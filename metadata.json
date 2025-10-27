@@ -1,0 +1,5 @@
+{
+  "name": "Aura Ciclo - Registro Menstrual",
+  "description": "Una aplicación web progresiva (PWA) para el registro y seguimiento del ciclo menstrual, diseñada con un enfoque en la privacidad, la personalización y una experiencia visual relajante. Incluye una animación de partículas interactiva que refleja la fase actual del ciclo.",
+  "requestFramePermissions": []
+}
