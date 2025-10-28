@@ -25,7 +25,7 @@ const AppContent: React.FC = () => {
             {!isLoading && <ParticleAura phase={currentPhase} intensity={intensity} />}
             <div className="md:flex">
                 <SideNav />
-                <main className="w-full h-screen overflow-y-auto pb-20 md:pb-0 md:ml-64">
+                <main className="w-full h-screen overflow-y-auto pb-16 md:pb-0 md:ml-64">
                     <Routes location={location}>
                         <Route path="/" element={<HomePage />} />
                         <Route path="/calendar" element={<CalendarPage />} />

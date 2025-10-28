@@ -1,8 +1,7 @@
 import type { DailyLog, Cycle } from '../types.ts';
-// FIX: Changed date-fns imports to use default imports from submodules to resolve module export errors.
-import formatISO from 'date-fns/formatISO';
-import addDays from 'date-fns/addDays';
-import subDays from 'date-fns/subDays';
+import { formatISO } from 'date-fns/formatISO';
+import { addDays } from 'date-fns/addDays';
+import { subDays } from 'date-fns/subDays';
 
 const randomInt = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
 

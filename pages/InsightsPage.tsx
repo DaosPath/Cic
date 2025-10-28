@@ -1,6 +1,6 @@
 import React, { useContext, useMemo } from 'react';
 import { AppContext } from '../context/AppContext.tsx';
-import parseISO from 'date-fns/parseISO';
+import { parseISO } from 'date-fns/parseISO';
 import type { Cycle, Symptom } from '../types.ts';
 import { useTranslation } from '../hooks/useTranslation.ts';
 import type { Translations } from '../services/i18n.ts';

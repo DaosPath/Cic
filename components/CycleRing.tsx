@@ -78,9 +78,18 @@ export const CycleRing: React.FC<CycleRingProps> = ({ phase, cycleDay }) => {
             observer.observe(containerRef.current);
         }
 
-        // Initialize particles
+        // Initialize particles with more density near center
         for (let i = 0; i < particleCount; i++) {
-            particles.push(new Particle(300, 300)); 
+            const p = new Particle(300, 300);
+            // Bias some particles to be closer to the torus
+            if (i < particleCount * 0.6) {
+                const angle = Math.random() * Math.PI * 2;
+                const radius = 80 + Math.random() * 60;
+                p.x = Math.cos(angle) * radius;
+                p.y = Math.sin(angle) * radius;
+                p.z = (Math.random() - 0.5) * 100;
+            }
+            particles.push(p); 
         }
 
         // Mouse tracking relative to canvas

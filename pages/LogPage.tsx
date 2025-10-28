@@ -1,8 +1,8 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { AppContext } from '../context/AppContext.tsx';
 import type { DailyLog, Symptom } from '../types.ts';
-import formatISO from 'date-fns/formatISO';
-import startOfToday from 'date-fns/startOfToday';
+import { formatISO } from 'date-fns/formatISO';
+import { startOfToday } from 'date-fns/startOfToday';
 import { getLog, upsertLog } from '../services/db.ts';
 import { useTranslation } from '../hooks/useTranslation.ts';
 import type { Translations } from '../services/i18n.ts';
