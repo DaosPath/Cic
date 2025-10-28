@@ -1,15 +1,18 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-
-const navItems = [
-  { path: '/', label: 'Hoy', ariaLabel: 'Ir a página de inicio', icon: (p: {isActive: boolean}) => <HomeIcon active={p.isActive} /> },
-  { path: '/calendar', label: 'Calendario', ariaLabel: 'Ir a calendario', icon: (p: {isActive: boolean}) => <CalendarIcon active={p.isActive} /> },
-  { path: '/log', label: 'Registrar', ariaLabel: 'Ir a registrar datos', icon: (p: {isActive: boolean}) => <LogIcon active={p.isActive} /> },
-  { path: '/insights', label: 'Análisis', ariaLabel: 'Ir a análisis', icon: (p: {isActive: boolean}) => <ChartIcon active={p.isActive} /> },
-  { path: '/settings', label: 'Ajustes', ariaLabel: 'Ir a ajustes', icon: (p: {isActive: boolean}) => <SettingsIcon active={p.isActive} /> },
-];
+import { useTranslation } from '../hooks/useTranslation.ts';
 
 export const SideNav: React.FC = () => {
+  const { t } = useTranslation();
+  
+  const navItems = [
+    { path: '/', labelKey: 'home' as const, icon: (p: {isActive: boolean}) => <HomeIcon active={p.isActive} /> },
+    { path: '/calendar', labelKey: 'calendar' as const, icon: (p: {isActive: boolean}) => <CalendarIcon active={p.isActive} /> },
+    { path: '/log', labelKey: 'log' as const, icon: (p: {isActive: boolean}) => <LogIcon active={p.isActive} /> },
+    { path: '/insights', labelKey: 'insights' as const, icon: (p: {isActive: boolean}) => <ChartIcon active={p.isActive} /> },
+    { path: '/settings', labelKey: 'settings' as const, icon: (p: {isActive: boolean}) => <SettingsIcon active={p.isActive} /> },
+  ];
+
   return (
     <aside className="hidden md:block fixed top-0 left-0 w-64 h-screen bg-brand-surface border-r border-brand-secondary/30 z-50 p-4">
       <div className="flex flex-col gap-2">
@@ -18,7 +21,7 @@ export const SideNav: React.FC = () => {
           <NavLink
             key={item.path}
             to={item.path}
-            aria-label={item.ariaLabel}
+            aria-label={t(item.labelKey)}
             aria-current={({ isActive }: { isActive: boolean }) => isActive ? 'page' : undefined}
             className={({ isActive }) =>
               `flex items-center gap-4 p-3 rounded-lg transition-colors duration-200 ${
@@ -29,7 +32,7 @@ export const SideNav: React.FC = () => {
             {({ isActive }) => (
                 <>
                     {item.icon({isActive})}
-                    <span className="text-base font-semibold" aria-hidden="true">{item.label}</span>
+                    <span className="text-base font-semibold" aria-hidden="true">{t(item.labelKey)}</span>
                 </>
             )}
           </NavLink>

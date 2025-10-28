@@ -24,6 +24,8 @@ export interface Cycle {
   length?: number;
 }
 
+export type Language = 'es' | 'en' | 'tr' | 'auto';
+
 export interface AppSettings {
   userName?: string;
   cycleLength: number;
@@ -34,6 +36,7 @@ export interface AppSettings {
   isDevMode?: boolean;
   customSymptoms: Symptom[];
   favoriteSymptomIds?: string[];
+  language: Language;
 }
 
 export interface Prediction {

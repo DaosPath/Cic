@@ -5,19 +5,21 @@ import { DailyLog } from '../types.ts';
 import formatISO from 'date-fns/formatISO';
 import startOfToday from 'date-fns/startOfToday';
 import { getLog, upsertLog } from '../services/db.ts';
-
-const moods = [
-    { value: 1, emoji: '😠', label: 'Terrible', ariaLabel: 'Seleccionar estado de ánimo: Terrible' },
-    { value: 2, emoji: '😔', label: 'Mal', ariaLabel: 'Seleccionar estado de ánimo: Mal' },
-    { value: 3, emoji: '😐', label: 'Normal', ariaLabel: 'Seleccionar estado de ánimo: Normal' },
-    { value: 4, emoji: '🙂', label: 'Bien', ariaLabel: 'Seleccionar estado de ánimo: Bien' },
-    { value: 5, emoji: '😊', label: 'Genial', ariaLabel: 'Seleccionar estado de ánimo: Genial' },
-];
+import { useTranslation } from '../hooks/useTranslation.ts';
 
 export const MoodTracker: React.FC = () => {
     const { refreshData } = useContext(AppContext);
+    const { t } = useTranslation();
     const todayStr = formatISO(startOfToday(), { representation: 'date' });
     const [selectedMood, setSelectedMood] = useState<number | undefined>();
+
+    const moods = [
+        { value: 1, emoji: '😠', label: t('terrible'), ariaLabel: `${t('mood')}: ${t('terrible')}` },
+        { value: 2, emoji: '😔', label: t('bad'), ariaLabel: `${t('mood')}: ${t('bad')}` },
+        { value: 3, emoji: '😐', label: t('normal'), ariaLabel: `${t('mood')}: ${t('normal')}` },
+        { value: 4, emoji: '🙂', label: t('good'), ariaLabel: `${t('mood')}: ${t('good')}` },
+        { value: 5, emoji: '😊', label: t('great'), ariaLabel: `${t('mood')}: ${t('great')}` },
+    ];
 
     useEffect(() => {
         const fetchMood = async () => {
@@ -47,7 +49,7 @@ export const MoodTracker: React.FC = () => {
 
     return (
         <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-6 rounded-3xl backdrop-blur-lg border border-brand-primary/20 shadow-xl w-full">
-            <h3 className="text-lg font-bold text-brand-text mb-5 text-center tracking-wide">¿Cómo te sientes hoy?</h3>
+            <h3 className="text-lg font-bold text-brand-text mb-5 text-center tracking-wide">{t('howDoYouFeel')}</h3>
             <div className="flex justify-between items-center px-2">
                 {moods.map(mood => (
                     <button

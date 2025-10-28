@@ -4,10 +4,12 @@ import { saveSettings, getBackupData, restoreBackupData, clearLogsAndCycles, cle
 import { generateDevData } from '../services/dev-data.ts';
 import type { AppSettings } from '../types.ts';
 import { ConfirmationModal } from '../components/ConfirmationModal.tsx';
+import { useTranslation } from '../hooks/useTranslation.ts';
 
 
 export const SettingsPage: React.FC = () => {
     const { settings, setSettings, refreshData } = useContext(AppContext);
+    const { t } = useTranslation();
     const [localSettings, setLocalSettings] = useState<AppSettings>(settings);
     const [isConfirmModalOpen, setConfirmModalOpen] = useState(false);
     const [devModeIntent, setDevModeIntent] = useState<boolean | null>(null);
@@ -109,8 +111,9 @@ export const SettingsPage: React.FC = () => {
         setDevModeIntent(null);
     };
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value, type, checked } = e.target;
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value, type } = e.target;
+        const checked = 'checked' in e.target ? e.target.checked : false;
         setLocalSettings(prev => ({
             ...prev,
             [name]: type === 'checkbox' ? checked : type === 'number' ? parseInt(value) || 0 : value
@@ -192,9 +195,9 @@ export const SettingsPage: React.FC = () => {
                 {/* Header elegante */}
                 <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-8 rounded-3xl backdrop-blur-lg border border-brand-primary/20 shadow-xl mb-8">
                     <div className="text-center">
-                        <h1 className="text-4xl md:text-5xl font-bold mb-3 text-brand-text tracking-tight">Configuración</h1>
+                        <h1 className="text-4xl md:text-5xl font-bold mb-3 text-brand-text tracking-tight">{t('configuration')}</h1>
                         <p className="text-lg md:text-xl text-brand-text-dim font-light">
-                            Personaliza tu experiencia
+                            {t('personalizeExperience')}
                         </p>
                         <div className="mt-4 w-20 h-1 bg-gradient-to-r from-brand-primary/50 to-brand-primary mx-auto rounded-full"></div>
                     </div>
@@ -236,6 +239,21 @@ export const SettingsPage: React.FC = () => {
                                         onChange={handleInputChange}
                                         className="w-full bg-brand-surface/50 p-4 rounded-2xl border border-brand-primary/10 focus:ring-2 focus:ring-brand-primary/50 focus:border-brand-primary/30 outline-none transition-all duration-300 text-brand-text"
                                     />
+                                </div>
+                                <div>
+                                    <label htmlFor="language" className="block text-sm font-semibold text-brand-text mb-2">Idioma / Language / Dil</label>
+                                    <select 
+                                        name="language" 
+                                        id="language" 
+                                        value={localSettings.language} 
+                                        onChange={handleInputChange}
+                                        className="w-full bg-brand-surface/50 p-4 rounded-2xl border border-brand-primary/10 focus:ring-2 focus:ring-brand-primary/50 focus:border-brand-primary/30 outline-none transition-all duration-300 text-brand-text"
+                                    >
+                                        <option value="auto">🌐 Automático / Automatic / Otomatik</option>
+                                        <option value="es">🇪🇸 Español</option>
+                                        <option value="en">🇺🇸 English</option>
+                                        <option value="tr">🇹🇷 Türkçe</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>

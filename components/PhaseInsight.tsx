@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AppContext } from '../context/AppContext.tsx';
 import { getPhaseInsight } from '../services/ai.ts';
+import { useTranslation } from '../hooks/useTranslation.ts';
 
 const LightbulbIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-3 text-yellow-300 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -11,6 +12,7 @@ const LightbulbIcon = () => (
 
 export const PhaseInsight: React.FC = () => {
     const { currentPhase } = useContext(AppContext);
+    const { t } = useTranslation();
     const [insight, setInsight] = useState('');
     const [loading, setLoading] = useState(true);
 
@@ -31,7 +33,7 @@ export const PhaseInsight: React.FC = () => {
                     <LightbulbIcon />
                 </div>
                 <div className="flex-1">
-                    <h3 className="text-lg font-bold text-brand-text mb-3 tracking-wide">Consejo del día</h3>
+                    <h3 className="text-lg font-bold text-brand-text mb-3 tracking-wide">{t('dailyTip')}</h3>
                     {loading ? (
                         <div className="space-y-3">
                             <div className="w-full h-3 bg-brand-secondary/20 rounded-full animate-pulse"></div>
@@ -41,7 +43,7 @@ export const PhaseInsight: React.FC = () => {
                     ) : (
                         <p className="text-base text-brand-text/90 leading-relaxed font-light">{insight}</p>
                     )}
-                     <p className="text-xs text-brand-text-dim/40 mt-4 text-right italic font-light">Powered by Gemini</p>
+                     <p className="text-xs text-brand-text-dim/40 mt-4 text-right italic font-light">{t('poweredByGemini')}</p>
                 </div>
             </div>
         </div>

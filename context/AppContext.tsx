@@ -23,6 +23,7 @@ const defaultSettings: AppSettings = {
     discreteMode: false,
     customSymptoms: [],
     favoriteSymptomIds: [],
+    language: 'auto',
 };
 
 export const AppContext = createContext<AppContextType>({
