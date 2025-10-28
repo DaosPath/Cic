@@ -1,89 +1,187 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
+import type { CyclePhase } from '../types.ts';
 
+// Props for the new ring, it only needs to know the current phase
 interface CycleRingProps {
-  dayOfCycle: number;
-  cycleLength: number;
-  lutealPhaseLength: number;
+    phase: CyclePhase;
 }
 
-const phaseConfig = {
-    menstruation: { days: 5, color: '#e65a78' },
-    ovulation: { days: 4, color: '#ffd778' },
-    follicular: { color: '#5ad2ba' },
-    luteal: { color: '#c8a0f0' },
-};
+// Helper function for linear interpolation
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
-const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(value, max));
+// Particle class adapted from the provided code
+class Particle {
+    x: number; y: number; z: number;
+    vx: number; vy: number; vz: number;
+    torusPhi: number; torusTheta: number;
 
-export const CycleRing: React.FC<CycleRingProps> = ({ dayOfCycle, cycleLength, lutealPhaseLength }) => {
-    const radius = 80;
-    const circumference = 2 * Math.PI * radius;
-    const strokeWidth = 14;
+    constructor(width: number, height: number) {
+        this.x = (Math.random() - 0.5) * width;
+        this.y = (Math.random() - 0.5) * height;
+        this.z = (Math.random() - 0.5) * 1000;
+        
+        // Angles for the torus/ring shape
+        this.torusPhi = Math.random() * 2 * Math.PI;
+        this.torusTheta = Math.random() * 2 * Math.PI;
+        
+        this.vx = 0; this.vy = 0; this.vz = 0;
+    }
+}
 
-    const safeCycleLength = Math.max(cycleLength, 1);
-    const follicularDays = Math.max(0, safeCycleLength - phaseConfig.menstruation.days - phaseConfig.ovulation.days - lutealPhaseLength);
-    
-    const phases = [
-        { name: 'menstruation', length: phaseConfig.menstruation.days, color: phaseConfig.menstruation.color },
-        { name: 'follicular', length: follicularDays, color: phaseConfig.follicular.color },
-        { name: 'ovulation', length: phaseConfig.ovulation.days, color: phaseConfig.ovulation.color },
-        { name: 'luteal', length: lutealPhaseLength, color: phaseConfig.luteal.color },
-    ];
+export const CycleRing: React.FC<CycleRingProps> = ({ phase }) => {
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
 
-    let accumulatedOffset = 0;
-    const phaseArcs = phases.map(phase => {
-        const dash = (phase.length / safeCycleLength) * circumference;
-        const offset = accumulatedOffset;
-        accumulatedOffset += dash;
-        return { dash, offset, color: phase.color };
-    });
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
 
-    const progress = clamp(dayOfCycle / safeCycleLength, 0, 1);
-    const angle = progress * 360 - 90;
-    const indicatorX = 100 + radius * Math.cos(angle * Math.PI / 180);
-    const indicatorY = 100 + radius * Math.sin(angle * Math.PI / 180);
+        let animationFrameId: number;
+        const particles: Particle[] = [];
+        const particleCount = 700;
+        
+        let width = 0;
+        let height = 0;
+        
+        const resizeHandler = (entries: ResizeObserverEntry[]) => {
+            if (!entries || entries.length === 0) return;
+            const entry = entries[0];
+            const dpr = window.devicePixelRatio || 1;
+            width = entry.contentRect.width;
+            height = entry.contentRect.height;
+            if (width === 0 || height === 0) return;
+            canvas.width = width * dpr;
+            canvas.height = height * dpr;
+            canvas.style.width = `${width}px`;
+            canvas.style.height = `${height}px`;
+            ctx.scale(dpr, dpr);
+        };
+        
+        const observer = new ResizeObserver(resizeHandler);
+        if (containerRef.current) {
+            observer.observe(containerRef.current);
+        }
+
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle(300, 300)); 
+        }
+
+        let mouse = { x: 0, y: 0 };
+        const handleMouseMove = (e: MouseEvent) => {
+            if (!canvas) return;
+            const rect = canvas.getBoundingClientRect();
+            mouse.x = e.clientX - rect.left;
+            mouse.y = e.clientY - rect.top;
+        };
+        document.addEventListener('mousemove', handleMouseMove);
+        
+        let time = 0;
+
+        let currentChaos = 0;
+        let currentAttraction = 0.02;
+        let currentRadius = 100;
+        let currentColor = { r: 180, g: 180, b: 220 };
+        let currentPulse = { amplitude: 0, frequency: 0 };
+        
+        const phaseTargets = (p: CyclePhase) => {
+            switch(p) {
+                case 'menstruation':
+                    return { chaos: 2.5, attraction: 0.018, radiusFactor: 0.8, pulse: { amplitude: 2, frequency: 10 }, color: { r: 230, g: 90, b: 120 } };
+                case 'follicular':
+                    return { chaos: 1.0, attraction: 0.02, radiusFactor: 0.9, pulse: { amplitude: 0.5, frequency: 8 }, color: { r: 90, g: 210, b: 190 } };
+                case 'ovulation':
+                    return { chaos: 2.0, attraction: 0.015, radiusFactor: 1.0, pulse: { amplitude: 3, frequency: 18 }, color: { r: 255, g: 215, b: 120 } };
+                case 'luteal':
+                default:
+                    return { chaos: 1.5, attraction: 0.017, radiusFactor: 0.85, pulse: { amplitude: -1.5, frequency: 12 }, color: { r: 200, g: 160, b: 240 } };
+            }
+        };
+
+        const animate = () => {
+            animationFrameId = requestAnimationFrame(animate);
+            if (width === 0 || height === 0) return;
+            
+            time += 0.01;
+            ctx.clearRect(0, 0, width, height);
+            
+            const target = phaseTargets(phase);
+
+            const smoothing = 0.08;
+            currentChaos = lerp(currentChaos, target.chaos, smoothing);
+            currentAttraction = lerp(currentAttraction, target.attraction, smoothing);
+            currentRadius = lerp(currentRadius, (Math.min(width, height) / 2.2) * target.radiusFactor, smoothing);
+            currentPulse.amplitude = lerp(currentPulse.amplitude, target.pulse.amplitude, smoothing);
+            currentPulse.frequency = lerp(currentPulse.frequency, target.pulse.frequency, smoothing);
+            currentColor.r = lerp(currentColor.r, target.color.r, smoothing);
+            currentColor.g = lerp(currentColor.g, target.color.g, smoothing);
+            currentColor.b = lerp(currentColor.b, target.color.b, smoothing);
+
+            particles.forEach(p => {
+                const R = currentRadius;
+                const r_torus = currentRadius * 0.35;
+                const spinAngle = time * 1.2; 
+
+                const targetX = (R + r_torus * Math.cos(p.torusPhi)) * Math.cos(p.torusTheta + spinAngle);
+                const targetY = (R + r_torus * Math.cos(p.torusPhi)) * Math.sin(p.torusTheta + spinAngle);
+                const targetZ = r_torus * Math.sin(p.torusPhi);
+                
+                const dxToMouse = p.x - (mouse.x - width / 2);
+                const dyToMouse = p.y - (mouse.y - height / 2);
+                const distToMouse = Math.hypot(dxToMouse, dyToMouse) || 1;
+                const repelForce = Math.max(0, (60 - distToMouse) / 60);
+
+                p.vx += (targetX - p.x) * currentAttraction;
+                p.vy += (targetY - p.y) * currentAttraction;
+                p.vz += (targetZ - p.z) * currentAttraction;
+
+                p.vx += (Math.random() - 0.5) * currentChaos;
+                p.vy += (Math.random() - 0.5) * currentChaos;
+                p.vz += (Math.random() - 0.5) * currentChaos;
+                
+                if (Math.abs(currentPulse.amplitude) > 0.01) {
+                     const pulse = Math.sin(time * currentPulse.frequency + p.y * 0.05) * currentPulse.amplitude;
+                     p.vy += pulse;
+                }
+
+                if (repelForce > 0) {
+                    p.vx += (dxToMouse / distToMouse) * repelForce * 5;
+                    p.vy += (dyToMouse / distToMouse) * repelForce * 5;
+                }
+
+                p.x += p.vx; p.y += p.vy; p.z += p.vz;
+                p.vx *= 0.92; p.vy *= 0.92; p.vz *= 0.92;
+
+                const perspective = Math.max(300, width * 0.6) / (Math.max(300, width * 0.6) + p.z);
+                const screenX = width / 2 + p.x * perspective;
+                const screenY = height / 2 + p.y * perspective;
+                const size = Math.max(0.1, 1.8 * perspective);
+                const alpha = Math.max(0.1, 1 * perspective);
+
+                const r = Math.round(currentColor.r);
+                const g = Math.round(currentColor.g);
+                const b = Math.round(currentColor.b);
+
+                ctx.beginPath();
+                ctx.arc(screenX, screenY, size, 0, 2 * Math.PI);
+                ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+                ctx.fill();
+            });
+        };
+
+        animate();
+
+        return () => {
+            cancelAnimationFrame(animationFrameId);
+            observer.disconnect();
+            document.removeEventListener('mousemove', handleMouseMove);
+        };
+    }, [phase]);
 
     return (
-        <div className="relative w-52 h-52 flex items-center justify-center">
-            <svg viewBox="0 0 200 200" className="absolute w-full h-full transform -rotate-90">
-                <circle
-                    cx="100"
-                    cy="100"
-                    r={radius}
-                    fill="none"
-                    stroke="rgba(90, 90, 106, 0.3)"
-                    strokeWidth={strokeWidth}
-                />
-                {phaseArcs.map((arc, index) => (
-                    <circle
-                        key={index}
-                        cx="100"
-                        cy="100"
-                        r={radius}
-                        fill="none"
-                        stroke={arc.color}
-                        strokeWidth={strokeWidth}
-                        strokeDasharray={`${arc.dash} ${circumference}`}
-                        strokeDashoffset={-arc.offset}
-                        strokeLinecap="round"
-                        className="transition-all duration-500"
-                    />
-                ))}
-                 <circle
-                    cx={indicatorX}
-                    cy={indicatorY}
-                    r={strokeWidth / 2 + 3}
-                    fill="rgba(10, 10, 15, 0.8)"
-                    stroke="#ffffff"
-                    strokeWidth="2"
-                    className="transition-all duration-500"
-                    style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
-                />
-            </svg>
-            <div className="z-10 text-center">
-                <span className="text-5xl font-bold text-brand-text">{dayOfCycle > 0 ? dayOfCycle : '...'}</span>
-                <p className="text-sm text-brand-text-dim -mt-1">{dayOfCycle > 0 ? 'Día del ciclo' : 'Calculando'}</p>
-            </div>
+        <div ref={containerRef} className="absolute inset-0 w-full h-full">
+             <canvas ref={canvasRef} />
         </div>
     );
 };

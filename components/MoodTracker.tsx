@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AppContext } from '../context/AppContext.tsx';
 import { DailyLog } from '../types.ts';
-import { formatISO, startOfToday } from 'date-fns';
+// FIX: Changed date-fns imports to use default imports from submodules to resolve module export errors.
+import formatISO from 'date-fns/formatISO';
+import startOfToday from 'date-fns/startOfToday';
 import { getLog, upsertLog } from '../services/db.ts';
 
 const moods = [

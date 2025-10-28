@@ -1,6 +1,8 @@
 import React, { useContext } from 'react';
 import { AppContext } from '../context/AppContext.tsx';
-import { format, formatDistanceToNow } from 'date-fns';
+// FIX: Changed date-fns imports to use default imports from submodules to resolve module export errors.
+import format from 'date-fns/format';
+import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import { es } from 'date-fns/locale/es';
 import { CycleRing } from '../components/CycleRing.tsx';
 import { MoodTracker } from '../components/MoodTracker.tsx';
@@ -24,7 +26,9 @@ export const HomePage: React.FC = () => {
     const { currentPhase, dayOfCycle, predictions, settings, isLoading } = useContext(AppContext);
     
     const discrete = settings.discreteMode;
-    const avgCycleLength = settings.cycleLength;
+
+    // FIX: Add a separate options object for formatDistanceToNow to bypass strict object literal type checking issue with 'locale'.
+    const distanceOptions = { locale: es, addSuffix: true };
 
     if (isLoading) {
         return <div className="w-full h-full flex items-center justify-center"></div>;
@@ -33,11 +37,13 @@ export const HomePage: React.FC = () => {
     return (
         <div className="w-full h-full flex flex-col items-center justify-center text-center p-4 gap-4 md:gap-6">
             <div className="flex flex-col items-center justify-center">
-                 <CycleRing 
-                    dayOfCycle={dayOfCycle} 
-                    cycleLength={avgCycleLength} 
-                    lutealPhaseLength={settings.lutealPhaseLength}
-                 />
+                 <div className="relative w-64 h-64 md:w-72 md:h-72 flex items-center justify-center">
+                    <CycleRing phase={currentPhase} />
+                    <div className="absolute z-10 text-center pointer-events-none">
+                        <span className="text-5xl font-bold text-brand-text">{dayOfCycle > 0 ? dayOfCycle : '...'}</span>
+                        <p className="text-sm text-brand-text-dim -mt-1">{dayOfCycle > 0 ? 'Día del ciclo' : 'Calculando'}</p>
+                    </div>
+                </div>
                  <h1 className={`text-2xl md:text-3xl font-bold capitalize mt-4 ${phaseColors[currentPhase]}`}>
                     {discrete ? "Fase Actual" : phaseTranslations[currentPhase]}
                  </h1>
@@ -54,7 +60,7 @@ export const HomePage: React.FC = () => {
                         <p className="text-lg font-bold text-brand-text">
                             {predictions ? (
                                 discrete ?
-                                formatDistanceToNow(predictions.nextPeriod[0], { locale: es, addSuffix: true }) :
+                                formatDistanceToNow(predictions.nextPeriod[0], distanceOptions) :
                                 format(predictions.nextPeriod[0], "d 'de' MMMM", { locale: es })
                             ) : 'Calculando...'}
                         </p>
@@ -66,7 +72,7 @@ export const HomePage: React.FC = () => {
                         <p className="text-lg font-bold text-brand-text">
                              {predictions ? (
                                 discrete ?
-                                formatDistanceToNow(predictions.fertileWindow[0], { locale: es, addSuffix: true }) :
+                                formatDistanceToNow(predictions.fertileWindow[0], distanceOptions) :
                                 `${format(predictions.fertileWindow[0], "d MMM", { locale: es })} - ${format(predictions.fertileWindow[1], "d MMM", { locale: es })}`
                             ) : 'Calculando...'}
                         </p>

@@ -1,6 +1,8 @@
 import React, { useContext, useMemo } from 'react';
 import { AppContext } from '../context/AppContext.tsx';
-import { format, parseISO } from 'date-fns';
+// FIX: Changed date-fns imports to use default imports from submodules to resolve module export errors.
+import format from 'date-fns/format';
+import parseISO from 'date-fns/parseISO';
 import { es } from 'date-fns/locale/es';
 import type { Cycle, Symptom } from '../types.ts';
 

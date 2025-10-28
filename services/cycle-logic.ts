@@ -1,5 +1,9 @@
 import type { Cycle, CyclePhase, Prediction } from '../types.ts';
-import { addDays, differenceInDays, startOfDay, parseISO } from 'date-fns';
+// FIX: Changed date-fns imports to use default imports from submodules to resolve module export errors.
+import addDays from 'date-fns/addDays';
+import differenceInDays from 'date-fns/differenceInDays';
+import startOfDay from 'date-fns/startOfDay';
+import parseISO from 'date-fns/parseISO';
 
 export const getTodayInTimezone = (timeZone = 'America/Lima'): Date => {
     const now = new Date();

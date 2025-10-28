@@ -1,21 +1,20 @@
 import React, { useState, useMemo, useContext } from 'react';
 import { AppContext } from '../context/AppContext.tsx';
-import {
-  format,
-  addMonths,
-  subMonths,
-  startOfMonth,
-  endOfMonth,
-  startOfWeek,
-  endOfWeek,
-  eachDayOfInterval,
-  isSameDay,
-  isSameMonth,
-  isToday,
-  formatISO,
-  getDate,
-  startOfDay
-} from 'date-fns';
+// FIX: Changed date-fns imports to use default imports from submodules to resolve module export errors.
+import format from 'date-fns/format';
+import addMonths from 'date-fns/addMonths';
+import subMonths from 'date-fns/subMonths';
+import startOfMonth from 'date-fns/startOfMonth';
+import endOfMonth from 'date-fns/endOfMonth';
+import startOfWeek from 'date-fns/startOfWeek';
+import endOfWeek from 'date-fns/endOfWeek';
+import eachDayOfInterval from 'date-fns/eachDayOfInterval';
+import isSameDay from 'date-fns/isSameDay';
+import isSameMonth from 'date-fns/isSameMonth';
+import isToday from 'date-fns/isToday';
+import formatISO from 'date-fns/formatISO';
+import getDate from 'date-fns/getDate';
+import startOfDay from 'date-fns/startOfDay';
 import { es } from 'date-fns/locale/es';
 
 // FIX: Add an explicit props interface and use React.FC to correctly type the DayCell component.
