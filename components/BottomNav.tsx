@@ -2,11 +2,11 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 
 const navItems = [
-  { path: '/', label: 'Hoy', icon: (p: {isActive: boolean}) => <HomeIcon active={p.isActive} /> },
-  { path: '/calendar', label: 'Calendario', icon: (p: {isActive: boolean}) => <CalendarIcon active={p.isActive} /> },
-  { path: '/log', label: 'Registrar', icon: (p: {isActive: boolean}) => <LogIcon active={p.isActive} /> },
-  { path: '/insights', label: 'Análisis', icon: (p: {isActive: boolean}) => <ChartIcon active={p.isActive} /> },
-  { path: '/settings', label: 'Ajustes', icon: (p: {isActive: boolean}) => <SettingsIcon active={p.isActive} /> },
+  { path: '/', label: 'Hoy', ariaLabel: 'Ir a página de inicio', icon: (p: {isActive: boolean}) => <HomeIcon active={p.isActive} /> },
+  { path: '/calendar', label: 'Calendario', ariaLabel: 'Ir a calendario', icon: (p: {isActive: boolean}) => <CalendarIcon active={p.isActive} /> },
+  { path: '/log', label: 'Registrar', ariaLabel: 'Ir a registrar datos', icon: (p: {isActive: boolean}) => <LogIcon active={p.isActive} /> },
+  { path: '/insights', label: 'Análisis', ariaLabel: 'Ir a análisis', icon: (p: {isActive: boolean}) => <ChartIcon active={p.isActive} /> },
+  { path: '/settings', label: 'Ajustes', ariaLabel: 'Ir a ajustes', icon: (p: {isActive: boolean}) => <SettingsIcon active={p.isActive} /> },
 ];
 
 export const BottomNav: React.FC = () => {
@@ -17,6 +17,8 @@ export const BottomNav: React.FC = () => {
           <NavLink
             key={item.path}
             to={item.path}
+            aria-label={item.ariaLabel}
+            aria-current={({ isActive }: { isActive: boolean }) => isActive ? 'page' : undefined}
             className={({ isActive }) =>
               `flex flex-col items-center justify-center gap-1 w-16 transition-colors duration-200 ${
                 isActive ? 'text-brand-primary' : 'text-brand-text-dim hover:text-brand-text'
@@ -26,7 +28,7 @@ export const BottomNav: React.FC = () => {
             {({ isActive }) => (
                 <>
                     {item.icon({isActive})}
-                    <span className="text-xs font-medium">{item.label}</span>
+                    <span className="text-xs font-medium" aria-hidden="true">{item.label}</span>
                 </>
             )}
           </NavLink>

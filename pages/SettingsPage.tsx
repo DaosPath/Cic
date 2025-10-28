@@ -122,6 +122,61 @@ export const SettingsPage: React.FC = () => {
         : "¿Desactivar Modo Desarrollador? Esto borrará todos los datos de prueba.";
 
 
+    const handleClearData = async () => {
+        if (window.confirm("¿Estás segura? Esto borrará TODOS tus datos permanentemente.")) {
+            try {
+                await clearLogsAndCycles();
+                await refreshData();
+                alert('Todos los datos han sido eliminados.');
+            } catch (error) {
+                console.error("Error clearing data:", error);
+                alert("Error al eliminar los datos.");
+            }
+        }
+    };
+
+    const handleExportLogs = async () => {
+        try {
+            const data = await getBackupData();
+            const csvContent = [
+                'Fecha,Fase Menstrual,Estado de Ánimo,Síntomas,Notas',
+                ...data.logs.map(log => [
+                    log.date,
+                    log.periodIntensity || 'N/A',
+                    log.mood || 'N/A',
+                    log.symptoms.join(';') || 'N/A',
+                    (log.notes || '').replace(/,/g, ';')
+                ].join(','))
+            ].join('\n');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `aura-ciclo-logs-${new Date().toISOString().slice(0, 10)}.csv`;
+            link.click();
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Error exporting logs:", error);
+            alert("Error al exportar los registros.");
+        }
+    };
+
+    const copyDebugInfo = () => {
+        const debugInfo = {
+            version: "1.0.0",
+            userAgent: navigator.userAgent,
+            timestamp: new Date().toISOString(),
+            settings: localSettings,
+            localStorage: Object.keys(localStorage).length,
+            indexedDB: 'available'
+        };
+        
+        navigator.clipboard.writeText(JSON.stringify(debugInfo, null, 2))
+            .then(() => alert('Información de debug copiada al portapapeles'))
+            .catch(() => alert('Error al copiar información de debug'));
+    };
+
     return (
         <>
             <ConfirmationModal
@@ -133,59 +188,183 @@ export const SettingsPage: React.FC = () => {
                 {devModeConfirmationMessage}
             </ConfirmationModal>
 
-            <div className="p-4 md:p-8 pt-10 max-w-4xl mx-auto">
-                <h1 className="text-3xl font-bold mb-8 text-brand-text">Ajustes</h1>
-                <div className="space-y-6 md:space-y-0 md:grid md:grid-cols-2 md:gap-8">
-                    {/* Columna Izquierda */}
+            <div className="min-h-screen p-4 md:p-8 pt-12 max-w-6xl mx-auto">
+                {/* Header elegante */}
+                <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-8 rounded-3xl backdrop-blur-lg border border-brand-primary/20 shadow-xl mb-8">
+                    <div className="text-center">
+                        <h1 className="text-4xl md:text-5xl font-bold mb-3 text-brand-text tracking-tight">Configuración</h1>
+                        <p className="text-lg md:text-xl text-brand-text-dim font-light">
+                            Personaliza tu experiencia
+                        </p>
+                        <div className="mt-4 w-20 h-1 bg-gradient-to-r from-brand-primary/50 to-brand-primary mx-auto rounded-full"></div>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    {/* Configuración General */}
                     <div className="space-y-6">
-                        <div>
-                            <label htmlFor="cycleLength" className="block text-sm font-medium text-brand-text-dim mb-1">Duración promedio del ciclo (días)</label>
-                            <input type="number" name="cycleLength" id="cycleLength" value={localSettings.cycleLength} onChange={handleInputChange}
-                                className="w-full bg-brand-surface p-3 rounded-lg border border-brand-secondary/50 focus:ring-2 focus:ring-brand-primary focus:border-brand-primary outline-none transition-all"/>
+                        {/* Configuración del Ciclo */}
+                        <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-6 rounded-3xl backdrop-blur-lg border border-brand-primary/20 shadow-xl">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="p-2 rounded-2xl bg-brand-primary/10">
+                                    <svg className="w-6 h-6 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                </div>
+                                <h2 className="text-xl font-bold text-brand-text tracking-wide">Configuración del Ciclo</h2>
+                            </div>
+                            <div className="space-y-4">
+                                <div>
+                                    <label htmlFor="cycleLength" className="block text-sm font-semibold text-brand-text mb-2">Duración promedio del ciclo (días)</label>
+                                    <input 
+                                        type="number" 
+                                        name="cycleLength" 
+                                        id="cycleLength" 
+                                        value={localSettings.cycleLength} 
+                                        onChange={handleInputChange}
+                                        className="w-full bg-brand-surface/50 p-4 rounded-2xl border border-brand-primary/10 focus:ring-2 focus:ring-brand-primary/50 focus:border-brand-primary/30 outline-none transition-all duration-300 text-brand-text"
+                                    />
+                                </div>
+                                <div>
+                                    <label htmlFor="lutealPhaseLength" className="block text-sm font-semibold text-brand-text mb-2">Duración de la fase lútea (días)</label>
+                                    <input 
+                                        type="number" 
+                                        name="lutealPhaseLength" 
+                                        id="lutealPhaseLength" 
+                                        value={localSettings.lutealPhaseLength} 
+                                        onChange={handleInputChange}
+                                        className="w-full bg-brand-surface/50 p-4 rounded-2xl border border-brand-primary/10 focus:ring-2 focus:ring-brand-primary/50 focus:border-brand-primary/30 outline-none transition-all duration-300 text-brand-text"
+                                    />
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <label htmlFor="lutealPhaseLength" className="block text-sm font-medium text-brand-text-dim mb-1">Duración de la fase lútea (días)</label>
-                            <input type="number" name="lutealPhaseLength" id="lutealPhaseLength" value={localSettings.lutealPhaseLength} onChange={handleInputChange}
-                                className="w-full bg-brand-surface p-3 rounded-lg border border-brand-secondary/50 focus:ring-2 focus:ring-brand-primary focus:border-brand-primary outline-none transition-all"/>
-                        </div>
-                        <div className="flex items-center justify-between">
-                            <span className="text-brand-text-dim">Modo Discreto</span>
-                            <label htmlFor="discreteMode" className="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" name="discreteMode" id="discreteMode" checked={localSettings.discreteMode} onChange={handleInputChange} className="sr-only peer"/>
-                                <div className="w-11 h-6 bg-brand-secondary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-primary"></div>
-                            </label>
+
+                        {/* Preferencias de Privacidad */}
+                        <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-6 rounded-3xl backdrop-blur-lg border border-brand-primary/20 shadow-xl">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="p-2 rounded-2xl bg-purple-400/10">
+                                    <svg className="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                    </svg>
+                                </div>
+                                <h2 className="text-xl font-bold text-brand-text tracking-wide">Privacidad</h2>
+                            </div>
+                            <div className="bg-brand-surface/30 p-4 rounded-2xl flex items-center justify-between">
+                                <div>
+                                    <span className="font-semibold text-brand-text">Modo Discreto</span>
+                                    <p className="text-sm text-brand-text-dim">Oculta términos específicos del ciclo menstrual</p>
+                                </div>
+                                <label htmlFor="discreteMode" className="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" name="discreteMode" id="discreteMode" checked={localSettings.discreteMode} onChange={handleInputChange} className="sr-only peer"/>
+                                    <div className="w-12 h-6 bg-brand-secondary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-primary shadow-inner"></div>
+                                </label>
+                            </div>
                         </div>
                     </div>
 
-                    {/* Columna Derecha */}
+                    {/* Gestión de Datos y Desarrollo */}
                     <div className="space-y-6">
-                        <div className="pt-4 border-t border-brand-secondary/30 md:pt-0 md:border-t-0">
-                             <h2 className="text-lg font-semibold mb-3 text-brand-primary">Datos</h2>
-                             <div className="flex gap-2">
-                                <button onClick={handleBackup} className="flex-1 bg-brand-surface hover:bg-brand-secondary text-brand-text font-semibold py-2 px-4 rounded-lg transition-colors">Crear copia de seguridad</button>
-                                <button onClick={handleRestore} className="flex-1 bg-brand-surface hover:bg-brand-secondary text-brand-text font-semibold py-2 px-4 rounded-lg transition-colors">Restaurar copia</button>
-                             </div>
+                        {/* Gestión de Datos */}
+                        <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-6 rounded-3xl backdrop-blur-lg border border-brand-primary/20 shadow-xl">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="p-2 rounded-2xl bg-blue-400/10">
+                                    <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                    </svg>
+                                </div>
+                                <h2 className="text-xl font-bold text-brand-text tracking-wide">Gestión de Datos</h2>
+                            </div>
+                            <div className="space-y-3">
+                                <button 
+                                    onClick={handleBackup} 
+                                    className="w-full bg-brand-surface/50 hover:bg-brand-surface text-brand-text font-semibold py-3 px-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] border border-brand-primary/10 hover:border-brand-primary/20"
+                                >
+                                    📦 Crear Copia de Seguridad
+                                </button>
+                                <button 
+                                    onClick={handleRestore} 
+                                    className="w-full bg-brand-surface/50 hover:bg-brand-surface text-brand-text font-semibold py-3 px-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] border border-brand-primary/10 hover:border-brand-primary/20"
+                                >
+                                    📥 Restaurar Datos
+                                </button>
+                                <button 
+                                    onClick={handleExportLogs} 
+                                    className="w-full bg-brand-surface/50 hover:bg-brand-surface text-brand-text font-semibold py-3 px-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] border border-brand-primary/10 hover:border-brand-primary/20"
+                                >
+                                    📊 Exportar a CSV
+                                </button>
+                                <button 
+                                    onClick={handleClearData} 
+                                    className="w-full bg-red-500/20 hover:bg-red-500/30 text-red-400 font-semibold py-3 px-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] border border-red-500/30 hover:border-red-500/50"
+                                >
+                                    🗑️ Eliminar Todos los Datos
+                                </button>
+                            </div>
                         </div>
                         
-                        <div className="pt-4 border-t border-brand-secondary/30 md:pt-0 md:border-t-0">
-                             <h2 className="text-lg font-semibold mb-3 text-yellow-400">Desarrollo</h2>
-                             <div className="flex items-center justify-between bg-yellow-900/20 p-3 rounded-lg border border-yellow-400/30">
-                                <div>
-                                    <span className="font-semibold text-yellow-400">Modo Desarrollador</span>
-                                    <p className="text-xs text-brand-text-dim">Llena la app con datos de prueba. ¡Cuidado!</p>
+                        {/* Herramientas de Desarrollo */}
+                        <div className="bg-gradient-to-br from-yellow-900/20 to-orange-900/20 p-6 rounded-3xl backdrop-blur-lg border border-yellow-400/30 shadow-xl">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="p-2 rounded-2xl bg-yellow-400/10">
+                                    <svg className="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                                    </svg>
                                 </div>
-                                <label htmlFor="devMode" className="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" name="devMode" id="devMode" checked={localSettings.isDevMode || false} onChange={handleToggleDevMode} className="sr-only peer"/>
-                                    <div className="w-11 h-6 bg-brand-secondary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-400"></div>
-                                </label>
+                                <h2 className="text-xl font-bold text-yellow-400 tracking-wide">Herramientas de Desarrollo</h2>
+                            </div>
+                            
+                            {/* Modo Desarrollador */}
+                            <div className="bg-yellow-900/30 p-4 rounded-2xl border border-yellow-400/30 mb-4">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <span className="font-semibold text-yellow-400">Modo Desarrollador</span>
+                                        <p className="text-sm text-brand-text-dim">Llena la app con datos de prueba realistas</p>
+                                    </div>
+                                    <label htmlFor="devMode" className="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" name="devMode" id="devMode" checked={localSettings.isDevMode || false} onChange={handleToggleDevMode} className="sr-only peer"/>
+                                        <div className="w-12 h-6 bg-brand-secondary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-400 shadow-inner"></div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            {/* Herramientas adicionales */}
+                            <div className="space-y-3">
+                                <button 
+                                    onClick={copyDebugInfo} 
+                                    className="w-full bg-brand-surface/30 hover:bg-brand-surface/50 text-brand-text font-semibold py-3 px-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] border border-yellow-400/20 hover:border-yellow-400/40"
+                                >
+                                    🐛 Copiar Info de Debug
+                                </button>
+                                <button 
+                                    onClick={() => window.location.reload()} 
+                                    className="w-full bg-brand-surface/30 hover:bg-brand-surface/50 text-brand-text font-semibold py-3 px-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] border border-yellow-400/20 hover:border-yellow-400/40"
+                                >
+                                    🔄 Recargar Aplicación
+                                </button>
+                                <button 
+                                    onClick={() => console.log('Settings:', localSettings)} 
+                                    className="w-full bg-brand-surface/30 hover:bg-brand-surface/50 text-brand-text font-semibold py-3 px-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] border border-yellow-400/20 hover:border-yellow-400/40"
+                                >
+                                    📋 Log Settings to Console
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <button onClick={handleSave} className="w-full bg-brand-primary text-brand-background font-bold py-3 rounded-xl mt-8 hover:scale-105 transition-transform duration-200">
-                    Guardar Cambios
-                </button>
+                {/* Botón de guardar */}
+                <div className="mt-8 flex justify-center">
+                    <button 
+                        onClick={handleSave} 
+                        className="group bg-gradient-to-r from-brand-primary to-brand-primary/80 text-brand-background font-bold py-4 px-12 rounded-2xl shadow-xl shadow-brand-primary/20 hover:shadow-2xl hover:shadow-brand-primary/30 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center gap-3"
+                    >
+                        <svg className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        Guardar Configuración
+                    </button>
+                </div>
             </div>
         </>
     );

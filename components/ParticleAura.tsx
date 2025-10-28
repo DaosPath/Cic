@@ -40,6 +40,9 @@ export const ParticleAura: React.FC<ParticleAuraProps> = ({
     const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
+    // Detect prefers-reduced-motion
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     let animationId = 0;
 
     // Tamaño / DPR
@@ -74,44 +77,47 @@ export const ParticleAura: React.FC<ParticleAuraProps> = ({
     let currentPulseAmp = 0;
     let currentPulseFreq = 0;
     let color: RGB = { r: 180, g: 180, b: 220 };
+    
+    // Adjust parameters for reduced motion
+    const motionMultiplier = prefersReducedMotion ? 0.1 : 1;
 
     const phaseTargets = (p: CyclePhase, intens: number) => {
       // intens en 0..1
       switch (p) {
         case 'menstruation':
           return {
-            chaos: 1.2 + intens * 1.8,
+            chaos: (1.2 + intens * 1.8) * motionMultiplier,
             attraction: 0.018,
             radius: 180 - intens * 30,
-            pulseAmp: 1.5 + intens * 2.5,
+            pulseAmp: (1.5 + intens * 2.5) * motionMultiplier,
             pulseFreq: 8 + intens * 6,
             color: { r: 230, g: 90, b: 120 } as RGB,
           };
         case 'follicular':
           return {
-            chaos: 0.8 + intens * 1.0,
+            chaos: (0.8 + intens * 1.0) * motionMultiplier,
             attraction: 0.02,
             radius: 200 + intens * 20,
-            pulseAmp: 0.5 + intens * 1.0,
+            pulseAmp: (0.5 + intens * 1.0) * motionMultiplier,
             pulseFreq: 6 + intens * 5,
             color: { r: 90, g: 210, b: 190 } as RGB,
           };
         case 'ovulation':
           return {
-            chaos: 1.5 + intens * 1.5,
+            chaos: (1.5 + intens * 1.5) * motionMultiplier,
             attraction: 0.015,
             radius: 220 + intens * 30,
-            pulseAmp: 2.0 + intens * 2.0,
+            pulseAmp: (2.0 + intens * 2.0) * motionMultiplier,
             pulseFreq: 14 + intens * 8,
             color: { r: 255, g: 215, b: 120 } as RGB,
           };
         case 'luteal':
         default:
           return {
-            chaos: 1.0 + intens * 1.0,
+            chaos: (1.0 + intens * 1.0) * motionMultiplier,
             attraction: 0.017,
             radius: 190 - intens * 10,
-            pulseAmp: 1.0 + intens * 1.5,
+            pulseAmp: (1.0 + intens * 1.5) * motionMultiplier,
             pulseFreq: 10 + intens * 5,
             color: { r: 200, g: 160, b: 240 } as RGB,
           };
@@ -121,7 +127,7 @@ export const ParticleAura: React.FC<ParticleAuraProps> = ({
     const animate = () => {
       animationId = requestAnimationFrame(animate);
       t += 0.01;
-      rotation += 0.001;
+      rotation += 0.001 * motionMultiplier;
 
       const { width: Wcss, height: Hcss } = canvas.getBoundingClientRect();
       ctx.clearRect(0, 0, Wcss, Hcss);
@@ -174,8 +180,8 @@ export const ParticleAura: React.FC<ParticleAuraProps> = ({
         const pulse = Math.sin(t * currentPulseFreq + p.y * 0.05) * currentPulseAmp;
         p.vy += pulse;
 
-        // Repulsión mouse
-        if (repel > 0) {
+        // Repulsión mouse - disable if reduced motion is preferred
+        if (repel > 0 && !prefersReducedMotion) {
           p.vx += (dxToMouse / distToMouse) * repel * 5;
           p.vy += (dyToMouse / distToMouse) * repel * 5;
         }

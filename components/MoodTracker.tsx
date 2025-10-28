@@ -7,11 +7,11 @@ import startOfToday from 'date-fns/startOfToday';
 import { getLog, upsertLog } from '../services/db.ts';
 
 const moods = [
-    { value: 1, emoji: '😠', label: 'Terrible' },
-    { value: 2, emoji: '😔', label: 'Mal' },
-    { value: 3, emoji: '😐', label: 'Normal' },
-    { value: 4, emoji: '🙂', label: 'Bien' },
-    { value: 5, emoji: '😊', label: 'Genial' },
+    { value: 1, emoji: '😠', label: 'Terrible', ariaLabel: 'Seleccionar estado de ánimo: Terrible' },
+    { value: 2, emoji: '😔', label: 'Mal', ariaLabel: 'Seleccionar estado de ánimo: Mal' },
+    { value: 3, emoji: '😐', label: 'Normal', ariaLabel: 'Seleccionar estado de ánimo: Normal' },
+    { value: 4, emoji: '🙂', label: 'Bien', ariaLabel: 'Seleccionar estado de ánimo: Bien' },
+    { value: 5, emoji: '😊', label: 'Genial', ariaLabel: 'Seleccionar estado de ánimo: Genial' },
 ];
 
 export const MoodTracker: React.FC = () => {
@@ -46,15 +46,17 @@ export const MoodTracker: React.FC = () => {
     };
 
     return (
-        <div className="bg-brand-surface/50 p-4 rounded-lg backdrop-blur-sm w-full max-w-sm md:max-w-md">
-            <h3 className="text-sm font-semibold text-brand-text-dim mb-3 text-center">¿Cómo te sientes hoy?</h3>
-            <div className="flex justify-around items-center">
+        <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-6 rounded-3xl backdrop-blur-lg border border-brand-primary/20 shadow-xl w-full">
+            <h3 className="text-lg font-bold text-brand-text mb-5 text-center tracking-wide">¿Cómo te sientes hoy?</h3>
+            <div className="flex justify-between items-center px-2">
                 {moods.map(mood => (
                     <button
                         key={mood.value}
                         onClick={() => handleMoodSelect(mood.value)}
-                        className={`text-3xl md:text-4xl rounded-full p-2 transition-transform duration-200 hover:scale-125 ${selectedMood === mood.value ? 'bg-brand-primary/20 scale-125' : ''}`}
-                        aria-label={mood.label}
+                        className={`text-3xl md:text-4xl rounded-xl p-3 transition-all duration-300 hover:scale-110 active:scale-105 flex-shrink-0 ${selectedMood === mood.value ? 'bg-brand-primary/40 scale-110 shadow-xl ring-2 ring-brand-primary/50' : 'hover:bg-brand-primary/10 hover:shadow-lg'}`}
+                        aria-label={mood.ariaLabel}
+                        aria-pressed={selectedMood === mood.value}
+                        type="button"
                     >
                         {mood.emoji}
                     </button>
