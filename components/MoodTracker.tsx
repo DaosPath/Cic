@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AppContext } from '../context/AppContext.tsx';
-import { DailyLog } from '../types.ts';
-// FIX: Changed date-fns imports to use default imports from submodules to resolve module export errors.
+import type { DailyLog } from '../types.ts';
 import formatISO from 'date-fns/formatISO';
 import startOfToday from 'date-fns/startOfToday';
 import { getLog, upsertLog } from '../services/db.ts';
@@ -14,11 +13,11 @@ export const MoodTracker: React.FC = () => {
     const [selectedMood, setSelectedMood] = useState<number | undefined>();
 
     const moods = [
-        { value: 1, emoji: '😠', label: t('terrible'), ariaLabel: `${t('mood')}: ${t('terrible')}` },
+        { value: 1, emoji: '😣', label: t('terrible'), ariaLabel: `${t('mood')}: ${t('terrible')}` },
         { value: 2, emoji: '😔', label: t('bad'), ariaLabel: `${t('mood')}: ${t('bad')}` },
         { value: 3, emoji: '😐', label: t('normal'), ariaLabel: `${t('mood')}: ${t('normal')}` },
         { value: 4, emoji: '🙂', label: t('good'), ariaLabel: `${t('mood')}: ${t('good')}` },
-        { value: 5, emoji: '😊', label: t('great'), ariaLabel: `${t('mood')}: ${t('great')}` },
+        { value: 5, emoji: '🤩', label: t('great'), ariaLabel: `${t('mood')}: ${t('great')}` },
     ];
 
     useEffect(() => {
@@ -34,14 +33,14 @@ export const MoodTracker: React.FC = () => {
     const handleMoodSelect = async (moodValue: number) => {
         const newMood = selectedMood === moodValue ? undefined : moodValue;
         setSelectedMood(newMood);
-        
-        const existingLog = await getLog(todayStr) || {
+
+        const existingLog = (await getLog(todayStr)) || {
             id: todayStr,
             date: todayStr,
             symptoms: [],
             medications: [],
         };
-        
+
         const updatedLog: DailyLog = { ...existingLog, mood: newMood as any };
         await upsertLog(updatedLog);
         await refreshData();

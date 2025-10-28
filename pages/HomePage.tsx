@@ -1,17 +1,13 @@
 import React, { useContext } from 'react';
 import { AppContext } from '../context/AppContext.tsx';
-// FIX: Changed date-fns imports to use default imports from submodules to resolve module export errors.
-import { format } from 'date-fns/format';
-import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
+import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import { es } from 'date-fns/locale/es';
 import { enUS } from 'date-fns/locale/en-US';
-import { tr } from 'date-fns/locale/tr';
+import { tr as trLocale } from 'date-fns/locale/tr';
 import { CycleRing } from '../components/CycleRing.tsx';
 import { MoodTracker } from '../components/MoodTracker.tsx';
 import { PhaseInsight } from '../components/PhaseInsight.tsx';
 import { useTranslation } from '../hooks/useTranslation.ts';
-
-
 
 const phaseColors: Record<string, string> = {
     menstruation: "text-phase-menstruation",
@@ -20,24 +16,32 @@ const phaseColors: Record<string, string> = {
     luteal: "text-phase-luteal"
 };
 
+const dateFnsLocales = {
+    es,
+    en: enUS,
+    tr: trLocale,
+} as const;
+
+const intlLocales = {
+    es: 'es-ES',
+    en: 'en-US',
+    tr: 'tr-TR',
+} as const;
+
+const formatDayMonth = (date: Date, locale: string) =>
+    new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long' }).format(date);
+
+const formatShortRange = (date: Date, locale: string) =>
+    new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short' }).format(date);
+
 export const HomePage: React.FC = () => {
     const { currentPhase, dayOfCycle, predictions, settings, isLoading } = useContext(AppContext);
     const { t, language } = useTranslation();
 
     const discrete = settings.discreteMode;
-
-    // Get the appropriate locale for date-fns
-    const getDateLocale = () => {
-        switch (language) {
-            case 'en': return enUS;
-            case 'tr': return tr;
-            case 'es':
-            default: return es;
-        }
-    };
-
-    const dateLocale = getDateLocale();
-    const distanceOptions = { locale: dateLocale, addSuffix: true };
+    const dateLocale = dateFnsLocales[language] ?? es;
+    const intlLocale = intlLocales[language] ?? 'es-ES';
+    const distanceOptions = { locale: dateLocale, addSuffix: true as const };
 
     const getPhaseTranslation = (phase: string) => {
         switch (phase) {
@@ -93,9 +97,9 @@ export const HomePage: React.FC = () => {
                         </h3>
                         <p className="text-2xl md:text-3xl font-bold text-brand-text text-center">
                             {predictions ? (
-                                discrete ?
-                                    formatDistanceToNow(predictions.nextPeriod[0], distanceOptions) :
-                                    format(predictions.nextPeriod[0], "d 'de' MMMM", { locale: dateLocale })
+                                discrete
+                                    ? formatDistanceToNow(predictions.nextPeriod[0], distanceOptions)
+                                    : formatDayMonth(predictions.nextPeriod[0], intlLocale)
                             ) : t('calculating')}
                         </p>
                     </div>
@@ -112,9 +116,9 @@ export const HomePage: React.FC = () => {
                         </h3>
                         <p className="text-2xl md:text-3xl font-bold text-brand-text text-center">
                             {predictions ? (
-                                discrete ?
-                                    formatDistanceToNow(predictions.fertileWindow[0], distanceOptions) :
-                                    `${format(predictions.fertileWindow[0], "d MMM", { locale: dateLocale })} - ${format(predictions.fertileWindow[1], "d MMM", { locale: dateLocale })}`
+                                discrete
+                                    ? formatDistanceToNow(predictions.fertileWindow[0], distanceOptions)
+                                    : `${formatShortRange(predictions.fertileWindow[0], intlLocale)} - ${formatShortRange(predictions.fertileWindow[1], intlLocale)}`
                             ) : t('calculating')}
                         </p>
                     </div>

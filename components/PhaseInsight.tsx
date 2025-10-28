@@ -12,19 +12,19 @@ const LightbulbIcon = () => (
 
 export const PhaseInsight: React.FC = () => {
     const { currentPhase } = useContext(AppContext);
-    const { t } = useTranslation();
+    const { t, language } = useTranslation();
     const [insight, setInsight] = useState('');
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchInsight = async () => {
             setLoading(true);
-            const text = await getPhaseInsight(currentPhase);
+            const text = await getPhaseInsight(currentPhase, language);
             setInsight(text);
             setLoading(false);
         };
         fetchInsight();
-    }, [currentPhase]);
+    }, [currentPhase, language]);
 
     return (
         <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-8 rounded-3xl backdrop-blur-lg border border-brand-primary/20 shadow-xl w-full">

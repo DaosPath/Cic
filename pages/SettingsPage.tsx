@@ -6,14 +6,20 @@ import type { AppSettings } from '../types.ts';
 import { ConfirmationModal } from '../components/ConfirmationModal.tsx';
 import { useTranslation } from '../hooks/useTranslation.ts';
 
+const languageOptions = [
+    { value: 'auto', labelKey: 'automatic' },
+    { value: 'es', labelKey: 'spanish' },
+    { value: 'en', labelKey: 'english' },
+    { value: 'tr', labelKey: 'turkish' },
+] as const;
 
 export const SettingsPage: React.FC = () => {
     const { settings, setSettings, refreshData } = useContext(AppContext);
-    const { t } = useTranslation();
+    const { t, language } = useTranslation();
     const [localSettings, setLocalSettings] = useState<AppSettings>(settings);
     const [isConfirmModalOpen, setConfirmModalOpen] = useState(false);
     const [devModeIntent, setDevModeIntent] = useState<boolean | null>(null);
-    
+
     useEffect(() => {
         setLocalSettings(settings);
     }, [settings]);
@@ -21,7 +27,7 @@ export const SettingsPage: React.FC = () => {
     const handleSave = async () => {
         await saveSettings(localSettings);
         setSettings(localSettings);
-        alert('Ajustes guardados.');
+        alert(t('settingsSaved'));
     };
 
     const handleBackup = async () => {
@@ -34,7 +40,7 @@ export const SettingsPage: React.FC = () => {
             link.click();
         } catch (error) {
             console.error("Error creating backup:", error);
-            alert("No se pudo crear la copia de seguridad.");
+            alert(t('backupCreationError'));
         }
     };
 
@@ -50,17 +56,17 @@ export const SettingsPage: React.FC = () => {
                     try {
                         const data = JSON.parse(e.target?.result as string);
                         if (data.logs && data.cycles && data.settings) {
-                           if (window.confirm("¿Estás segura? Esto sobreescribirá todos tus datos actuales.")) {
+                            if (window.confirm(t('restoreConfirm'))) {
                                 await restoreBackupData(data);
                                 await refreshData();
-                                alert('Datos restaurados con éxito.');
-                           }
+                                alert(t('restoreSuccess'));
+                            }
                         } else {
-                            throw new Error("Archivo de copia de seguridad inválido.");
+                            throw new Error(t('invalidBackupFile'));
                         }
                     } catch (error) {
                         console.error("Error restoring backup:", error);
-                        alert("No se pudo restaurar la copia de seguridad. El archivo puede estar dañado o tener un formato incorrecto.");
+                        alert(t('restoreFailed'));
                     }
                 };
                 reader.readAsText(file);
@@ -71,9 +77,7 @@ export const SettingsPage: React.FC = () => {
 
     const handleToggleDevMode = () => {
         const newDevModeState = !localSettings.isDevMode;
-        // Optimistically update UI
         setLocalSettings(prev => ({ ...prev, isDevMode: newDevModeState }));
-        // Store intent and open modal
         setDevModeIntent(newDevModeState);
         setConfirmModalOpen(true);
     };
@@ -83,20 +87,19 @@ export const SettingsPage: React.FC = () => {
 
         const newSettings = { ...localSettings, isDevMode: devModeIntent };
         try {
-            if (devModeIntent) { // Turning ON
+            if (devModeIntent) {
                 const devData = generateDevData();
                 await clearAndBulkInsert(devData);
-                alert("Modo desarrollador activado.");
-            } else { // Turning OFF
+                alert(t('devModeEnabled'));
+            } else {
                 await clearLogsAndCycles();
-                alert("Modo desarrollador desactivado. La app está vacía.");
+                alert(t('devModeDisabled'));
             }
             await saveSettings(newSettings);
             await refreshData();
-        } catch (e) {
-            console.error("Failed to toggle dev mode:", e);
-            alert("Error al cambiar el modo desarrollador.");
-            // Revert UI on error
+        } catch (error) {
+            console.error("Failed to toggle dev mode:", error);
+            alert(t('devModeError'));
             setLocalSettings(prev => ({ ...prev, isDevMode: !devModeIntent }));
         } finally {
             setConfirmModalOpen(false);
@@ -105,7 +108,6 @@ export const SettingsPage: React.FC = () => {
     };
 
     const handleCancelDevMode = () => {
-        // Revert UI change
         setLocalSettings(prev => ({ ...prev, isDevMode: !devModeIntent }));
         setConfirmModalOpen(false);
         setDevModeIntent(null);
@@ -116,24 +118,19 @@ export const SettingsPage: React.FC = () => {
         const checked = 'checked' in e.target ? e.target.checked : false;
         setLocalSettings(prev => ({
             ...prev,
-            [name]: type === 'checkbox' ? checked : type === 'number' ? parseInt(value) || 0 : value
+            [name]: type === 'checkbox' ? checked : type === 'number' ? parseInt(value, 10) || 0 : value
         }));
     };
-    
-    const devModeConfirmationMessage = devModeIntent
-        ? "¿Activar Modo Desarrollador? Esto borrará todos tus datos actuales y los reemplazará con datos de prueba."
-        : "¿Desactivar Modo Desarrollador? Esto borrará todos los datos de prueba.";
-
 
     const handleClearData = async () => {
-        if (window.confirm("¿Estás segura? Esto borrará TODOS tus datos permanentemente.")) {
+        if (window.confirm(t('deleteDataConfirm'))) {
             try {
                 await clearLogsAndCycles();
                 await refreshData();
-                alert('Todos los datos han sido eliminados.');
+                alert(t('dataDeleted'));
             } catch (error) {
                 console.error("Error clearing data:", error);
-                alert("Error al eliminar los datos.");
+                alert(t('deleteDataError'));
             }
         }
     };
@@ -141,17 +138,18 @@ export const SettingsPage: React.FC = () => {
     const handleExportLogs = async () => {
         try {
             const data = await getBackupData();
+            const csvHeader = [t('date'), t('menstruationIntensity'), t('mood'), t('symptoms'), t('notes')].join(',');
             const csvContent = [
-                'Fecha,Fase Menstrual,Estado de Ánimo,Síntomas,Notas',
+                csvHeader,
                 ...data.logs.map(log => [
                     log.date,
-                    log.periodIntensity || 'N/A',
-                    log.mood || 'N/A',
+                    log.periodIntensity ?? 'N/A',
+                    log.mood ?? 'N/A',
                     log.symptoms.join(';') || 'N/A',
                     (log.notes || '').replace(/,/g, ';')
                 ].join(','))
             ].join('\n');
-            
+
             const blob = new Blob([csvContent], { type: 'text/csv' });
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
@@ -161,7 +159,7 @@ export const SettingsPage: React.FC = () => {
             URL.revokeObjectURL(url);
         } catch (error) {
             console.error("Error exporting logs:", error);
-            alert("Error al exportar los registros.");
+            alert(t('exportError'));
         }
     };
 
@@ -169,30 +167,35 @@ export const SettingsPage: React.FC = () => {
         const debugInfo = {
             version: "1.0.0",
             userAgent: navigator.userAgent,
-            timestamp: new Date().toISOString(),
-            settings: localSettings,
-            localStorage: Object.keys(localStorage).length,
+            language,
+            locale: Intl.DateTimeFormat().resolvedOptions().locale,
+            localStorageSize: JSON.stringify(localStorage).length,
             indexedDB: 'available'
         };
-        
+
         navigator.clipboard.writeText(JSON.stringify(debugInfo, null, 2))
-            .then(() => alert('Información de debug copiada al portapapeles'))
-            .catch(() => alert('Error al copiar información de debug'));
+            .then(() => alert(t('debugCopySuccess')))
+            .catch(() => alert(t('debugCopyError')));
     };
+
+    const devModeConfirmationMessage = devModeIntent
+        ? t('devModeEnableConfirm')
+        : t('devModeDisableConfirm');
 
     return (
         <>
             <ConfirmationModal
                 isOpen={isConfirmModalOpen}
-                title="Confirmación Requerida"
+                title={t('confirm')}
                 onConfirm={handleConfirmDevMode}
                 onCancel={handleCancelDevMode}
+                confirmText={t('confirm')}
+                cancelText={t('cancel')}
             >
                 {devModeConfirmationMessage}
             </ConfirmationModal>
 
             <div className="min-h-screen p-4 md:p-8 pt-12 max-w-6xl mx-auto">
-                {/* Header elegante */}
                 <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-8 rounded-3xl backdrop-blur-lg border border-brand-primary/20 shadow-xl mb-8">
                     <div className="text-center">
                         <h1 className="text-4xl md:text-5xl font-bold mb-3 text-brand-text tracking-tight">{t('configuration')}</h1>
@@ -204,9 +207,7 @@ export const SettingsPage: React.FC = () => {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    {/* Configuración General */}
                     <div className="space-y-6">
-                        {/* Configuración del Ciclo */}
                         <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-6 rounded-3xl backdrop-blur-lg border border-brand-primary/20 shadow-xl">
                             <div className="flex items-center gap-3 mb-6">
                                 <div className="p-2 rounded-2xl bg-brand-primary/10">
@@ -215,113 +216,110 @@ export const SettingsPage: React.FC = () => {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                     </svg>
                                 </div>
-                                <h2 className="text-xl font-bold text-brand-text tracking-wide">Configuración del Ciclo</h2>
+                                <h2 className="text-xl font-bold text-brand-text tracking-wide">{t('cycleConfiguration')}</h2>
                             </div>
                             <div className="space-y-4">
                                 <div>
-                                    <label htmlFor="cycleLength" className="block text-sm font-semibold text-brand-text mb-2">Duración promedio del ciclo (días)</label>
-                                    <input 
-                                        type="number" 
-                                        name="cycleLength" 
-                                        id="cycleLength" 
-                                        value={localSettings.cycleLength} 
+                                    <label htmlFor="cycleLength" className="block text-sm font-semibold text-brand-text mb-2">{t('averageCycleDuration')}</label>
+                                    <input
+                                        type="number"
+                                        name="cycleLength"
+                                        id="cycleLength"
+                                        value={localSettings.cycleLength}
                                         onChange={handleInputChange}
                                         className="w-full bg-brand-surface/50 p-4 rounded-2xl border border-brand-primary/10 focus:ring-2 focus:ring-brand-primary/50 focus:border-brand-primary/30 outline-none transition-all duration-300 text-brand-text"
                                     />
                                 </div>
                                 <div>
-                                    <label htmlFor="lutealPhaseLength" className="block text-sm font-semibold text-brand-text mb-2">Duración de la fase lútea (días)</label>
-                                    <input 
-                                        type="number" 
-                                        name="lutealPhaseLength" 
-                                        id="lutealPhaseLength" 
-                                        value={localSettings.lutealPhaseLength} 
+                                    <label htmlFor="lutealPhaseLength" className="block text-sm font-semibold text-brand-text mb-2">{t('lutealPhaseDuration')}</label>
+                                    <input
+                                        type="number"
+                                        name="lutealPhaseLength"
+                                        id="lutealPhaseLength"
+                                        value={localSettings.lutealPhaseLength}
                                         onChange={handleInputChange}
                                         className="w-full bg-brand-surface/50 p-4 rounded-2xl border border-brand-primary/10 focus:ring-2 focus:ring-brand-primary/50 focus:border-brand-primary/30 outline-none transition-all duration-300 text-brand-text"
                                     />
                                 </div>
                                 <div>
-                                    <label htmlFor="language" className="block text-sm font-semibold text-brand-text mb-2">Idioma / Language / Dil</label>
-                                    <select 
-                                        name="language" 
-                                        id="language" 
-                                        value={localSettings.language} 
+                                    <label htmlFor="language" className="block text-sm font-semibold text-brand-text mb-2">{t('language')}</label>
+                                    <select
+                                        id="language"
+                                        name="language"
+                                        value={localSettings.language}
                                         onChange={handleInputChange}
                                         className="w-full bg-brand-surface/50 p-4 rounded-2xl border border-brand-primary/10 focus:ring-2 focus:ring-brand-primary/50 focus:border-brand-primary/30 outline-none transition-all duration-300 text-brand-text"
                                     >
-                                        <option value="auto">🌐 Automático / Automatic / Otomatik</option>
-                                        <option value="es">🇪🇸 Español</option>
-                                        <option value="en">🇺🇸 English</option>
-                                        <option value="tr">🇹🇷 Türkçe</option>
+                                        {languageOptions.map(option => (
+                                            <option key={option.value} value={option.value}>
+                                                {t(option.labelKey)}
+                                            </option>
+                                        ))}
                                     </select>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Preferencias de Privacidad */}
                         <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-6 rounded-3xl backdrop-blur-lg border border-brand-primary/20 shadow-xl">
                             <div className="flex items-center gap-3 mb-6">
-                                <div className="p-2 rounded-2xl bg-purple-400/10">
-                                    <svg className="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                <div className="p-2 rounded-2xl bg-brand-primary/10">
+                                    <svg className="w-6 h-6 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6l4 2" />
                                     </svg>
                                 </div>
-                                <h2 className="text-xl font-bold text-brand-text tracking-wide">Privacidad</h2>
+                                <h2 className="text-xl font-bold text-brand-text tracking-wide">{t('privacy')}</h2>
                             </div>
-                            <div className="bg-brand-surface/30 p-4 rounded-2xl flex items-center justify-between">
+                            <div className="bg-brand-surface/50 p-4 rounded-2xl border border-brand-primary/10 flex items-center justify-between">
                                 <div>
-                                    <span className="font-semibold text-brand-text">Modo Discreto</span>
-                                    <p className="text-sm text-brand-text-dim">Oculta términos específicos del ciclo menstrual</p>
+                                    <span className="font-semibold text-brand-text">{t('discreteMode')}</span>
+                                    <p className="text-sm text-brand-text-dim">{t('hideSpecificTerms')}</p>
                                 </div>
                                 <label htmlFor="discreteMode" className="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" name="discreteMode" id="discreteMode" checked={localSettings.discreteMode} onChange={handleInputChange} className="sr-only peer"/>
+                                    <input type="checkbox" name="discreteMode" id="discreteMode" checked={localSettings.discreteMode} onChange={handleInputChange} className="sr-only peer" />
                                     <div className="w-12 h-6 bg-brand-secondary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-primary shadow-inner"></div>
                                 </label>
                             </div>
                         </div>
-                    </div>
 
-                    {/* Gestión de Datos y Desarrollo */}
-                    <div className="space-y-6">
-                        {/* Gestión de Datos */}
                         <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-6 rounded-3xl backdrop-blur-lg border border-brand-primary/20 shadow-xl">
                             <div className="flex items-center gap-3 mb-6">
-                                <div className="p-2 rounded-2xl bg-blue-400/10">
-                                    <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                <div className="p-2 rounded-2xl bg-brand-primary/10">
+                                    <svg className="w-6 h-6 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4h16v16H4z" />
                                     </svg>
                                 </div>
-                                <h2 className="text-xl font-bold text-brand-text tracking-wide">Gestión de Datos</h2>
+                                <h2 className="text-xl font-bold text-brand-text tracking-wide">{t('dataManagement')}</h2>
                             </div>
                             <div className="space-y-3">
-                                <button 
-                                    onClick={handleBackup} 
+                                <button
+                                    onClick={handleBackup}
                                     className="w-full bg-brand-surface/50 hover:bg-brand-surface text-brand-text font-semibold py-3 px-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] border border-brand-primary/10 hover:border-brand-primary/20"
                                 >
-                                    📦 Crear Copia de Seguridad
+                                    {t('createBackup')}
                                 </button>
-                                <button 
-                                    onClick={handleRestore} 
+                                <button
+                                    onClick={handleRestore}
                                     className="w-full bg-brand-surface/50 hover:bg-brand-surface text-brand-text font-semibold py-3 px-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] border border-brand-primary/10 hover:border-brand-primary/20"
                                 >
-                                    📥 Restaurar Datos
+                                    {t('restoreData')}
                                 </button>
-                                <button 
-                                    onClick={handleExportLogs} 
+                                <button
+                                    onClick={handleExportLogs}
                                     className="w-full bg-brand-surface/50 hover:bg-brand-surface text-brand-text font-semibold py-3 px-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] border border-brand-primary/10 hover:border-brand-primary/20"
                                 >
-                                    📊 Exportar a CSV
+                                    {t('exportToCsv')}
                                 </button>
-                                <button 
-                                    onClick={handleClearData} 
-                                    className="w-full bg-red-500/20 hover:bg-red-500/30 text-red-400 font-semibold py-3 px-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] border border-red-500/30 hover:border-red-500/50"
+                                <button
+                                    onClick={handleClearData}
+                                    className="w-full bg-gradient-to-r from-phase-menstruation to-phase-menstruation/80 text-white font-semibold py-3 px-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] shadow-lg shadow-phase-menstruation/30"
                                 >
-                                    🗑️ Eliminar Todos los Datos
+                                    🗑️ {t('deleteAllData')}
                                 </button>
                             </div>
                         </div>
-                        
-                        {/* Herramientas de Desarrollo */}
+                    </div>
+
+                    <div className="space-y-6">
                         <div className="bg-gradient-to-br from-yellow-900/20 to-orange-900/20 p-6 rounded-3xl backdrop-blur-lg border border-yellow-400/30 shadow-xl">
                             <div className="flex items-center gap-3 mb-6">
                                 <div className="p-2 rounded-2xl bg-yellow-400/10">
@@ -329,58 +327,55 @@ export const SettingsPage: React.FC = () => {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
                                     </svg>
                                 </div>
-                                <h2 className="text-xl font-bold text-yellow-400 tracking-wide">Herramientas de Desarrollo</h2>
+                                <h2 className="text-xl font-bold text-yellow-400 tracking-wide">{t('developmentTools')}</h2>
                             </div>
-                            
-                            {/* Modo Desarrollador */}
+
                             <div className="bg-yellow-900/30 p-4 rounded-2xl border border-yellow-400/30 mb-4">
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <span className="font-semibold text-yellow-400">Modo Desarrollador</span>
-                                        <p className="text-sm text-brand-text-dim">Llena la app con datos de prueba realistas</p>
+                                        <span className="font-semibold text-yellow-400">{t('developerMode')}</span>
+                                        <p className="text-sm text-brand-text-dim">{t('fillWithTestData')}</p>
                                     </div>
                                     <label htmlFor="devMode" className="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" name="devMode" id="devMode" checked={localSettings.isDevMode || false} onChange={handleToggleDevMode} className="sr-only peer"/>
+                                        <input type="checkbox" name="devMode" id="devMode" checked={localSettings.isDevMode || false} onChange={handleToggleDevMode} className="sr-only peer" />
                                         <div className="w-12 h-6 bg-brand-secondary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-400 shadow-inner"></div>
                                     </label>
                                 </div>
                             </div>
 
-                            {/* Herramientas adicionales */}
                             <div className="space-y-3">
-                                <button 
-                                    onClick={copyDebugInfo} 
+                                <button
+                                    onClick={copyDebugInfo}
                                     className="w-full bg-brand-surface/30 hover:bg-brand-surface/50 text-brand-text font-semibold py-3 px-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] border border-yellow-400/20 hover:border-yellow-400/40"
                                 >
-                                    🐛 Copiar Info de Debug
+                                    {t('copyDebugInfo')}
                                 </button>
-                                <button 
-                                    onClick={() => window.location.reload()} 
+                                <button
+                                    onClick={() => window.location.reload()}
                                     className="w-full bg-brand-surface/30 hover:bg-brand-surface/50 text-brand-text font-semibold py-3 px-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] border border-yellow-400/20 hover:border-yellow-400/40"
                                 >
-                                    🔄 Recargar Aplicación
+                                    {t('reloadApp')}
                                 </button>
-                                <button 
-                                    onClick={() => console.log('Settings:', localSettings)} 
+                                <button
+                                    onClick={() => console.log('Settings:', localSettings)}
                                     className="w-full bg-brand-surface/30 hover:bg-brand-surface/50 text-brand-text font-semibold py-3 px-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] border border-yellow-400/20 hover:border-yellow-400/40"
                                 >
-                                    📋 Log Settings to Console
+                                    {t('logSettingsConsole')}
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Botón de guardar */}
                 <div className="mt-8 flex justify-center">
-                    <button 
-                        onClick={handleSave} 
+                    <button
+                        onClick={handleSave}
                         className="group bg-gradient-to-r from-brand-primary to-brand-primary/80 text-brand-background font-bold py-4 px-12 rounded-2xl shadow-xl shadow-brand-primary/20 hover:shadow-2xl hover:shadow-brand-primary/30 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center gap-3"
                     >
                         <svg className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
-                        Guardar Configuración
+                        {t('saveConfiguration')}
                     </button>
                 </div>
             </div>
