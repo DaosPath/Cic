@@ -19,15 +19,27 @@ export const SettingsPage: React.FC = () => {
     const [localSettings, setLocalSettings] = useState<AppSettings>(settings);
     const [isConfirmModalOpen, setConfirmModalOpen] = useState(false);
     const [devModeIntent, setDevModeIntent] = useState<boolean | null>(null);
+    const [hasChanges, setHasChanges] = useState(false);
+    const [showToast, setShowToast] = useState(false);
+    const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     useEffect(() => {
         setLocalSettings(settings);
+        setHasChanges(false);
     }, [settings]);
+
+    useEffect(() => {
+        const changed = JSON.stringify(localSettings) !== JSON.stringify(settings);
+        setHasChanges(changed);
+    }, [localSettings, settings]);
 
     const handleSave = async () => {
         await saveSettings(localSettings);
         setSettings(localSettings);
-        alert(t('settingsSaved'));
+        setHasChanges(false);
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
     };
 
     const handleBackup = async () => {
@@ -123,15 +135,15 @@ export const SettingsPage: React.FC = () => {
     };
 
     const handleClearData = async () => {
-        if (window.confirm(t('deleteDataConfirm'))) {
-            try {
-                await clearLogsAndCycles();
-                await refreshData();
-                alert(t('dataDeleted'));
-            } catch (error) {
-                console.error("Error clearing data:", error);
-                alert(t('deleteDataError'));
-            }
+        setShowDeleteModal(false);
+        try {
+            await clearLogsAndCycles();
+            await refreshData();
+            setShowToast(true);
+            setTimeout(() => setShowToast(false), 3000);
+        } catch (error) {
+            console.error("Error clearing data:", error);
+            alert(t('deleteDataError'));
         }
     };
 
@@ -195,188 +207,346 @@ export const SettingsPage: React.FC = () => {
                 {devModeConfirmationMessage}
             </ConfirmationModal>
 
-            <div className="min-h-screen p-4 md:p-8 pt-12 max-w-6xl mx-auto">
-                <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-8 rounded-3xl backdrop-blur-lg border border-brand-primary/20 shadow-xl mb-8">
-                    <div className="text-center">
-                        <h1 className="text-4xl md:text-5xl font-bold mb-3 text-brand-text tracking-tight">{t('configuration')}</h1>
-                        <p className="text-lg md:text-xl text-brand-text-dim font-light">
-                            {t('personalizeExperience')}
-                        </p>
-                        <div className="mt-4 w-20 h-1 bg-gradient-to-r from-brand-primary/50 to-brand-primary mx-auto rounded-full"></div>
+            {/* Delete Confirmation Modal */}
+            <ConfirmationModal
+                isOpen={showDeleteModal}
+                title="⚠️ Eliminar todos los datos"
+                onConfirm={handleClearData}
+                onCancel={() => setShowDeleteModal(false)}
+                confirmText="Eliminar"
+                cancelText="Cancelar"
+            >
+                Esta acción eliminará permanentemente todos tus ciclos, registros y datos. No se puede deshacer.
+            </ConfirmationModal>
+
+            {/* Toast Notification */}
+            {showToast && (
+                <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-top duration-300">
+                    <div className="bg-brand-surface border border-brand-primary/30 rounded-[18px] px-6 py-4 shadow-[0_4px_16px_rgba(0,0,0,0.3)] flex items-center gap-3">
+                        <svg className="w-5 h-5 text-brand-positive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span className="text-brand-text font-medium">Cambios guardados correctamente</span>
                     </div>
                 </div>
+            )}
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div className="space-y-6">
-                        <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-6 rounded-3xl backdrop-blur-lg border border-brand-primary/20 shadow-xl">
-                            <div className="flex items-center gap-3 mb-6">
-                                <div className="p-2 rounded-2xl bg-brand-primary/10">
-                                    <svg className="w-6 h-6 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    </svg>
-                                </div>
-                                <h2 className="text-xl font-bold text-brand-text tracking-wide">{t('cycleConfiguration')}</h2>
-                            </div>
-                            <div className="space-y-4">
-                                <div>
-                                    <label htmlFor="cycleLength" className="block text-sm font-semibold text-brand-text mb-2">{t('averageCycleDuration')}</label>
-                                    <input
-                                        type="number"
-                                        name="cycleLength"
-                                        id="cycleLength"
-                                        value={localSettings.cycleLength}
-                                        onChange={handleInputChange}
-                                        className="w-full bg-brand-surface/50 p-4 rounded-2xl border border-brand-primary/10 focus:ring-2 focus:ring-brand-primary/50 focus:border-brand-primary/30 outline-none transition-all duration-300 text-brand-text"
-                                    />
-                                </div>
-                                <div>
-                                    <label htmlFor="lutealPhaseLength" className="block text-sm font-semibold text-brand-text mb-2">{t('lutealPhaseDuration')}</label>
-                                    <input
-                                        type="number"
-                                        name="lutealPhaseLength"
-                                        id="lutealPhaseLength"
-                                        value={localSettings.lutealPhaseLength}
-                                        onChange={handleInputChange}
-                                        className="w-full bg-brand-surface/50 p-4 rounded-2xl border border-brand-primary/10 focus:ring-2 focus:ring-brand-primary/50 focus:border-brand-primary/30 outline-none transition-all duration-300 text-brand-text"
-                                    />
-                                </div>
-                                <div>
-                                    <label htmlFor="language" className="block text-sm font-semibold text-brand-text mb-2">{t('language')}</label>
-                                    <select
-                                        id="language"
-                                        name="language"
-                                        value={localSettings.language}
-                                        onChange={handleInputChange}
-                                        className="w-full bg-brand-surface/50 p-4 rounded-2xl border border-brand-primary/10 focus:ring-2 focus:ring-brand-primary/50 focus:border-brand-primary/30 outline-none transition-all duration-300 text-brand-text"
-                                    >
-                                        {languageOptions.map(option => (
-                                            <option key={option.value} value={option.value}>
-                                                {t(option.labelKey)}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-6 rounded-3xl backdrop-blur-lg border border-brand-primary/20 shadow-xl">
-                            <div className="flex items-center gap-3 mb-6">
-                                <div className="p-2 rounded-2xl bg-brand-primary/10">
-                                    <svg className="w-6 h-6 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6l4 2" />
-                                    </svg>
-                                </div>
-                                <h2 className="text-xl font-bold text-brand-text tracking-wide">{t('privacy')}</h2>
-                            </div>
-                            <div className="bg-brand-surface/50 p-4 rounded-2xl border border-brand-primary/10 flex items-center justify-between">
-                                <div>
-                                    <span className="font-semibold text-brand-text">{t('discreteMode')}</span>
-                                    <p className="text-sm text-brand-text-dim">{t('hideSpecificTerms')}</p>
-                                </div>
-                                <label htmlFor="discreteMode" className="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" name="discreteMode" id="discreteMode" checked={localSettings.discreteMode} onChange={handleInputChange} className="sr-only peer" />
-                                    <div className="w-12 h-6 bg-brand-secondary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-primary shadow-inner"></div>
-                                </label>
-                            </div>
-                        </div>
-
-                        <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-6 rounded-3xl backdrop-blur-lg border border-brand-primary/20 shadow-xl">
-                            <div className="flex items-center gap-3 mb-6">
-                                <div className="p-2 rounded-2xl bg-brand-primary/10">
-                                    <svg className="w-6 h-6 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4h16v16H4z" />
-                                    </svg>
-                                </div>
-                                <h2 className="text-xl font-bold text-brand-text tracking-wide">{t('dataManagement')}</h2>
-                            </div>
-                            <div className="space-y-3">
-                                <button
-                                    onClick={handleBackup}
-                                    className="w-full bg-brand-surface/50 hover:bg-brand-surface text-brand-text font-semibold py-3 px-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] border border-brand-primary/10 hover:border-brand-primary/20"
-                                >
-                                    {t('createBackup')}
-                                </button>
-                                <button
-                                    onClick={handleRestore}
-                                    className="w-full bg-brand-surface/50 hover:bg-brand-surface text-brand-text font-semibold py-3 px-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] border border-brand-primary/10 hover:border-brand-primary/20"
-                                >
-                                    {t('restoreData')}
-                                </button>
-                                <button
-                                    onClick={handleExportLogs}
-                                    className="w-full bg-brand-surface/50 hover:bg-brand-surface text-brand-text font-semibold py-3 px-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] border border-brand-primary/10 hover:border-brand-primary/20"
-                                >
-                                    {t('exportToCsv')}
-                                </button>
-                                <button
-                                    onClick={handleClearData}
-                                    className="w-full bg-gradient-to-r from-phase-menstruation to-phase-menstruation/80 text-white font-semibold py-3 px-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] shadow-lg shadow-phase-menstruation/30"
-                                >
-                                    🗑️ {t('deleteAllData')}
-                                </button>
-                            </div>
-                        </div>
+            <div className="min-h-screen px-4 md:px-8 pt-12 pb-32 md:pb-24">
+                <div className="max-w-[1140px] mx-auto">
+                    {/* Header */}
+                    <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-6 md:p-8 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)] mb-6">
+                        <h1 className="text-3xl md:text-4xl font-bold text-brand-text mb-2" style={{ fontWeight: 700, lineHeight: 1.3 }}>
+                            {t('configuration')}
+                        </h1>
+                        <p className="text-base text-brand-text-dim" style={{ fontWeight: 500, lineHeight: 1.5 }}>
+                            {t('personalizeExperience')}
+                        </p>
                     </div>
 
-                    <div className="space-y-6">
-                        <div className="bg-gradient-to-br from-yellow-900/20 to-orange-900/20 p-6 rounded-3xl backdrop-blur-lg border border-yellow-400/30 shadow-xl">
-                            <div className="flex items-center gap-3 mb-6">
-                                <div className="p-2 rounded-2xl bg-yellow-400/10">
-                                    <svg className="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-                                    </svg>
+                    {/* Two Column Grid */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        {/* Left Column */}
+                        <div className="space-y-6">
+                            {/* Cycle Configuration */}
+                            <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-5 md:p-6 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)]">
+                                <div className="flex items-center gap-3 mb-5">
+                                    <div className="p-2 rounded-xl bg-brand-primary/15">
+                                        <svg className="w-5 h-5 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                    </div>
+                                    <h2 className="text-lg font-bold text-brand-text" style={{ fontWeight: 700, lineHeight: 1.3 }}>
+                                        {t('cycleConfiguration')}
+                                    </h2>
                                 </div>
-                                <h2 className="text-xl font-bold text-yellow-400 tracking-wide">{t('developmentTools')}</h2>
+                                <div className="space-y-4">
+                                    <div>
+                                        <label htmlFor="cycleLength" className="block text-sm font-semibold text-brand-text mb-2" style={{ fontWeight: 600 }}>
+                                            {t('averageCycleDuration')}
+                                        </label>
+                                        <input
+                                            type="number"
+                                            name="cycleLength"
+                                            id="cycleLength"
+                                            value={localSettings.cycleLength}
+                                            onChange={handleInputChange}
+                                            placeholder="28"
+                                            className="w-full bg-brand-surface text-brand-text placeholder:text-brand-text-dim/70 p-3 rounded-xl border border-brand-border focus:ring-2 focus:ring-brand-primary/50 focus:border-brand-primary outline-none transition-all duration-150"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="lutealPhaseLength" className="block text-sm font-semibold text-brand-text mb-2" style={{ fontWeight: 600 }}>
+                                            {t('lutealPhaseDuration')}
+                                        </label>
+                                        <input
+                                            type="number"
+                                            name="lutealPhaseLength"
+                                            id="lutealPhaseLength"
+                                            value={localSettings.lutealPhaseLength}
+                                            onChange={handleInputChange}
+                                            placeholder="14"
+                                            className="w-full bg-brand-surface text-brand-text placeholder:text-brand-text-dim/70 p-3 rounded-xl border border-brand-border focus:ring-2 focus:ring-brand-primary/50 focus:border-brand-primary outline-none transition-all duration-150"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="language" className="block text-sm font-semibold text-brand-text mb-2" style={{ fontWeight: 600 }}>
+                                            {t('language')}
+                                        </label>
+                                        <select
+                                            id="language"
+                                            name="language"
+                                            value={localSettings.language}
+                                            onChange={handleInputChange}
+                                            className="w-full bg-brand-surface text-brand-text p-3 rounded-xl border border-brand-border focus:ring-2 focus:ring-brand-primary/50 focus:border-brand-primary outline-none transition-all duration-150"
+                                        >
+                                            {languageOptions.map(option => (
+                                                <option key={option.value} value={option.value}>
+                                                    {t(option.labelKey)}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div className="bg-yellow-900/30 p-4 rounded-2xl border border-yellow-400/30 mb-4">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <span className="font-semibold text-yellow-400">{t('developerMode')}</span>
-                                        <p className="text-sm text-brand-text-dim">{t('fillWithTestData')}</p>
+                            {/* Privacy */}
+                            <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-5 md:p-6 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)]">
+                                <div className="flex items-center gap-3 mb-5">
+                                    <div className="p-2 rounded-xl bg-brand-primary/15">
+                                        <svg className="w-5 h-5 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                        </svg>
                                     </div>
-                                    <label htmlFor="devMode" className="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" name="devMode" id="devMode" checked={localSettings.isDevMode || false} onChange={handleToggleDevMode} className="sr-only peer" />
-                                        <div className="w-12 h-6 bg-brand-secondary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-400 shadow-inner"></div>
+                                    <h2 className="text-lg font-bold text-brand-text" style={{ fontWeight: 700, lineHeight: 1.3 }}>
+                                        {t('privacy')}
+                                    </h2>
+                                </div>
+                                <div className="bg-brand-surface-2 p-4 rounded-xl border border-brand-border flex items-start justify-between gap-4">
+                                    <div className="flex-1">
+                                        <div className="font-semibold text-brand-text mb-1" style={{ fontWeight: 600 }}>
+                                            {t('discreteMode')}
+                                        </div>
+                                        <p className="text-xs text-brand-text-dim leading-relaxed">
+                                            Oculta términos específicos en la interfaz para mayor privacidad en espacios públicos
+                                        </p>
+                                    </div>
+                                    <label htmlFor="discreteMode" className="relative inline-flex items-center cursor-pointer flex-shrink-0">
+                                        <input 
+                                            type="checkbox" 
+                                            name="discreteMode" 
+                                            id="discreteMode" 
+                                            checked={localSettings.discreteMode} 
+                                            onChange={handleInputChange} 
+                                            className="sr-only peer" 
+                                        />
+                                        <div className="w-11 h-6 bg-brand-border rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-primary"></div>
                                     </label>
                                 </div>
                             </div>
 
-                            <div className="space-y-3">
+                            {/* Data Management */}
+                            <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-5 md:p-6 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)]">
+                                <div className="flex items-center gap-3 mb-5">
+                                    <div className="p-2 rounded-xl bg-brand-primary/15">
+                                        <svg className="w-5 h-5 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+                                        </svg>
+                                    </div>
+                                    <h2 className="text-lg font-bold text-brand-text" style={{ fontWeight: 700, lineHeight: 1.3 }}>
+                                        {t('dataManagement')}
+                                    </h2>
+                                </div>
+                                <div className="space-y-3">
+                                    <button
+                                        onClick={handleBackup}
+                                        className="w-full bg-brand-surface-2 hover:bg-brand-surface text-brand-text font-medium py-3 px-4 rounded-xl transition-all duration-150 border border-brand-border hover:border-brand-primary/30 flex items-center justify-center gap-2"
+                                        style={{ fontWeight: 500 }}
+                                    >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                                        </svg>
+                                        {t('createBackup')}
+                                    </button>
+                                    <button
+                                        onClick={handleRestore}
+                                        className="w-full bg-brand-surface-2 hover:bg-brand-surface text-brand-text font-medium py-3 px-4 rounded-xl transition-all duration-150 border border-brand-border hover:border-brand-primary/30 flex items-center justify-center gap-2"
+                                        style={{ fontWeight: 500 }}
+                                    >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                        </svg>
+                                        {t('restoreData')}
+                                    </button>
+                                    <button
+                                        onClick={handleExportLogs}
+                                        className="w-full bg-brand-surface-2 hover:bg-brand-surface text-brand-text font-medium py-3 px-4 rounded-xl transition-all duration-150 border border-brand-border hover:border-brand-primary/30 flex items-center justify-center gap-2"
+                                        style={{ fontWeight: 500 }}
+                                    >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                        {t('exportToCsv')}
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Danger Zone */}
+                            <div className="bg-gradient-to-br from-red-950/30 to-red-900/20 p-5 md:p-6 rounded-[18px] backdrop-blur-lg border border-red-500/30 shadow-[0_4px_16px_rgba(239,68,68,0.15)]">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <div className="p-2 rounded-xl bg-red-500/15">
+                                        <svg className="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                        </svg>
+                                    </div>
+                                    <h2 className="text-lg font-bold text-red-400" style={{ fontWeight: 700, lineHeight: 1.3 }}>
+                                        Zona de peligro
+                                    </h2>
+                                </div>
+                                <p className="text-sm text-brand-text-dim mb-4 leading-relaxed">
+                                    Esta acción es permanente y no se puede deshacer. Todos tus datos serán eliminados.
+                                </p>
                                 <button
-                                    onClick={copyDebugInfo}
-                                    className="w-full bg-brand-surface/30 hover:bg-brand-surface/50 text-brand-text font-semibold py-3 px-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] border border-yellow-400/20 hover:border-yellow-400/40"
+                                    onClick={() => setShowDeleteModal(true)}
+                                    className="w-full bg-red-500/20 hover:bg-red-500/30 text-red-400 font-semibold py-3 px-4 rounded-xl transition-all duration-150 border border-red-500/30 hover:border-red-500/50 flex items-center justify-center gap-2"
+                                    style={{ fontWeight: 600 }}
                                 >
-                                    {t('copyDebugInfo')}
-                                </button>
-                                <button
-                                    onClick={() => window.location.reload()}
-                                    className="w-full bg-brand-surface/30 hover:bg-brand-surface/50 text-brand-text font-semibold py-3 px-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] border border-yellow-400/20 hover:border-yellow-400/40"
-                                >
-                                    {t('reloadApp')}
-                                </button>
-                                <button
-                                    onClick={() => console.log('Settings:', localSettings)}
-                                    className="w-full bg-brand-surface/30 hover:bg-brand-surface/50 text-brand-text font-semibold py-3 px-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] border border-yellow-400/20 hover:border-yellow-400/40"
-                                >
-                                    {t('logSettingsConsole')}
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                    {t('deleteAllData')}
                                 </button>
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                <div className="mt-8 flex justify-center">
-                    <button
-                        onClick={handleSave}
-                        className="group bg-gradient-to-r from-brand-primary to-brand-primary/80 text-brand-background font-bold py-4 px-12 rounded-2xl shadow-xl shadow-brand-primary/20 hover:shadow-2xl hover:shadow-brand-primary/30 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center gap-3"
-                    >
-                        <svg className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                        {t('saveConfiguration')}
-                    </button>
+                        {/* Right Column */}
+                        <div className="space-y-6">
+                            {/* Advanced Settings - Accordion */}
+                            <div className="bg-gradient-to-br from-amber-950/30 to-orange-950/20 rounded-[18px] backdrop-blur-lg border border-amber-500/30 shadow-[0_4px_16px_rgba(0,0,0,0.25)] overflow-hidden">
+                                {/* Accordion Header */}
+                                <button
+                                    onClick={() => setIsAdvancedOpen(!isAdvancedOpen)}
+                                    className="w-full p-5 md:p-6 flex items-center justify-between hover:bg-amber-500/5 transition-all duration-150"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 rounded-xl bg-amber-500/15">
+                                            <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                                            </svg>
+                                        </div>
+                                        <h2 className="text-lg font-bold text-amber-400" style={{ fontWeight: 700, lineHeight: 1.3 }}>
+                                            {t('developmentTools')}
+                                        </h2>
+                                    </div>
+                                    <svg 
+                                        className={`w-5 h-5 text-amber-400 transition-transform duration-200 ${isAdvancedOpen ? 'rotate-180' : ''}`} 
+                                        fill="none" 
+                                        stroke="currentColor" 
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+
+                                {/* Accordion Content */}
+                                <div className={`transition-all duration-200 ${isAdvancedOpen ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
+                                    <div className="p-5 md:p-6 pt-0 space-y-4">
+
+                                        <div className="bg-amber-900/30 p-4 rounded-xl border border-amber-500/30">
+                                            <div className="flex items-start justify-between gap-4">
+                                                <div className="flex-1">
+                                                    <div className="font-semibold text-amber-400 mb-1" style={{ fontWeight: 600 }}>
+                                                        {t('developerMode')}
+                                                    </div>
+                                                    <p className="text-xs text-brand-text-dim leading-relaxed">
+                                                        {t('fillWithTestData')}
+                                                    </p>
+                                                </div>
+                                                <label htmlFor="devMode" className="relative inline-flex items-center cursor-pointer flex-shrink-0">
+                                                    <input 
+                                                        type="checkbox" 
+                                                        name="devMode" 
+                                                        id="devMode" 
+                                                        checked={localSettings.isDevMode || false} 
+                                                        onChange={handleToggleDevMode} 
+                                                        className="sr-only peer" 
+                                                    />
+                                                    <div className="w-11 h-6 bg-brand-border rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <button
+                                            onClick={copyDebugInfo}
+                                            className="w-full bg-brand-surface-2 hover:bg-brand-surface text-brand-text font-medium py-3 px-4 rounded-xl transition-all duration-150 border border-amber-500/20 hover:border-amber-500/40 flex items-center justify-center gap-2"
+                                            style={{ fontWeight: 500 }}
+                                        >
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                            </svg>
+                                            {t('copyDebugInfo')}
+                                        </button>
+                                        <button
+                                            onClick={() => window.location.reload()}
+                                            className="w-full bg-brand-surface-2 hover:bg-brand-surface text-brand-text font-medium py-3 px-4 rounded-xl transition-all duration-150 border border-amber-500/20 hover:border-amber-500/40 flex items-center justify-center gap-2"
+                                            style={{ fontWeight: 500 }}
+                                        >
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                            </svg>
+                                            {t('reloadApp')}
+                                        </button>
+                                        <button
+                                            onClick={() => console.log('Settings:', localSettings)}
+                                            className="w-full bg-brand-surface-2 hover:bg-brand-surface text-brand-text font-medium py-3 px-4 rounded-xl transition-all duration-150 border border-amber-500/20 hover:border-amber-500/40 flex items-center justify-center gap-2"
+                                            style={{ fontWeight: 500 }}
+                                        >
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                            {t('logSettingsConsole')}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Sticky Save Bar */}
+                    {hasChanges && (
+                        <div className="fixed bottom-0 left-0 right-0 bg-brand-surface/95 backdrop-blur-lg border-t border-brand-border shadow-[0_-4px_16px_rgba(0,0,0,0.3)] z-40 animate-in slide-in-from-bottom duration-200">
+                            <div className="max-w-[1140px] mx-auto px-4 md:px-8 py-4 flex items-center justify-between gap-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                                    <span className="text-sm font-medium text-brand-text" style={{ fontWeight: 500 }}>
+                                        Cambios no guardados
+                                    </span>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <button
+                                        onClick={() => {
+                                            setLocalSettings(settings);
+                                            setHasChanges(false);
+                                        }}
+                                        className="px-4 py-2 rounded-xl text-sm font-medium text-brand-text-dim hover:text-brand-text hover:bg-brand-surface-2 transition-all duration-150"
+                                        style={{ fontWeight: 500 }}
+                                    >
+                                        Descartar
+                                    </button>
+                                    <button
+                                        onClick={handleSave}
+                                        disabled={!hasChanges}
+                                        className="px-6 py-2.5 rounded-xl text-sm font-semibold bg-brand-primary text-white hover:bg-brand-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150 flex items-center gap-2 shadow-lg shadow-brand-primary/20"
+                                        style={{ fontWeight: 600 }}
+                                    >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        Guardar cambios
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </>

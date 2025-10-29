@@ -291,12 +291,33 @@ const DayEditor: React.FC<DayEditorProps> = ({ date, log: initialLog, onSave, on
     const { t } = useTranslation();
     const [log, setLog] = useState<DailyLog>(initialLog);
     const [saved, setSaved] = useState(false);
+    const [isAdvancedMode, setIsAdvancedMode] = useState(false);
 
     // Update log when date changes
     useEffect(() => {
         setLog(initialLog);
         setSaved(false);
     }, [date, initialLog]);
+
+    // Helper to check if a field has data
+    const hasData = (field: keyof DailyLog): boolean => {
+        const value = log[field];
+        if (value === undefined || value === null) return false;
+        if (typeof value === 'boolean') return value;
+        if (typeof value === 'number') return value > 0;
+        if (typeof value === 'string') return value.length > 0;
+        if (Array.isArray(value)) {
+            // Special handling for medications array
+            if (field === 'medications') {
+                return value.length > 0 && value.some(m => 
+                    (typeof m === 'object' && m !== null && (m.name || m.dose)) || 
+                    (typeof m === 'string' && m.length > 0)
+                );
+            }
+            return value.length > 0;
+        }
+        return false;
+    };
 
     const handleSave = async () => {
         await upsertLog(log);
@@ -319,150 +340,478 @@ const DayEditor: React.FC<DayEditorProps> = ({ date, log: initialLog, onSave, on
     );
 
     return (
-        <div className="fixed inset-0 md:inset-auto md:right-0 md:top-0 md:bottom-0 md:w-96 bg-brand-surface border-l border-brand-border shadow-2xl z-50 overflow-y-auto animate-slide-in-right">
-            <div className="sticky top-0 bg-brand-surface/95 backdrop-blur-lg border-b border-brand-border p-4 flex items-center justify-between z-10">
-                <div>
-                    <h2 className="text-lg font-bold text-brand-text" style={{ fontWeight: 700, lineHeight: 1.3 }}>
-                        {format(date, 'MMMM d, yyyy')}
-                    </h2>
-                    <p className="text-sm text-brand-text-dim" style={{ fontWeight: 500 }}>{format(date, 'EEEE')}</p>
+        <div className="fixed inset-0 md:inset-auto md:right-0 md:top-0 md:bottom-0 md:w-[420px] bg-brand-surface border-l border-brand-border shadow-2xl z-50 overflow-y-auto animate-slide-in-right">
+            <div className="sticky top-0 bg-brand-surface/95 backdrop-blur-lg border-b border-brand-border p-4 z-10">
+                <div className="flex items-center justify-between mb-3">
+                    <div>
+                        <h2 className="text-lg font-bold text-brand-text" style={{ fontWeight: 700, lineHeight: 1.3 }}>
+                            {format(date, 'MMMM d, yyyy')}
+                        </h2>
+                        <p className="text-sm text-brand-text-dim" style={{ fontWeight: 500 }}>{format(date, 'EEEE')}</p>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="p-2 rounded-lg hover:bg-brand-surface-2 transition-all duration-150 hover:scale-105 active:scale-95"
+                        aria-label="Cerrar"
+                    >
+                        <svg className="w-5 h-5 text-brand-text-dim hover:text-brand-text transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
                 </div>
-                <button
-                    onClick={onClose}
-                    className="p-2 rounded-lg hover:bg-brand-surface-2 transition-all duration-150 hover:scale-105 active:scale-95"
-                    aria-label="Cerrar"
-                >
-                    <svg className="w-5 h-5 text-brand-text-dim hover:text-brand-text transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
+
+                {/* Mode Toggle */}
+                <div className="flex bg-brand-surface-2 rounded-lg p-1 border border-brand-border">
+                    <button
+                        onClick={() => setIsAdvancedMode(false)}
+                        className={`flex-1 px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-150 ${
+                            !isAdvancedMode
+                                ? 'bg-brand-primary text-white shadow-sm'
+                                : 'text-brand-text-dim hover:text-brand-text'
+                        }`}
+                        style={{ fontWeight: 500 }}
+                    >
+                        Simplificado
+                    </button>
+                    <button
+                        onClick={() => setIsAdvancedMode(true)}
+                        className={`flex-1 px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-150 ${
+                            isAdvancedMode
+                                ? 'bg-brand-primary text-white shadow-sm'
+                                : 'text-brand-text-dim hover:text-brand-text'
+                        }`}
+                        style={{ fontWeight: 500 }}
+                    >
+                        Avanzado
+                    </button>
+                </div>
             </div>
 
-            <div className="p-4 space-y-4">
-                {/* Menstruation */}
-                <div className="bg-brand-surface-2 p-4 rounded-[18px] border border-brand-border">
-                    <div className="flex items-center gap-2 mb-3">
-                        <svg className="w-4 h-4 text-phase-menstruation" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
-                        <h3 className="text-sm font-bold text-brand-text" style={{ fontWeight: 700 }}>
-                            {t('menstruationIntensity')}
-                        </h3>
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                        <PeriodButton intensity={0} label={t('noFlow')} />
-                        <PeriodButton intensity={1} label={t('light')} />
-                        <PeriodButton intensity={2} label={t('medium')} />
-                        <PeriodButton intensity={3} label={t('heavy')} />
-                    </div>
-                </div>
+            <div className="p-4 space-y-3">
+                {/* Simplified Mode - Basic Fields */}
+                {!isAdvancedMode && (
+                    <>
+                        {/* Menstruation */}
+                        <div className="bg-brand-surface-2 p-3 rounded-xl border border-brand-border">
+                            <div className="flex items-center gap-2 mb-2">
+                                <svg className="w-4 h-4 text-phase-menstruation" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                </svg>
+                                <h3 className="text-xs font-bold text-brand-text" style={{ fontWeight: 700 }}>
+                                    {t('menstruationIntensity')}
+                                </h3>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                                <PeriodButton intensity={0} label={t('noFlow')} />
+                                <PeriodButton intensity={1} label={t('light')} />
+                                <PeriodButton intensity={2} label={t('medium')} />
+                                <PeriodButton intensity={3} label={t('heavy')} />
+                            </div>
+                        </div>
 
-                {/* Mood */}
-                <div className="bg-brand-surface-2 p-4 rounded-[18px] border border-brand-border">
-                    <div className="flex items-center gap-2 mb-3">
-                        <svg className="w-4 h-4 text-brand-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.01M15 10h1.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <h3 className="text-sm font-bold text-brand-text" style={{ fontWeight: 700 }}>
-                            {t('mood')}
-                        </h3>
-                    </div>
-                    <div className="flex justify-between gap-1">
-                        {moodEmojis.map(({ value, emoji }) => (
-                            <button
-                                key={value}
-                                onClick={() => setLog({ ...log, mood: value as DailyLog['mood'] })}
-                                className={`text-2xl rounded-lg p-2 transition-all duration-200 ${
-                                    log.mood === value 
-                                        ? 'bg-brand-primary/20 ring-2 ring-brand-primary/50' 
-                                        : 'hover:bg-brand-surface/50'
-                                }`}
-                            >
-                                {emoji}
-                            </button>
-                        ))}
-                    </div>
-                </div>
+                        {/* Mood */}
+                        <div className="bg-brand-surface-2 p-3 rounded-xl border border-brand-border">
+                            <div className="flex items-center gap-2 mb-2">
+                                <svg className="w-4 h-4 text-brand-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.01M15 10h1.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <h3 className="text-xs font-bold text-brand-text" style={{ fontWeight: 700 }}>
+                                    {t('mood')}
+                                </h3>
+                            </div>
+                            <div className="flex justify-between gap-1">
+                                {moodEmojis.map(({ value, emoji }) => (
+                                    <button
+                                        key={value}
+                                        onClick={() => setLog({ ...log, mood: value as DailyLog['mood'] })}
+                                        className={`text-2xl rounded-lg p-2 transition-all duration-200 ${
+                                            log.mood === value 
+                                                ? 'bg-brand-primary/20 ring-2 ring-brand-primary/50' 
+                                                : 'hover:bg-brand-surface/50'
+                                        }`}
+                                    >
+                                        {emoji}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
 
-                {/* Symptoms */}
-                <div className="bg-brand-surface-2 p-4 rounded-[18px] border border-brand-border">
-                    <div className="flex items-center gap-2 mb-3">
-                        <svg className="w-4 h-4 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        <h3 className="text-sm font-bold text-brand-text" style={{ fontWeight: 700 }}>
-                            {t('symptoms')}
-                        </h3>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                        {settings.customSymptoms.map((symptom: Symptom) => (
-                            <button
-                                key={symptom.id}
-                                onClick={() => {
-                                    const symptoms = log.symptoms || [];
-                                    setLog({
-                                        ...log,
-                                        symptoms: symptoms.includes(symptom.id)
-                                            ? symptoms.filter(id => id !== symptom.id)
-                                            : [...symptoms, symptom.id]
-                                    });
-                                }}
-                                className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all duration-200 ${
-                                    log.symptoms?.includes(symptom.id)
-                                        ? 'bg-brand-primary/20 text-brand-primary border border-brand-primary'
-                                        : 'bg-transparent text-brand-text border border-brand-border hover:bg-brand-surface/50'
-                                }`}
-                            >
-                                {symptom.name}
-                            </button>
-                        ))}
-                    </div>
-                </div>
+                        {/* Symptoms */}
+                        <div className="bg-brand-surface-2 p-3 rounded-xl border border-brand-border">
+                            <div className="flex items-center gap-2 mb-2">
+                                <svg className="w-4 h-4 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                <h3 className="text-xs font-bold text-brand-text" style={{ fontWeight: 700 }}>
+                                    {t('symptoms')}
+                                </h3>
+                            </div>
+                            <div className="flex flex-wrap gap-1.5">
+                                {settings.customSymptoms.map((symptom: Symptom) => (
+                                    <button
+                                        key={symptom.id}
+                                        onClick={() => {
+                                            const symptoms = log.symptoms || [];
+                                            setLog({
+                                                ...log,
+                                                symptoms: symptoms.includes(symptom.id)
+                                                    ? symptoms.filter(id => id !== symptom.id)
+                                                    : [...symptoms, symptom.id]
+                                            });
+                                        }}
+                                        className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all duration-200 ${
+                                            log.symptoms?.includes(symptom.id)
+                                                ? 'bg-brand-primary/20 text-brand-primary border border-brand-primary'
+                                                : 'bg-transparent text-brand-text border border-brand-border hover:bg-brand-surface/50'
+                                        }`}
+                                    >
+                                        {symptom.name}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
 
-                {/* Notes */}
-                <div className="bg-brand-surface-2 p-4 rounded-[18px] border border-brand-border">
-                    <div className="flex items-center gap-2 mb-3">
-                        <svg className="w-4 h-4 text-brand-positive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                        <h3 className="text-sm font-bold text-brand-text" style={{ fontWeight: 700 }}>
-                            {t('notes')}
-                        </h3>
-                    </div>
-                    <textarea
-                        value={log.notes || ''}
-                        onChange={(e) => setLog({ ...log, notes: e.target.value })}
-                        className="w-full h-24 bg-brand-surface p-3 rounded-xl border border-brand-border hover:bg-brand-surface-2 focus:border-brand-primary outline-none transition-all duration-200 resize-none text-brand-text text-sm"
-                        placeholder={t('addAnyAdditionalNotes')}
-                        style={{ fontWeight: 400, lineHeight: 1.5 }}
-                    />
-                </div>
+                        {/* Notes */}
+                        <div className="bg-brand-surface-2 p-3 rounded-xl border border-brand-border">
+                            <div className="flex items-center gap-2 mb-2">
+                                <svg className="w-4 h-4 text-brand-positive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                                <h3 className="text-xs font-bold text-brand-text" style={{ fontWeight: 700 }}>
+                                    {t('notes')}
+                                </h3>
+                            </div>
+                            <textarea
+                                value={log.notes || ''}
+                                onChange={(e) => setLog({ ...log, notes: e.target.value })}
+                                className="w-full h-20 bg-brand-surface p-2.5 rounded-lg border border-brand-border hover:bg-brand-surface-2 focus:border-brand-primary outline-none transition-all duration-200 resize-none text-brand-text text-xs"
+                                placeholder={t('addAnyAdditionalNotes')}
+                                style={{ fontWeight: 400, lineHeight: 1.5 }}
+                            />
+                        </div>
+                    </>
+                )}
 
-                {/* Save Button */}
-                <button
-                    onClick={handleSave}
-                    disabled={saved}
-                    className={`w-full bg-gradient-to-r from-brand-primary to-brand-accent text-white font-semibold py-3 px-6 rounded-full shadow-lg shadow-brand-primary/25 hover:shadow-xl hover:shadow-brand-primary/35 hover:scale-[1.02] active:scale-[0.98] transition-all duration-150 flex items-center justify-center gap-2 ${
-                        saved ? 'opacity-75 cursor-not-allowed' : ''
-                    }`}
-                    style={{ fontWeight: 600 }}
-                >
-                    {saved ? (
-                        <>
-                            <svg className="w-5 h-5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
-                            Guardado
-                        </>
-                    ) : (
-                        <>
-                            <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
-                            </svg>
-                            {t('saveRecord')}
-                        </>
-                    )}
-                </button>
+                {/* Advanced Mode - Show only fields with data */}
+                {isAdvancedMode && (
+                    <>
+                        {/* Menstruation Details */}
+                        {(hasData('periodIntensity') || hasData('periodColor') || hasData('hasClots') || hasData('periodProducts')) && (
+                            <div className="bg-brand-surface-2 p-3 rounded-xl border border-brand-border">
+                                <h3 className="text-xs font-bold text-brand-text mb-2" style={{ fontWeight: 700 }}>Menstruación</h3>
+                                <div className="space-y-1.5 text-xs">
+                                    {hasData('periodIntensity') && (
+                                        <div className="flex justify-between">
+                                            <span className="text-brand-text-dim">Intensidad:</span>
+                                            <span className="text-brand-text font-medium">
+                                                {['Sin flujo', 'Spotting', 'Ligero', 'Medio', 'Abundante'][log.periodIntensity || 0]}
+                                            </span>
+                                        </div>
+                                    )}
+                                    {hasData('periodColor') && (
+                                        <div className="flex justify-between">
+                                            <span className="text-brand-text-dim">Color:</span>
+                                            <span className="text-brand-text font-medium">
+                                                {{'bright-red': 'Rojo vivo', 'dark-red': 'Rojo oscuro', 'brown': 'Marrón', 'pink': 'Rosa'}[log.periodColor!]}
+                                            </span>
+                                        </div>
+                                    )}
+                                    {hasData('hasClots') && (
+                                        <div className="flex justify-between">
+                                            <span className="text-brand-text-dim">Coágulos:</span>
+                                            <span className="text-brand-text font-medium">Sí</span>
+                                        </div>
+                                    )}
+                                    {hasData('periodProducts') && (
+                                        <div className="flex justify-between">
+                                            <span className="text-brand-text-dim">Productos:</span>
+                                            <span className="text-brand-text font-medium">
+                                                {log.periodProducts?.map(p => {
+                                                    const translations: Record<string, string> = {
+                                                        pad: 'Toalla',
+                                                        tampon: 'Tampón',
+                                                        cup: 'Copa',
+                                                        disc: 'Disco'
+                                                    };
+                                                    return translations[p] || p;
+                                                }).join(', ')}
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Mood */}
+                        {hasData('mood') && (
+                            <div className="bg-brand-surface-2 p-3 rounded-xl border border-brand-border">
+                                <h3 className="text-xs font-bold text-brand-text mb-2" style={{ fontWeight: 700 }}>Estado de ánimo</h3>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-2xl">{moodEmojis.find(m => m.value === log.mood)?.emoji}</span>
+                                    <span className="text-xs text-brand-text">
+                                        {['Terrible', 'Mal', 'Normal', 'Bien', 'Genial'][log.mood! - 1]}
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Pain */}
+                        {(hasData('painLevel') || hasData('painLocations')) && (
+                            <div className="bg-brand-surface-2 p-3 rounded-xl border border-brand-border">
+                                <h3 className="text-xs font-bold text-brand-text mb-2" style={{ fontWeight: 700 }}>Dolor</h3>
+                                <div className="space-y-1.5 text-xs">
+                                    {hasData('painLevel') && (
+                                        <div className="flex justify-between">
+                                            <span className="text-brand-text-dim">Nivel:</span>
+                                            <span className="text-brand-text font-medium">{log.painLevel}/10</span>
+                                        </div>
+                                    )}
+                                    {hasData('painLocations') && (
+                                        <div className="flex justify-between">
+                                            <span className="text-brand-text-dim">Ubicación:</span>
+                                            <span className="text-brand-text font-medium">{log.painLocations?.join(', ')}</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Energy & Stress */}
+                        {(hasData('energyLevel') || hasData('stressScore') || hasData('stressLevel')) && (
+                            <div className="bg-brand-surface-2 p-3 rounded-xl border border-brand-border">
+                                <h3 className="text-xs font-bold text-brand-text mb-2" style={{ fontWeight: 700 }}>Energía & Estrés</h3>
+                                <div className="space-y-1.5 text-xs">
+                                    {hasData('energyLevel') && (
+                                        <div className="flex justify-between">
+                                            <span className="text-brand-text-dim">Energía:</span>
+                                            <span className="text-brand-text font-medium">
+                                                {log.energyLevel === 'low' ? 'Baja' : log.energyLevel === 'medium' ? 'Media' : 'Alta'}
+                                            </span>
+                                        </div>
+                                    )}
+                                    {hasData('stressScore') && (
+                                        <div className="flex justify-between">
+                                            <span className="text-brand-text-dim">Estrés:</span>
+                                            <span className="text-brand-text font-medium">{log.stressScore}/10</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Sleep */}
+                        {(hasData('sleepHours') || hasData('sleepQuality')) && (
+                            <div className="bg-brand-surface-2 p-3 rounded-xl border border-brand-border">
+                                <h3 className="text-xs font-bold text-brand-text mb-2" style={{ fontWeight: 700 }}>Sueño</h3>
+                                <div className="space-y-1.5 text-xs">
+                                    {hasData('sleepHours') && (
+                                        <div className="flex justify-between">
+                                            <span className="text-brand-text-dim">Horas:</span>
+                                            <span className="text-brand-text font-medium">{log.sleepHours}h</span>
+                                        </div>
+                                    )}
+                                    {hasData('sleepQuality') && (
+                                        <div className="flex justify-between">
+                                            <span className="text-brand-text-dim">Calidad:</span>
+                                            <span className="text-brand-text font-medium">{log.sleepQuality}/5</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Physical Activity */}
+                        {(hasData('physicalActivity') || hasData('activityType') || hasData('activityDuration')) && (
+                            <div className="bg-brand-surface-2 p-3 rounded-xl border border-brand-border">
+                                <h3 className="text-xs font-bold text-brand-text mb-2" style={{ fontWeight: 700 }}>Actividad Física</h3>
+                                <div className="space-y-1.5 text-xs">
+                                    {hasData('physicalActivity') && (
+                                        <div className="flex justify-between">
+                                            <span className="text-brand-text-dim">Intensidad:</span>
+                                            <span className="text-brand-text font-medium">
+                                                {log.physicalActivity === 'none' ? 'Ninguna' : 
+                                                 log.physicalActivity === 'light' ? 'Suave' : 
+                                                 log.physicalActivity === 'moderate' ? 'Moderada' : 'Intensa'}
+                                            </span>
+                                        </div>
+                                    )}
+                                    {hasData('activityType') && (
+                                        <div className="flex justify-between">
+                                            <span className="text-brand-text-dim">Tipo:</span>
+                                            <span className="text-brand-text font-medium">
+                                                {log.activityType?.map(t => {
+                                                    const translations: Record<string, string> = {
+                                                        walking: 'Caminar',
+                                                        running: 'Correr',
+                                                        strength: 'Fuerza',
+                                                        yoga: 'Yoga',
+                                                        other: 'Otro'
+                                                    };
+                                                    return translations[t] || t;
+                                                }).join(', ')}
+                                            </span>
+                                        </div>
+                                    )}
+                                    {hasData('activityDuration') && (
+                                        <div className="flex justify-between">
+                                            <span className="text-brand-text-dim">Duración:</span>
+                                            <span className="text-brand-text font-medium">{log.activityDuration} min</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Fertility */}
+                        {(hasData('cervicalFluid') || hasData('ovulationTest') || hasData('sexualActivity')) && (
+                            <div className="bg-brand-surface-2 p-3 rounded-xl border border-brand-border">
+                                <h3 className="text-xs font-bold text-brand-text mb-2" style={{ fontWeight: 700 }}>Fertilidad</h3>
+                                <div className="space-y-1.5 text-xs">
+                                    {hasData('cervicalFluid') && (
+                                        <div className="flex justify-between">
+                                            <span className="text-brand-text-dim">Flujo cervical:</span>
+                                            <span className="text-brand-text font-medium">
+                                                {log.cervicalFluid === 'dry' ? 'Seco' :
+                                                 log.cervicalFluid === 'sticky' ? 'Pegajoso' :
+                                                 log.cervicalFluid === 'creamy' ? 'Cremoso' :
+                                                 log.cervicalFluid === 'watery' ? 'Acuoso' : 'Clara de huevo'}
+                                            </span>
+                                        </div>
+                                    )}
+                                    {hasData('ovulationTest') && (
+                                        <div className="flex justify-between">
+                                            <span className="text-brand-text-dim">Test ovulación:</span>
+                                            <span className="text-brand-text font-medium">
+                                                {log.ovulationTest === 'positive' ? 'Positivo' :
+                                                 log.ovulationTest === 'negative' ? 'Negativo' : 'Indeterminado'}
+                                            </span>
+                                        </div>
+                                    )}
+                                    {hasData('sexualActivity') && (
+                                        <div className="flex justify-between">
+                                            <span className="text-brand-text-dim">Actividad sexual:</span>
+                                            <span className="text-brand-text font-medium">
+                                                {log.sexualActivity ? 'Sí' : 'No'}
+                                                {log.sexualActivity && log.protection !== undefined && 
+                                                 ` (${log.protection ? 'con protección' : 'sin protección'})`}
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Supplements & Medication */}
+                        {(hasData('supplements') || hasData('medications') || hasData('contraception')) && (
+                            <div className="bg-brand-surface-2 p-3 rounded-xl border border-brand-border">
+                                <h3 className="text-xs font-bold text-brand-text mb-2" style={{ fontWeight: 700 }}>Medicación</h3>
+                                <div className="space-y-1.5 text-xs">
+                                    {hasData('supplements') && (
+                                        <div className="flex justify-between">
+                                            <span className="text-brand-text-dim">Suplementos:</span>
+                                            <span className="text-brand-text font-medium">
+                                                {log.supplements?.map(s => {
+                                                    const translations: Record<string, string> = {
+                                                        iron: 'Hierro',
+                                                        magnesium: 'Magnesio',
+                                                        omega3: 'Omega-3',
+                                                        vitaminD: 'Vitamina D',
+                                                        other: 'Otro'
+                                                    };
+                                                    return translations[s] || s;
+                                                }).join(', ')}
+                                            </span>
+                                        </div>
+                                    )}
+                                    {hasData('medications') && Array.isArray(log.medications) && log.medications.length > 0 && (
+                                        <div className="flex flex-col gap-1">
+                                            <span className="text-brand-text-dim">Medicamentos:</span>
+                                            <div className="space-y-0.5">
+                                                {log.medications.map((m, idx) => (
+                                                    <div key={idx} className="text-brand-text font-medium text-xs">
+                                                        • {typeof m === 'object' && m !== null ? `${m.name || ''}${m.dose ? ` ${m.dose}` : ''}` : String(m)}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                    {hasData('contraception') && (
+                                        <div className="flex justify-between">
+                                            <span className="text-brand-text-dim">Anticonceptivo:</span>
+                                            <span className="text-brand-text font-medium">{log.contraception}</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Health Metrics */}
+                        {(hasData('basalTemp') || hasData('weight') || hasData('waterIntake')) && (
+                            <div className="bg-brand-surface-2 p-3 rounded-xl border border-brand-border">
+                                <h3 className="text-xs font-bold text-brand-text mb-2" style={{ fontWeight: 700 }}>Métricas de Salud</h3>
+                                <div className="space-y-1.5 text-xs">
+                                    {hasData('basalTemp') && (
+                                        <div className="flex justify-between">
+                                            <span className="text-brand-text-dim">Temperatura basal:</span>
+                                            <span className="text-brand-text font-medium">{log.basalTemp}°C</span>
+                                        </div>
+                                    )}
+                                    {hasData('weight') && (
+                                        <div className="flex justify-between">
+                                            <span className="text-brand-text-dim">Peso:</span>
+                                            <span className="text-brand-text font-medium">{log.weight} kg</span>
+                                        </div>
+                                    )}
+                                    {hasData('waterIntake') && (
+                                        <div className="flex justify-between">
+                                            <span className="text-brand-text-dim">Agua:</span>
+                                            <span className="text-brand-text font-medium">{log.waterIntake} L</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Symptoms */}
+                        {hasData('symptoms') && (
+                            <div className="bg-brand-surface-2 p-3 rounded-xl border border-brand-border">
+                                <h3 className="text-xs font-bold text-brand-text mb-2" style={{ fontWeight: 700 }}>Síntomas</h3>
+                                <div className="flex flex-wrap gap-1.5">
+                                    {log.symptoms?.map(symptomId => {
+                                        const symptom = settings.customSymptoms.find(s => s.id === symptomId);
+                                        return symptom ? (
+                                            <span key={symptomId} className="px-2 py-0.5 rounded-md bg-brand-primary/20 text-brand-primary text-xs">
+                                                {symptom.name}
+                                            </span>
+                                        ) : null;
+                                    })}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Notes */}
+                        {hasData('notes') && (
+                            <div className="bg-brand-surface-2 p-3 rounded-xl border border-brand-border">
+                                <h3 className="text-xs font-bold text-brand-text mb-2" style={{ fontWeight: 700 }}>Notas</h3>
+                                <p className="text-xs text-brand-text leading-relaxed">{log.notes}</p>
+                            </div>
+                        )}
+
+                        {/* Empty State */}
+                        {!hasData('periodIntensity') && !hasData('mood') && !hasData('painLevel') && !hasData('energyLevel') && 
+                         !hasData('sleepHours') && !hasData('physicalActivity') && !hasData('symptoms') && !hasData('notes') &&
+                         !hasData('cervicalFluid') && !hasData('supplements') && !hasData('basalTemp') && (
+                            <div className="text-center py-8">
+                                <svg className="w-12 h-12 text-brand-text-dim/30 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                <p className="text-sm text-brand-text-dim">No hay datos registrados</p>
+                                <p className="text-xs text-brand-text-dim/70 mt-1">Cambia a modo simplificado para agregar</p>
+                            </div>
+                        )}
+                    </>
+                )}
+
             </div>
         </div>
     );
