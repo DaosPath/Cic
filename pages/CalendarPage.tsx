@@ -20,7 +20,9 @@ import { enUS } from 'date-fns/locale/en-US';
 import { tr as trLocale } from 'date-fns/locale/tr';
 import { useTranslation } from '../hooks/useTranslation.ts';
 import { getLog, upsertLog } from '../services/db.ts';
-import type { DailyLog, Symptom } from '../types.ts';
+import type { DailyLog, Symptom, CyclePhase } from '../types.ts';
+import { parseISO } from 'date-fns/parseISO';
+import { differenceInDays } from 'date-fns/differenceInDays';
 
 const dateFnsLocales = {
     es,
@@ -58,6 +60,7 @@ interface DayCellProps {
     isRangeEnd: boolean;
     isInRange: boolean;
     isDimmed: boolean;
+    cyclePhase: CyclePhase | null;
     log?: DailyLog;
     onClick: () => void;
     onMouseEnter: () => void;
@@ -81,6 +84,7 @@ const DayCell: React.FC<DayCellProps> = ({
     isRangeEnd,
     isInRange,
     isDimmed,
+    cyclePhase,
     log,
     onClick,
     onMouseEnter,
@@ -91,7 +95,7 @@ const DayCell: React.FC<DayCellProps> = ({
         isFuture ? 'cursor-not-allowed opacity-50' : isDimmed ? 'cursor-pointer opacity-20' : 'cursor-pointer'
     }`;
 
-    let bgClasses = isFuture ? 'bg-transparent' : 'bg-transparent hover:bg-brand-surface/50 hover:shadow-sm';
+    let bgClasses = 'bg-transparent';
     let textClasses = isCurrentMonth ? 'text-brand-text' : 'text-brand-text-dim/40';
     let borderClasses = 'border border-transparent';
     let patternClasses = '';
@@ -101,48 +105,78 @@ const DayCell: React.FC<DayCellProps> = ({
         textClasses = 'text-brand-text-dim/30';
     }
 
-    // Range selection styling
-    if (isInRange) {
-        bgClasses = 'bg-brand-primary/10 hover:bg-brand-primary/15';
-    }
-    if (isRangeStart || isRangeEnd) {
-        borderClasses = 'border-2 border-brand-primary shadow-md';
+    // Base background from cycle phase (always visible)
+    if (!isFuture && cyclePhase) {
+        switch (cyclePhase) {
+            case 'menstruation':
+                bgClasses = 'bg-phase-menstruation/12 hover:bg-phase-menstruation/18';
+                borderClasses = 'border border-phase-menstruation/20';
+                break;
+            case 'follicular':
+                bgClasses = 'bg-phase-follicular/8 hover:bg-phase-follicular/12';
+                borderClasses = 'border border-phase-follicular/15';
+                break;
+            case 'ovulation':
+                bgClasses = 'bg-phase-ovulation/12 hover:bg-phase-ovulation/18';
+                borderClasses = 'border border-phase-ovulation/20';
+                break;
+            case 'luteal':
+                bgClasses = 'bg-phase-luteal/8 hover:bg-phase-luteal/12';
+                borderClasses = 'border border-phase-luteal/15';
+                break;
+        }
+        bgClasses += ' shadow-sm hover:shadow-md';
+    } else if (!isFuture) {
+        bgClasses = 'bg-transparent hover:bg-brand-surface/50 hover:shadow-sm';
     }
 
-    // Phase styling with predicted pattern
-    if (isOvulation) {
+    // Overlay: Period intensity (strengthens menstruation color)
+    if (isPeriod && periodIntensity) {
+        const intensityOpacity = [0, 25, 40, 55][periodIntensity] || 55;
+        bgClasses = `bg-phase-menstruation/${intensityOpacity} hover:bg-phase-menstruation/${intensityOpacity + 10} shadow-sm hover:shadow-md`;
+        textClasses = periodIntensity >= 2 ? 'text-white font-semibold' : 'text-brand-text font-medium';
         if (isPredicted) {
-            bgClasses = 'bg-phase-ovulation/25 hover:bg-phase-ovulation/30';
+            borderClasses = 'border border-phase-menstruation/30 border-dashed';
             patternClasses = 'opacity-60';
-            borderClasses = 'border border-phase-ovulation/20 border-dashed';
         } else {
-            bgClasses = 'bg-phase-ovulation/40 hover:bg-phase-ovulation/50 shadow-sm hover:shadow-md';
-            borderClasses = 'border border-phase-ovulation/40';
+            borderClasses = 'border border-phase-menstruation/50';
         }
-        textClasses = 'text-brand-text font-semibold';
-    } else if (isFertile) {
-        if (isPredicted) {
-            bgClasses = 'bg-phase-follicular/15 hover:bg-phase-follicular/20';
-            patternClasses = 'opacity-60';
-            borderClasses = 'border border-phase-follicular/15 border-dashed';
-        } else {
+    }
+    
+    // Overlay: Fertile window (adds emphasis to follicular/ovulation phases)
+    if (isFertile && !isPeriod) {
+        if (cyclePhase === 'follicular' || cyclePhase === 'ovulation') {
             bgClasses = 'bg-phase-follicular/25 hover:bg-phase-follicular/35 shadow-sm hover:shadow-md';
+            borderClasses = 'border border-phase-follicular/30';
+        } else {
+            bgClasses = 'bg-phase-follicular/20 hover:bg-phase-follicular/30 shadow-sm hover:shadow-md';
             borderClasses = 'border border-phase-follicular/25';
         }
         textClasses = 'text-brand-text font-medium';
+        if (isPredicted) {
+            borderClasses = 'border border-phase-follicular/15 border-dashed';
+            patternClasses = 'opacity-60';
+        }
+    }
+    
+    // Overlay: Ovulation day (highest visual priority)
+    if (isOvulation) {
+        bgClasses = 'bg-phase-ovulation/35 hover:bg-phase-ovulation/45 shadow-sm hover:shadow-md';
+        textClasses = 'text-brand-text font-semibold';
+        if (isPredicted) {
+            borderClasses = 'border border-phase-ovulation/20 border-dashed';
+            patternClasses = 'opacity-60';
+        } else {
+            borderClasses = 'border border-phase-ovulation/50';
+        }
     }
 
-    if (isPeriod && periodIntensity) {
-        const intensityOpacity = [0, 0.2, 0.35, 0.5][periodIntensity] || 0.5;
-        if (isPredicted) {
-            bgClasses = `bg-phase-menstruation/${Math.round(intensityOpacity * 100)} hover:bg-phase-menstruation/${Math.round((intensityOpacity + 0.1) * 100)}`;
-            patternClasses = 'opacity-60';
-            borderClasses = 'border border-phase-menstruation/30 border-dashed';
-        } else {
-            bgClasses = `bg-phase-menstruation/${Math.round(intensityOpacity * 100)} hover:bg-phase-menstruation/${Math.round((intensityOpacity + 0.1) * 100)} shadow-sm hover:shadow-md`;
-            borderClasses = 'border border-phase-menstruation/50';
-        }
-        textClasses = periodIntensity >= 2 ? 'text-white font-semibold' : 'text-brand-text font-medium';
+    // Range selection styling (overlay)
+    if (isInRange) {
+        bgClasses += ' ring-1 ring-brand-primary/30';
+    }
+    if (isRangeStart || isRangeEnd) {
+        borderClasses = 'border-2 border-brand-primary shadow-md';
     }
 
     if (isSelected) {
@@ -164,29 +198,38 @@ const DayCell: React.FC<DayCellProps> = ({
             tabIndex={isCurrentMonth && !isFuture ? 0 : -1}
         >
             <div className="relative z-10 flex flex-col items-center justify-center w-full h-full">
-                <span className={`text-sm md:text-base transition-all duration-150 ${textClasses} ${
-                    isToday ? 'bg-brand-primary text-white w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center font-bold shadow-lg ring-2 ring-brand-primary/30 ring-offset-1 ring-offset-transparent' : ''
+                <span className={`text-base md:text-lg font-semibold transition-all duration-150 ${textClasses} ${
+                    isToday ? 'bg-brand-primary text-white w-8 h-8 md:w-9 md:h-9 rounded-full flex items-center justify-center font-bold shadow-lg ring-2 ring-brand-primary/30 ring-offset-1 ring-offset-transparent' : ''
                 }`}>
                     {dayNumber}
                 </span>
                 
-                {/* Indicators */}
-                <div className="absolute bottom-1 flex gap-0.5">
+                {/* Data indicators - bottom left */}
+                <div className="absolute bottom-1 left-1 flex gap-1">
                     {log?.mood && (
-                        <div className="w-1 h-1 bg-brand-accent rounded-full"></div>
+                        <div className="w-2 h-2 bg-brand-accent rounded-full shadow-md"></div>
                     )}
                     {log?.symptoms && log.symptoms.length > 0 && (
-                        <div className="w-1 h-1 bg-brand-primary rounded-full"></div>
+                        <div className="w-2 h-2 bg-brand-primary rounded-full shadow-md"></div>
                     )}
                     {log?.notes && (
-                        <div className="w-1 h-1 bg-brand-positive rounded-full"></div>
+                        <div className="w-2 h-2 bg-brand-positive rounded-full shadow-md"></div>
                     )}
                 </div>
 
-                {/* Ovulation marker */}
+                {/* Period intensity indicator - bottom right */}
+                {isPeriod && periodIntensity && periodIntensity > 0 && (
+                    <div className="absolute bottom-1 right-1 flex gap-0.5">
+                        {Array.from({ length: periodIntensity }).map((_, i) => (
+                            <div key={i} className="w-1.5 h-2.5 bg-phase-menstruation rounded-full shadow-md"></div>
+                        ))}
+                    </div>
+                )}
+
+                {/* Ovulation star marker - top right */}
                 {isOvulation && (
-                    <div className="absolute top-1 right-1">
-                        <svg className="w-3 h-3 text-phase-ovulation" fill="currentColor" viewBox="0 0 20 20">
+                    <div className="absolute top-0.5 right-0.5">
+                        <svg className="w-5 h-5 md:w-6 md:h-6 text-phase-ovulation drop-shadow-xl" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                         </svg>
                     </div>
@@ -484,7 +527,7 @@ const MonthSelector: React.FC<MonthSelectorProps> = ({ currentDate, onSelect, on
 
 // Main Calendar Component
 export const CalendarPage: React.FC = () => {
-    const { logs, predictions, settings, refreshData } = useContext(AppContext);
+    const { logs, predictions, settings, refreshData, cycles } = useContext(AppContext);
     const { t, language } = useTranslation();
     const [currentMonth, setCurrentMonth] = useState(startOfMonth(new Date()));
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -865,6 +908,28 @@ export const CalendarPage: React.FC = () => {
                                     const today = startOfDay(new Date());
                                     const isFuture = dayStart > today;
 
+                                    // Calculate cycle phase for this day
+                                    let cyclePhase: 'menstruation' | 'follicular' | 'ovulation' | 'luteal' | null = null;
+                                    if (cycles.length > 0 && cycles[0].startDate) {
+                                        const cycleStartDate = startOfDay(parseISO(cycles[0].startDate));
+                                        const dayOfCycle = differenceInDays(dayStart, cycleStartDate) + 1;
+                                        
+                                        if (dayOfCycle > 0 && dayOfCycle <= settings.cycleLength + 7) {
+                                            const estimatedOvulationDay = settings.cycleLength - settings.lutealPhaseLength;
+                                            const estimatedPeriodEndDay = 5;
+                                            
+                                            if (dayOfCycle <= estimatedPeriodEndDay) {
+                                                cyclePhase = 'menstruation';
+                                            } else if (dayOfCycle < estimatedOvulationDay - 3) {
+                                                cyclePhase = 'follicular';
+                                            } else if (dayOfCycle >= estimatedOvulationDay - 3 && dayOfCycle <= estimatedOvulationDay + 1) {
+                                                cyclePhase = 'ovulation';
+                                            } else if (dayOfCycle > estimatedOvulationDay + 1 && dayOfCycle <= settings.cycleLength) {
+                                                cyclePhase = 'luteal';
+                                            }
+                                        }
+                                    }
+
                                     let isFertile = false;
                                     let isOvulation = false;
                                     let isPredicted = false;
@@ -915,6 +980,7 @@ export const CalendarPage: React.FC = () => {
                                             isRangeEnd={!!isRangeEnd}
                                             isInRange={!!isInRange}
                                             isDimmed={shouldDim}
+                                            cyclePhase={cyclePhase}
                                             log={log}
                                             onClick={() => handleDayClick(day)}
                                             onMouseEnter={() => handleDayMouseEnter(day)}
@@ -928,11 +994,11 @@ export const CalendarPage: React.FC = () => {
                     )}
                 </div>
 
-                {/* Interactive Legend */}
+                {/* Interactive Legend - Phases */}
                 <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-5 md:p-6 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)] md:sticky md:bottom-6">
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-base font-bold text-brand-text" style={{ fontWeight: 700, lineHeight: 1.3 }}>
-                            {t('legend')}
+                            Fases del Ciclo
                         </h3>
                         {activeFilter !== 'all' && (
                             <button
@@ -990,6 +1056,54 @@ export const CalendarPage: React.FC = () => {
                                 {t('ovulation')}
                             </span>
                         </button>
+                    </div>
+                </div>
+
+                {/* Indicators Legend */}
+                <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-5 md:p-6 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)]">
+                    <h3 className="text-base font-bold text-brand-text mb-4" style={{ fontWeight: 700, lineHeight: 1.3 }}>
+                        Indicadores
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {/* Left column */}
+                        <div className="space-y-2.5">
+                            <div className="flex items-center gap-3 text-sm text-brand-text">
+                                <svg className="w-6 h-6 text-phase-ovulation flex-shrink-0 drop-shadow-md" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                </svg>
+                                <span style={{ fontWeight: 500 }}>Día de ovulación</span>
+                            </div>
+                            <div className="flex items-center gap-3 text-sm text-brand-text">
+                                <div className="flex gap-0.5 flex-shrink-0">
+                                    <div className="w-1.5 h-2.5 bg-phase-menstruation rounded-full shadow-sm"></div>
+                                    <div className="w-1.5 h-2.5 bg-phase-menstruation rounded-full shadow-sm"></div>
+                                    <div className="w-1.5 h-2.5 bg-phase-menstruation rounded-full shadow-sm"></div>
+                                </div>
+                                <span style={{ fontWeight: 500 }}>Intensidad menstrual (1-3)</span>
+                            </div>
+                            <div className="flex items-center gap-3 text-sm text-brand-text">
+                                <div className="w-2 h-2 bg-brand-accent rounded-full shadow-md flex-shrink-0"></div>
+                                <span style={{ fontWeight: 500 }}>Estado de ánimo registrado</span>
+                            </div>
+                        </div>
+                        
+                        {/* Right column */}
+                        <div className="space-y-2.5">
+                            <div className="flex items-center gap-3 text-sm text-brand-text">
+                                <div className="w-2 h-2 bg-brand-primary rounded-full shadow-md flex-shrink-0"></div>
+                                <span style={{ fontWeight: 500 }}>Síntomas registrados</span>
+                            </div>
+                            <div className="flex items-center gap-3 text-sm text-brand-text">
+                                <div className="w-2 h-2 bg-brand-positive rounded-full shadow-md flex-shrink-0"></div>
+                                <span style={{ fontWeight: 500 }}>Notas escritas</span>
+                            </div>
+                            <div className="flex items-center gap-3 text-sm text-brand-text">
+                                <div className="px-2 py-1 border border-brand-border border-dashed rounded text-xs flex-shrink-0">
+                                    - - -
+                                </div>
+                                <span style={{ fontWeight: 500 }}>Predicción (no confirmado)</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
