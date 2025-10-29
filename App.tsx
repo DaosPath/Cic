@@ -4,6 +4,7 @@ import { AppProvider, AppContext } from './context/AppContext.tsx';
 import ParticleAura from './components/ParticleAura.tsx';
 import { BottomNav } from './components/BottomNav.tsx';
 import { SideNav } from './components/SideNav.tsx';
+import { usePhaseTheme } from './hooks/usePhaseTheme.ts';
 
 import { HomePage } from './pages/HomePage.tsx';
 import { CalendarPage } from './pages/CalendarPage.tsx';
@@ -15,6 +16,9 @@ import { InsightsPage } from './pages/InsightsPage.tsx';
 const AppContent: React.FC = () => {
     const { currentPhase, isLoading } = useContext(AppContext);
     const location = useLocation();
+    
+    // Apply phase-specific theme colors
+    usePhaseTheme(currentPhase);
 
     // The intensity can be connected to a daily log entry, e.g., pain level.
     // For now, it's a static value.

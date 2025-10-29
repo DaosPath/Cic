@@ -14,10 +14,10 @@ export const SideNav: React.FC = () => {
   ];
 
   return (
-    <aside className="hidden md:flex fixed top-0 left-0 w-64 h-screen bg-gradient-to-b from-brand-surface to-brand-surface/95 border-r border-brand-text-dim/10 z-50 p-4 flex-col">
+    <aside className="hidden md:flex fixed top-0 left-0 w-64 h-screen bg-gradient-to-b from-brand-surface to-brand-surface/95 border-r border-brand-border z-50 p-4 flex-col">
       <div className="flex flex-col gap-2 flex-1">
         <div className="p-4 mb-4">
-          <div className="text-2xl font-bold text-phase-follicular">Aura Ciclo</div>
+          <div className="text-2xl font-bold text-brand-primary">Aura Ciclo</div>
           <div className="text-xs text-brand-text-dim mt-1">Salud menstrual inteligente</div>
         </div>
         {navItems.map((item) => (
@@ -28,7 +28,7 @@ export const SideNav: React.FC = () => {
             className={({ isActive }) =>
               `flex items-center gap-4 p-3 rounded-full transition-all duration-200 ${
                 isActive 
-                  ? 'bg-phase-follicular/20 text-phase-follicular shadow-lg shadow-phase-follicular/20' 
+                  ? 'bg-brand-primary/20 text-brand-primary shadow-lg shadow-brand-primary/20' 
                   : 'text-brand-text-dim hover:bg-brand-surface/50 hover:text-brand-text'
               }`
             }

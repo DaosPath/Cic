@@ -14,7 +14,7 @@ export const BottomNav: React.FC = () => {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 h-16 bg-brand-surface/90 backdrop-blur-lg border-t border-brand-text-dim/10 z-50 md:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 h-16 bg-brand-surface/90 backdrop-blur-lg border-t border-brand-border z-50 md:hidden">
       <div className="flex justify-around items-center h-full max-w-lg mx-auto px-2">
         {navItems.map((item) => (
           <NavLink
@@ -23,7 +23,7 @@ export const BottomNav: React.FC = () => {
             aria-label={t(item.labelKey)}
             className={({ isActive }) =>
               `flex flex-col items-center justify-center gap-1 w-16 py-2 transition-colors duration-200 ${
-                isActive ? 'text-phase-follicular' : 'text-brand-text-dim hover:text-brand-text'
+                isActive ? 'text-brand-primary' : 'text-brand-text-dim hover:text-brand-text'
               }`
             }
           >

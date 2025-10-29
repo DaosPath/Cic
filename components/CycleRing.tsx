@@ -117,29 +117,45 @@ export const CycleRing: React.FC<CycleRingProps> = ({ phase, cycleDay }) => {
         // Adjust parameters for reduced motion
         const motionMultiplier = prefersReducedMotion ? 0.1 : 1;
         
+        // Get CSS variable color for current phase
+        const getPhaseColor = () => {
+            const style = getComputedStyle(document.documentElement);
+            const particleColor = style.getPropertyValue('--particle').trim();
+            
+            // Convert hex to RGB
+            const hex = particleColor.replace('#', '');
+            const r = parseInt(hex.substring(0, 2), 16);
+            const g = parseInt(hex.substring(2, 4), 16);
+            const b = parseInt(hex.substring(4, 6), 16);
+            
+            return { r, g, b };
+        };
+        
         // Phase-specific targets
         const phaseTargets = (p: CyclePhase) => {
+            const phaseColor = getPhaseColor();
+            
             switch(p) {
                 case 'menstruation':
                     return { 
                         attraction: 0.018, 
                         radiusFactor: 0.8, 
                         flowSpeed: 1.8 * motionMultiplier, 
-                        color: { r: 230, g: 90, b: 120 } 
+                        color: phaseColor
                     };
                 case 'follicular':
                     return { 
                         attraction: 0.02, 
                         radiusFactor: 0.9, 
                         flowSpeed: 1.2 * motionMultiplier, 
-                        color: { r: 90, g: 210, b: 190 } 
+                        color: phaseColor
                     };
                 case 'ovulation':
                     return { 
                         attraction: 0.015, 
                         radiusFactor: 1.0, 
                         flowSpeed: 2.2 * motionMultiplier, 
-                        color: { r: 255, g: 215, b: 120 } 
+                        color: phaseColor
                     };
                 case 'luteal':
                 default:
@@ -147,7 +163,7 @@ export const CycleRing: React.FC<CycleRingProps> = ({ phase, cycleDay }) => {
                         attraction: 0.017, 
                         radiusFactor: 0.85, 
                         flowSpeed: 1.5 * motionMultiplier, 
-                        color: { r: 200, g: 160, b: 240 } 
+                        color: phaseColor
                     };
             }
         };

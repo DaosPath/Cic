@@ -81,8 +81,24 @@ export const ParticleAura: React.FC<ParticleAuraProps> = ({
     // Adjust parameters for reduced motion
     const motionMultiplier = prefersReducedMotion ? 0.1 : 1;
 
+    // Get CSS variable color for current phase
+    const getPhaseColor = (): RGB => {
+      const style = getComputedStyle(document.documentElement);
+      const particleColor = style.getPropertyValue('--particle').trim();
+      
+      // Convert hex to RGB
+      const hex = particleColor.replace('#', '');
+      const r = parseInt(hex.substring(0, 2), 16);
+      const g = parseInt(hex.substring(2, 4), 16);
+      const b = parseInt(hex.substring(4, 6), 16);
+      
+      return { r, g, b };
+    };
+    
     const phaseTargets = (p: CyclePhase, intens: number) => {
       // intens en 0..1
+      const phaseColor = getPhaseColor();
+      
       switch (p) {
         case 'menstruation':
           return {
@@ -91,7 +107,7 @@ export const ParticleAura: React.FC<ParticleAuraProps> = ({
             radius: 180 - intens * 30,
             pulseAmp: (1.5 + intens * 2.5) * motionMultiplier,
             pulseFreq: 8 + intens * 6,
-            color: { r: 230, g: 90, b: 120 } as RGB,
+            color: phaseColor,
           };
         case 'follicular':
           return {
@@ -100,7 +116,7 @@ export const ParticleAura: React.FC<ParticleAuraProps> = ({
             radius: 200 + intens * 20,
             pulseAmp: (0.5 + intens * 1.0) * motionMultiplier,
             pulseFreq: 6 + intens * 5,
-            color: { r: 90, g: 210, b: 190 } as RGB,
+            color: phaseColor,
           };
         case 'ovulation':
           return {
@@ -109,7 +125,7 @@ export const ParticleAura: React.FC<ParticleAuraProps> = ({
             radius: 220 + intens * 30,
             pulseAmp: (2.0 + intens * 2.0) * motionMultiplier,
             pulseFreq: 14 + intens * 8,
-            color: { r: 255, g: 215, b: 120 } as RGB,
+            color: phaseColor,
           };
         case 'luteal':
         default:
@@ -119,7 +135,7 @@ export const ParticleAura: React.FC<ParticleAuraProps> = ({
             radius: 190 - intens * 10,
             pulseAmp: (1.0 + intens * 1.5) * motionMultiplier,
             pulseFreq: 10 + intens * 5,
-            color: { r: 200, g: 160, b: 240 } as RGB,
+            color: phaseColor,
           };
       }
     };

@@ -53,40 +53,42 @@ export const MoodTracker: React.FC = () => {
     };
 
     return (
-        <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-6 rounded-[20px] backdrop-blur-lg border border-brand-text-dim/10 shadow-[0_8px_32px_rgba(0,0,0,0.3)] w-full">
+        <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-5 md:p-6 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)] w-full">
             <div className="flex items-center justify-between mb-5">
-                <h3 className="text-lg font-bold text-brand-text tracking-wide">{t('howDoYouFeel')}</h3>
+                <h3 className="text-base md:text-lg font-semibold text-brand-text tracking-wide" style={{ lineHeight: 1.4 }}>{t('howDoYouFeel')}</h3>
                 {showSaved && selectedMood && (
-                    <span className="text-xs bg-phase-follicular/20 text-phase-follicular px-3 py-1 rounded-full font-medium flex items-center gap-1">
+                    <span className="text-xs bg-brand-primary/20 text-brand-primary px-3 py-1 rounded-full font-medium flex items-center gap-1">
                         <span>✓</span> Guardado
                     </span>
                 )}
             </div>
-            <div className="flex justify-between items-start gap-2 mb-4">
+            <div className="flex justify-between items-start gap-2 md:gap-3 mb-5">
                 {moods.map(mood => (
                     <button
                         key={mood.value}
                         onClick={() => handleMoodSelect(mood.value)}
-                        className={`flex flex-col items-center gap-2 rounded-xl p-2 transition-all duration-300 hover:scale-105 active:scale-100 flex-1 ${
+                        className={`flex flex-col items-center gap-2 rounded-xl p-2 md:p-3 transition-all duration-300 hover:scale-105 active:scale-100 flex-1 ${
                             selectedMood === mood.value 
-                                ? 'bg-phase-follicular/20 scale-105 shadow-lg ring-2 ring-phase-follicular/50 shadow-phase-follicular/20' 
+                                ? 'bg-brand-primary/20 scale-105 shadow-lg ring-2 ring-brand-primary/50 shadow-brand-primary/20' 
                                 : 'hover:bg-brand-surface/50'
                         }`}
                         aria-label={mood.ariaLabel}
                         aria-pressed={selectedMood === mood.value}
                         type="button"
                     >
-                        <span className="text-3xl md:text-4xl">{mood.emoji}</span>
-                        <span className="text-[10px] md:text-xs text-brand-text-dim font-medium text-center leading-tight">{mood.label}</span>
+                        <span className="text-4xl md:text-[42px]">{mood.emoji}</span>
+                        <span className="text-[10px] md:text-xs text-brand-text-dim/80 font-medium text-center leading-tight" style={{ lineHeight: 1.3 }}>{mood.label}</span>
                     </button>
                 ))}
             </div>
-            <button 
-                onClick={() => window.location.hash = '/log'}
-                className="w-full md:w-auto md:ml-auto md:block border border-phase-follicular/40 text-phase-follicular px-4 py-2 rounded-full text-sm font-medium hover:bg-phase-follicular/10 transition-all duration-300 hover:shadow-lg hover:shadow-phase-follicular/20"
-            >
-                Registrar síntomas
-            </button>
+            <div className="flex justify-end">
+                <button 
+                    onClick={() => window.location.hash = '/log'}
+                    className="bg-brand-primary text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-brand-accent transition-all duration-300 hover:shadow-lg hover:shadow-brand-primary/30 hover:scale-[1.02]"
+                >
+                    Registrar síntomas
+                </button>
+            </div>
         </div>
     );
 };

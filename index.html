@@ -19,47 +19,172 @@
               sans: ['Inter', 'sans-serif'],
             },
             colors: {
-              'brand-background': '#0a0a0f',
-              'brand-surface': '#1a1a1f',
-              'brand-primary': '#c8a2c8', // Lilac
+              // Base colors using CSS variables
+              'brand-bg': 'var(--bg)',
+              'brand-surface': 'var(--surface)',
+              'brand-surface-2': 'var(--surface-2)',
+              'brand-text': 'var(--text)',
+              'brand-text-dim': 'var(--text-2)',
+              'brand-border': 'var(--border)',
+              
+              // Dynamic phase colors
+              'brand-primary': 'var(--brand)',
+              'brand-accent': 'var(--accent)',
+              'brand-particle': 'var(--particle)',
+              
+              // Semantic colors
+              'brand-positive': 'var(--positive)',
+              'brand-warning': 'var(--warning)',
+              
+              // Legacy colors for backward compatibility
+              'brand-background': 'var(--bg)',
               'brand-secondary': '#5a5a6a',
-              'brand-text': '#f0f0f0',
-              'brand-text-dim': '#c8c8c8',
-              'phase-menstruation': '#e65a78',
-              'phase-follicular': '#5ad2ba',
-              'phase-ovulation': '#ffd778',
-              'phase-luteal': '#c8a0f0',
+              'phase-menstruation': '#E84D5B',
+              'phase-follicular': '#1FB6A6',
+              'phase-ovulation': '#10B981',
+              'phase-luteal': '#F59E0B',
             }
           }
         }
       }
     </script>
     <style>
+      :root {
+        /* Base colors (dark mode) */
+        --bg: #0B0D10;
+        --surface: #12151A;
+        --surface-2: #1A1F28;
+        --text: #E6E8EC;
+        --text-2: #A1A7B3;
+        --border: #232833;
+        
+        /* Default phase colors (follicular) */
+        --brand: #1FB6A6;
+        --accent: #4FD1C5;
+        --particle: #A7F3D0;
+        
+        /* Semantic colors */
+        --positive: #10B981;
+        --warning: #F59E0B;
+        
+        /* Transition for smooth color changes */
+        --transition-duration: 180ms;
+      }
+      
+      /* Phase-specific color themes */
+      [data-phase="menstruation"] {
+        --brand: #E84D5B;
+        --accent: #FF8A8A;
+        --particle: #FFB3B3;
+      }
+      
+      [data-phase="follicular"] {
+        --brand: #1FB6A6;
+        --accent: #4FD1C5;
+        --particle: #A7F3D0;
+      }
+      
+      [data-phase="ovulation"] {
+        --brand: #10B981;
+        --accent: #F5C84B;
+        --particle: #FFE08A;
+      }
+      
+      [data-phase="luteal"] {
+        --brand: #F59E0B;
+        --accent: #FDE68A;
+        --particle: #FCD34D;
+      }
+      
       body {
-        background-color: #0a0a0f;
-        color: #e0e0e0;
+        background-color: var(--bg);
+        color: var(--text);
         font-family: 'Inter', sans-serif;
+        transition: background-color var(--transition-duration) ease;
       }
       /* Custom scrollbar for a better dark mode experience */
       ::-webkit-scrollbar {
         width: 8px;
       }
       ::-webkit-scrollbar-track {
-        background: #1a1a1f;
+        background: var(--surface);
       }
       ::-webkit-scrollbar-thumb {
-        background: #5a5a6a;
+        background: var(--border);
         border-radius: 4px;
+        transition: background var(--transition-duration) ease;
       }
       ::-webkit-scrollbar-thumb:hover {
-        background: #7a7a8a;
+        background: var(--brand);
       }
       
       /* Focus states for accessibility */
       *:focus-visible {
-        outline: 2px solid #c8a2c8;
+        outline: 2px solid var(--brand);
         outline-offset: 3px;
         border-radius: 8px;
+      }
+      
+      /* Smooth color transitions */
+      * {
+        transition-property: color, background-color, border-color, fill, stroke;
+        transition-duration: var(--transition-duration);
+        transition-timing-function: ease;
+      }
+      
+      /* Prevent autofill white background */
+      input:-webkit-autofill,
+      input:-webkit-autofill:hover,
+      input:-webkit-autofill:focus,
+      textarea:-webkit-autofill,
+      textarea:-webkit-autofill:hover,
+      textarea:-webkit-autofill:focus {
+        -webkit-box-shadow: 0 0 0 1000px var(--surface) inset !important;
+        -webkit-text-fill-color: var(--text) !important;
+        border-color: var(--border) !important;
+        transition: background-color 5000s ease-in-out 0s;
+      }
+      
+      /* Custom textarea scrollbar */
+      textarea::-webkit-scrollbar {
+        width: 10px;
+      }
+      textarea::-webkit-scrollbar-track {
+        background: transparent;
+        border-radius: 10px;
+      }
+      textarea::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 10px;
+        border: 2px solid transparent;
+        background-clip: padding-box;
+      }
+      textarea::-webkit-scrollbar-thumb:hover {
+        background: var(--text-2);
+        background-clip: padding-box;
+      }
+      
+      /* Textarea placeholder */
+      textarea::placeholder {
+        color: var(--text-2);
+        opacity: 0.7;
+      }
+      
+      /* Textarea focus ring */
+      textarea:focus {
+        box-shadow: 0 0 0 3px rgba(31, 182, 166, 0.2);
+      }
+      
+      [data-phase="menstruation"] textarea:focus {
+        box-shadow: 0 0 0 3px rgba(232, 77, 91, 0.2);
+      }
+      
+      [data-phase="ovulation"] textarea:focus {
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+      }
+      
+      [data-phase="luteal"] textarea:focus {
+        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
       }
       
       /* Smooth animations */
