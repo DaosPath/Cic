@@ -2,6 +2,10 @@ import { GoogleGenAI } from "@google/genai";
 import type { CyclePhase, Language } from '../types.ts';
 import { detectLanguage, getTranslations } from './i18n.ts';
 
+const API_KEY = (typeof process !== 'undefined' && process.env && process.env.API_KEY)
+    ? process.env.API_KEY
+    : "AIzaSyDY_OO9FEfPw_vpxILXzXOM8rt4m-goD5w";
+
 let ai: GoogleGenAI | null = null;
 
 // Lazily initialize the AI client to prevent app crash on startup if API key is missing.
@@ -9,9 +13,8 @@ const getAiClient = (): GoogleGenAI | null => {
     if (ai) {
         return ai;
     }
-    // Safely check for process.env to avoid ReferenceError in some browser environments
-    if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
-        ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    if (API_KEY) {
+        ai = new GoogleGenAI({ apiKey: API_KEY });
         return ai;
     }
     console.warn("Gemini API key not found. AI features will be disabled.");
