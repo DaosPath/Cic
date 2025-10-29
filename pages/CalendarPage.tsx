@@ -47,6 +47,7 @@ interface DayCellProps {
     dayNumber: number;
     isCurrentMonth: boolean;
     isToday: boolean;
+    isFuture: boolean;
     isPeriod: boolean;
     periodIntensity?: number;
     isFertile: boolean;
@@ -56,6 +57,7 @@ interface DayCellProps {
     isRangeStart: boolean;
     isRangeEnd: boolean;
     isInRange: boolean;
+    isDimmed: boolean;
     log?: DailyLog;
     onClick: () => void;
     onMouseEnter: () => void;
@@ -68,6 +70,7 @@ const DayCell: React.FC<DayCellProps> = ({
     dayNumber,
     isCurrentMonth,
     isToday,
+    isFuture,
     isPeriod,
     periodIntensity,
     isFertile,
@@ -77,69 +80,92 @@ const DayCell: React.FC<DayCellProps> = ({
     isRangeStart,
     isRangeEnd,
     isInRange,
+    isDimmed,
     log,
     onClick,
     onMouseEnter,
     onMouseDown,
     showTooltip
 }) => {
-    const baseClasses = 'relative w-full aspect-square flex items-center justify-center rounded-xl transition-all duration-200 cursor-pointer group';
+    const baseClasses = `relative w-full aspect-square flex items-center justify-center rounded-xl transition-all duration-150 group focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2 focus:ring-offset-brand-bg ${
+        isFuture ? 'cursor-not-allowed opacity-50' : isDimmed ? 'cursor-pointer opacity-20' : 'cursor-pointer'
+    }`;
 
-    let bgClasses = 'bg-transparent hover:bg-brand-surface/50';
+    let bgClasses = isFuture ? 'bg-transparent' : 'bg-transparent hover:bg-brand-surface/50 hover:shadow-sm';
     let textClasses = isCurrentMonth ? 'text-brand-text' : 'text-brand-text-dim/40';
     let borderClasses = 'border border-transparent';
+    let patternClasses = '';
+
+    // Disable interactions for future dates
+    if (isFuture) {
+        textClasses = 'text-brand-text-dim/30';
+    }
 
     // Range selection styling
     if (isInRange) {
-        bgClasses = 'bg-brand-primary/10';
+        bgClasses = 'bg-brand-primary/10 hover:bg-brand-primary/15';
     }
     if (isRangeStart || isRangeEnd) {
-        borderClasses = 'border border-brand-primary';
+        borderClasses = 'border-2 border-brand-primary shadow-md';
     }
 
-    // Phase styling
+    // Phase styling with predicted pattern
     if (isOvulation) {
-        bgClasses = isPredicted 
-            ? 'bg-phase-ovulation/25 opacity-60' 
-            : 'bg-phase-ovulation/40 shadow-sm';
+        if (isPredicted) {
+            bgClasses = 'bg-phase-ovulation/25 hover:bg-phase-ovulation/30';
+            patternClasses = 'opacity-60';
+            borderClasses = 'border border-phase-ovulation/20 border-dashed';
+        } else {
+            bgClasses = 'bg-phase-ovulation/40 hover:bg-phase-ovulation/50 shadow-sm hover:shadow-md';
+            borderClasses = 'border border-phase-ovulation/40';
+        }
         textClasses = 'text-brand-text font-semibold';
-        borderClasses = 'border border-phase-ovulation/30';
     } else if (isFertile) {
-        bgClasses = isPredicted 
-            ? 'bg-phase-follicular/15 opacity-60' 
-            : 'bg-phase-follicular/25 shadow-sm';
+        if (isPredicted) {
+            bgClasses = 'bg-phase-follicular/15 hover:bg-phase-follicular/20';
+            patternClasses = 'opacity-60';
+            borderClasses = 'border border-phase-follicular/15 border-dashed';
+        } else {
+            bgClasses = 'bg-phase-follicular/25 hover:bg-phase-follicular/35 shadow-sm hover:shadow-md';
+            borderClasses = 'border border-phase-follicular/25';
+        }
         textClasses = 'text-brand-text font-medium';
-        borderClasses = 'border border-phase-follicular/20';
     }
 
     if (isPeriod && periodIntensity) {
         const intensityOpacity = [0, 0.2, 0.35, 0.5][periodIntensity] || 0.5;
-        bgClasses = isPredicted
-            ? `bg-phase-menstruation/${Math.round(intensityOpacity * 100)} opacity-60`
-            : `bg-phase-menstruation/${Math.round(intensityOpacity * 100)} shadow-sm`;
+        if (isPredicted) {
+            bgClasses = `bg-phase-menstruation/${Math.round(intensityOpacity * 100)} hover:bg-phase-menstruation/${Math.round((intensityOpacity + 0.1) * 100)}`;
+            patternClasses = 'opacity-60';
+            borderClasses = 'border border-phase-menstruation/30 border-dashed';
+        } else {
+            bgClasses = `bg-phase-menstruation/${Math.round(intensityOpacity * 100)} hover:bg-phase-menstruation/${Math.round((intensityOpacity + 0.1) * 100)} shadow-sm hover:shadow-md`;
+            borderClasses = 'border border-phase-menstruation/50';
+        }
         textClasses = periodIntensity >= 2 ? 'text-white font-semibold' : 'text-brand-text font-medium';
-        borderClasses = 'border border-phase-menstruation/40';
     }
 
     if (isSelected) {
-        borderClasses = 'border-2 border-brand-primary shadow-lg';
+        borderClasses = 'border-2 border-brand-primary shadow-lg shadow-brand-primary/30';
+        bgClasses = bgClasses + ' ring-2 ring-brand-primary/20';
     }
 
-    const dayClasses = `${baseClasses} ${bgClasses} ${borderClasses}`;
+    const dayClasses = `${baseClasses} ${bgClasses} ${borderClasses} ${patternClasses}`;
 
     return (
         <div 
             className={dayClasses}
-            onClick={onClick}
+            onClick={isFuture ? undefined : onClick}
             onMouseEnter={onMouseEnter}
-            onMouseDown={onMouseDown}
+            onMouseDown={isFuture ? undefined : onMouseDown}
             role="gridcell"
             aria-selected={isSelected}
-            tabIndex={isCurrentMonth ? 0 : -1}
+            aria-disabled={isFuture}
+            tabIndex={isCurrentMonth && !isFuture ? 0 : -1}
         >
             <div className="relative z-10 flex flex-col items-center justify-center w-full h-full">
-                <span className={`text-sm md:text-base transition-all duration-200 ${textClasses} ${
-                    isToday ? 'bg-brand-primary text-white w-6 h-6 md:w-7 md:h-7 rounded-full flex items-center justify-center font-bold shadow-md' : ''
+                <span className={`text-sm md:text-base transition-all duration-150 ${textClasses} ${
+                    isToday ? 'bg-brand-primary text-white w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center font-bold shadow-lg ring-2 ring-brand-primary/30 ring-offset-1 ring-offset-transparent' : ''
                 }`}>
                     {dayNumber}
                 </span>
@@ -169,31 +195,39 @@ const DayCell: React.FC<DayCellProps> = ({
 
             {/* Tooltip */}
             {showTooltip && log && (
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 pointer-events-none">
-                    <div className="bg-brand-surface border border-brand-border rounded-lg shadow-xl p-3 min-w-[180px] text-left">
-                        <div className="text-xs font-semibold text-brand-text mb-2">
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 pointer-events-none animate-fade-in">
+                    <div className="bg-brand-surface border border-brand-border rounded-xl shadow-2xl p-3 min-w-[200px] text-left backdrop-blur-lg">
+                        <div className="text-xs font-bold text-brand-text mb-2 pb-2 border-b border-brand-border" style={{ fontWeight: 700 }}>
                             {format(date, 'MMM d, yyyy')}
                         </div>
                         {log.periodIntensity && log.periodIntensity > 0 && (
-                            <div className="text-xs text-brand-text-dim mb-1">
-                                🩸 Intensidad: {log.periodIntensity}/3
+                            <div className="text-xs text-brand-text mb-1.5 flex items-center gap-1.5">
+                                <span className="text-phase-menstruation">🩸</span>
+                                <span>Intensidad: {log.periodIntensity}/3</span>
                             </div>
                         )}
                         {log.mood && (
-                            <div className="text-xs text-brand-text-dim mb-1">
-                                {moodEmojis[log.mood - 1]?.emoji} Estado de ánimo
+                            <div className="text-xs text-brand-text mb-1.5 flex items-center gap-1.5">
+                                <span>{moodEmojis[log.mood - 1]?.emoji}</span>
+                                <span>Estado de ánimo</span>
                             </div>
                         )}
                         {log.symptoms && log.symptoms.length > 0 && (
-                            <div className="text-xs text-brand-text-dim mb-1">
-                                📋 {log.symptoms.length} síntoma{log.symptoms.length > 1 ? 's' : ''}
+                            <div className="text-xs text-brand-text mb-1.5 flex items-center gap-1.5">
+                                <span className="text-brand-primary">📋</span>
+                                <span>{log.symptoms.length} síntoma{log.symptoms.length > 1 ? 's' : ''}</span>
                             </div>
                         )}
                         {log.notes && (
-                            <div className="text-xs text-brand-text-dim truncate">
-                                📝 {log.notes.substring(0, 30)}...
+                            <div className="text-xs text-brand-text-dim truncate flex items-center gap-1.5">
+                                <span className="text-brand-positive">📝</span>
+                                <span className="truncate">{log.notes.substring(0, 30)}...</span>
                             </div>
                         )}
+                        {/* Tooltip arrow */}
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px">
+                            <div className="w-2 h-2 bg-brand-surface border-r border-b border-brand-border rotate-45"></div>
+                        </div>
                     </div>
                 </div>
             )}
@@ -242,20 +276,20 @@ const DayEditor: React.FC<DayEditorProps> = ({ date, log: initialLog, onSave, on
     );
 
     return (
-        <div className="fixed inset-0 md:inset-auto md:right-0 md:top-0 md:bottom-0 md:w-96 bg-brand-surface border-l border-brand-border shadow-2xl z-50 overflow-y-auto">
-            <div className="sticky top-0 bg-brand-surface border-b border-brand-border p-4 flex items-center justify-between">
+        <div className="fixed inset-0 md:inset-auto md:right-0 md:top-0 md:bottom-0 md:w-96 bg-brand-surface border-l border-brand-border shadow-2xl z-50 overflow-y-auto animate-slide-in-right">
+            <div className="sticky top-0 bg-brand-surface/95 backdrop-blur-lg border-b border-brand-border p-4 flex items-center justify-between z-10">
                 <div>
-                    <h2 className="text-lg font-bold text-brand-text" style={{ fontWeight: 700 }}>
+                    <h2 className="text-lg font-bold text-brand-text" style={{ fontWeight: 700, lineHeight: 1.3 }}>
                         {format(date, 'MMMM d, yyyy')}
                     </h2>
-                    <p className="text-sm text-brand-text-dim">{format(date, 'EEEE')}</p>
+                    <p className="text-sm text-brand-text-dim" style={{ fontWeight: 500 }}>{format(date, 'EEEE')}</p>
                 </div>
                 <button
                     onClick={onClose}
-                    className="p-2 rounded-lg hover:bg-brand-surface-2 transition-colors"
+                    className="p-2 rounded-lg hover:bg-brand-surface-2 transition-all duration-150 hover:scale-105 active:scale-95"
                     aria-label="Cerrar"
                 >
-                    <svg className="w-5 h-5 text-brand-text-dim" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 text-brand-text-dim hover:text-brand-text transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
@@ -364,19 +398,22 @@ const DayEditor: React.FC<DayEditorProps> = ({ date, log: initialLog, onSave, on
                 {/* Save Button */}
                 <button
                     onClick={handleSave}
-                    className="w-full bg-gradient-to-r from-brand-primary to-brand-accent text-white font-semibold py-3 px-6 rounded-full shadow-lg shadow-brand-primary/25 hover:shadow-xl hover:shadow-brand-primary/35 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2"
+                    disabled={saved}
+                    className={`w-full bg-gradient-to-r from-brand-primary to-brand-accent text-white font-semibold py-3 px-6 rounded-full shadow-lg shadow-brand-primary/25 hover:shadow-xl hover:shadow-brand-primary/35 hover:scale-[1.02] active:scale-[0.98] transition-all duration-150 flex items-center justify-center gap-2 ${
+                        saved ? 'opacity-75 cursor-not-allowed' : ''
+                    }`}
                     style={{ fontWeight: 600 }}
                 >
                     {saved ? (
                         <>
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-5 h-5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                             </svg>
                             Guardado
                         </>
                     ) : (
                         <>
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
                             </svg>
                             {t('saveRecord')}
@@ -400,23 +437,23 @@ const MonthSelector: React.FC<MonthSelectorProps> = ({ currentDate, onSelect, on
     const months = Array.from({ length: 12 }, (_, i) => new Date(selectedYear, i, 1));
 
     return (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
-            <div className="bg-brand-surface border border-brand-border rounded-[18px] shadow-2xl max-w-md w-full p-6" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in" onClick={onClose}>
+            <div className="bg-brand-surface border border-brand-border rounded-[18px] shadow-2xl max-w-md w-full p-6 animate-slide-up" onClick={(e) => e.stopPropagation()}>
                 <div className="flex items-center justify-between mb-6">
                     <button
                         onClick={() => setSelectedYear(selectedYear - 1)}
-                        className="p-2 rounded-lg hover:bg-brand-surface-2 transition-colors"
+                        className="p-2 rounded-lg hover:bg-brand-surface-2 transition-all duration-150 hover:scale-110 active:scale-95"
                     >
-                        <svg className="w-5 h-5 text-brand-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-5 h-5 text-brand-text hover:text-brand-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                         </svg>
                     </button>
-                    <h3 className="text-xl font-bold text-brand-text">{selectedYear}</h3>
+                    <h3 className="text-xl font-bold text-brand-text" style={{ fontWeight: 700 }}>{selectedYear}</h3>
                     <button
                         onClick={() => setSelectedYear(selectedYear + 1)}
-                        className="p-2 rounded-lg hover:bg-brand-surface-2 transition-colors"
+                        className="p-2 rounded-lg hover:bg-brand-surface-2 transition-all duration-150 hover:scale-110 active:scale-95"
                     >
-                        <svg className="w-5 h-5 text-brand-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-5 h-5 text-brand-text hover:text-brand-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                         </svg>
                     </button>
@@ -429,11 +466,12 @@ const MonthSelector: React.FC<MonthSelectorProps> = ({ currentDate, onSelect, on
                                 onSelect(month);
                                 onClose();
                             }}
-                            className={`py-3 px-4 rounded-xl text-sm font-medium transition-all duration-200 ${
+                            className={`py-3 px-4 rounded-xl text-sm font-medium transition-all duration-150 hover:scale-105 active:scale-95 ${
                                 month.getMonth() === currentDate.getMonth() && month.getFullYear() === currentDate.getFullYear()
-                                    ? 'bg-brand-primary text-white'
-                                    : 'bg-brand-surface-2 text-brand-text hover:bg-brand-primary/20'
+                                    ? 'bg-brand-primary text-white shadow-md'
+                                    : 'bg-brand-surface-2 text-brand-text hover:bg-brand-primary/20 hover:shadow-sm'
                             }`}
+                            style={{ fontWeight: 500 }}
                         >
                             {format(month, 'MMM')}
                         </button>
@@ -505,23 +543,46 @@ export const CalendarPage: React.FC = () => {
     }, []);
 
     const handleDayClick = useCallback((date: Date) => {
+        // Don't allow selecting future dates
+        const today = startOfDay(new Date());
+        if (startOfDay(date) > today) {
+            return;
+        }
         setSelectedDate(date);
         setRangeStart(null);
         setRangeEnd(null);
     }, []);
 
     const handleDayMouseDown = useCallback((date: Date) => {
+        // Don't allow range selection starting from future dates
+        const today = startOfDay(new Date());
+        if (startOfDay(date) > today) {
+            return;
+        }
         setIsDragging(true);
         setRangeStart(date);
         setRangeEnd(date);
     }, []);
 
     const handleDayMouseEnter = useCallback((date: Date) => {
-        setHoveredDate(date);
-        if (isDragging && rangeStart) {
+        const today = startOfDay(new Date());
+        const isFuture = startOfDay(date) > today;
+        
+        if (!isFuture) {
+            setHoveredDate(date);
+        } else {
+            // Clear tooltip when hovering over future dates
+            setHoveredDate(null);
+        }
+        
+        if (isDragging && rangeStart && !isFuture) {
             setRangeEnd(date);
         }
     }, [isDragging, rangeStart]);
+
+    const handleMouseLeave = useCallback(() => {
+        setHoveredDate(null);
+    }, []);
 
     useEffect(() => {
         const handleMouseUp = () => {
@@ -534,6 +595,54 @@ export const CalendarPage: React.FC = () => {
         document.addEventListener('mouseup', handleMouseUp);
         return () => document.removeEventListener('mouseup', handleMouseUp);
     }, [isDragging, rangeStart, rangeEnd]);
+
+    // Keyboard navigation
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (!selectedDate) return;
+
+            let newDate: Date | null = null;
+
+            switch (e.key) {
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    newDate = addDays(selectedDate, -1);
+                    break;
+                case 'ArrowRight':
+                    e.preventDefault();
+                    newDate = addDays(selectedDate, 1);
+                    break;
+                case 'ArrowUp':
+                    e.preventDefault();
+                    newDate = addDays(selectedDate, -7);
+                    break;
+                case 'ArrowDown':
+                    e.preventDefault();
+                    newDate = addDays(selectedDate, 7);
+                    break;
+                case 'Escape':
+                    e.preventDefault();
+                    setSelectedDate(null);
+                    break;
+            }
+
+            if (newDate) {
+                // Don't allow navigating to future dates
+                const today = startOfDay(new Date());
+                if (startOfDay(newDate) > today) {
+                    return;
+                }
+                setSelectedDate(newDate);
+                // Change month if needed
+                if (!isSameMonth(newDate, currentMonth)) {
+                    setCurrentMonth(startOfMonth(newDate));
+                }
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [selectedDate, currentMonth]);
 
     const handleSaveDay = useCallback(async (log: DailyLog) => {
         await refreshData();
@@ -623,17 +732,17 @@ export const CalendarPage: React.FC = () => {
                         <div className="flex items-center justify-between md:justify-start gap-4">
                             <button
                                 onClick={prevMonth}
-                                className="p-2 rounded-lg hover:bg-brand-surface-2 transition-all duration-200 hover:scale-105"
+                                className="p-2 rounded-lg hover:bg-brand-surface-2 transition-all duration-150 hover:scale-110 active:scale-95 hover:shadow-sm"
                                 aria-label={t('previousMonth')}
                             >
-                                <svg className="w-5 h-5 text-brand-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-5 h-5 text-brand-text hover:text-brand-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                                 </svg>
                             </button>
 
                             <button
                                 onClick={() => setShowMonthSelector(true)}
-                                className="text-center hover:bg-brand-surface-2 px-4 py-2 rounded-lg transition-colors"
+                                className="text-center hover:bg-brand-surface-2 px-4 py-2 rounded-lg transition-all duration-150 hover:scale-[1.02] active:scale-[0.98]"
                             >
                                 <h1 className="text-2xl md:text-3xl font-bold capitalize text-brand-text" style={{ fontWeight: 700, lineHeight: 1.2 }}>
                                     {monthLabel}
@@ -645,10 +754,10 @@ export const CalendarPage: React.FC = () => {
 
                             <button
                                 onClick={nextMonth}
-                                className="p-2 rounded-lg hover:bg-brand-surface-2 transition-all duration-200 hover:scale-105"
+                                className="p-2 rounded-lg hover:bg-brand-surface-2 transition-all duration-150 hover:scale-110 active:scale-95 hover:shadow-sm"
                                 aria-label={t('nextMonth')}
                             >
-                                <svg className="w-5 h-5 text-brand-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-5 h-5 text-brand-text hover:text-brand-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                 </svg>
                             </button>
@@ -657,7 +766,7 @@ export const CalendarPage: React.FC = () => {
                         <div className="flex items-center gap-2 flex-wrap">
                             <button
                                 onClick={goToToday}
-                                className="px-4 py-2 rounded-full text-sm font-medium bg-brand-primary/20 text-brand-primary border border-brand-primary hover:bg-brand-primary/30 transition-all duration-200"
+                                className="px-4 py-2 rounded-full text-sm font-medium bg-brand-primary/20 text-brand-primary border border-brand-primary hover:bg-brand-primary/30 hover:scale-105 active:scale-95 transition-all duration-150 shadow-sm hover:shadow-md"
                                 style={{ fontWeight: 500 }}
                             >
                                 Hoy
@@ -665,10 +774,10 @@ export const CalendarPage: React.FC = () => {
 
                             <button
                                 onClick={() => setShowPredictions(!showPredictions)}
-                                className={`px-3 py-2 rounded-full text-xs font-medium transition-all duration-200 ${
+                                className={`px-3 py-2 rounded-full text-xs font-medium transition-all duration-150 hover:scale-105 active:scale-95 ${
                                     showPredictions
-                                        ? 'bg-brand-primary/20 text-brand-primary border border-brand-primary'
-                                        : 'bg-transparent text-brand-text-dim border border-brand-border hover:bg-brand-surface-2'
+                                        ? 'bg-brand-primary/20 text-brand-primary border border-brand-primary shadow-sm'
+                                        : 'bg-transparent text-brand-text-dim border border-brand-border hover:bg-brand-surface-2 hover:text-brand-text'
                                 }`}
                             >
                                 Predicciones
@@ -706,14 +815,22 @@ export const CalendarPage: React.FC = () => {
 
                     {/* Range Selection Info */}
                     {rangeStart && rangeEnd && selectedRangeCount > 1 && (
-                        <div className="mt-4 px-4 py-2 bg-brand-primary/10 border border-brand-primary/30 rounded-lg text-sm text-brand-primary flex items-center justify-between">
-                            <span>{selectedRangeCount} días seleccionados</span>
+                        <div className="mt-4 px-4 py-2.5 bg-brand-primary/15 border border-brand-primary/40 rounded-xl text-sm text-brand-primary flex items-center justify-between shadow-sm animate-fade-in">
+                            <div className="flex items-center gap-2">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                </svg>
+                                <span className="font-semibold" style={{ fontWeight: 600 }}>
+                                    {selectedRangeCount} día{selectedRangeCount > 1 ? 's' : ''} seleccionado{selectedRangeCount > 1 ? 's' : ''}
+                                </span>
+                            </div>
                             <button
                                 onClick={() => {
                                     setRangeStart(null);
                                     setRangeEnd(null);
                                 }}
-                                className="text-xs underline hover:no-underline"
+                                className="text-xs font-medium hover:bg-brand-primary/20 px-2 py-1 rounded-lg transition-all duration-150"
+                                style={{ fontWeight: 500 }}
                             >
                                 Cancelar
                             </button>
@@ -722,7 +839,7 @@ export const CalendarPage: React.FC = () => {
                 </div>
 
                 {/* Calendar Grid */}
-                <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-4 md:p-6 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)] mb-6">
+                <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-4 md:p-6 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)] mb-6 transition-all duration-200">
                     {isLoading ? (
                         <div className="flex items-center justify-center py-20">
                             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary"></div>
@@ -739,12 +856,14 @@ export const CalendarPage: React.FC = () => {
                                 ))}
                             </div>
 
-                            <div className="grid grid-cols-7 gap-1 md:gap-2" role="grid">
+                            <div className="grid grid-cols-7 gap-1 md:gap-2" role="grid" onMouseLeave={handleMouseLeave}>
                                 {daysInGrid.map((day) => {
                                     const dayId = formatISO(day, { representation: 'date' });
                                     const log = logsMap.get(dayId);
                                     const isPeriod = !!(log?.periodIntensity && log.periodIntensity > 0);
                                     const dayStart = startOfDay(day);
+                                    const today = startOfDay(new Date());
+                                    const isFuture = dayStart > today;
 
                                     let isFertile = false;
                                     let isOvulation = false;
@@ -766,11 +885,11 @@ export const CalendarPage: React.FC = () => {
                                         isOvulation = false;
                                     }
 
-                                    // Filter logic
-                                    let shouldShow = true;
-                                    if (activeFilter === 'period' && !isPeriod) shouldShow = false;
-                                    if (activeFilter === 'fertile' && !isFertile) shouldShow = false;
-                                    if (activeFilter === 'ovulation' && !isOvulation) shouldShow = false;
+                                    // Filter logic - hide non-matching days
+                                    let shouldDim = false;
+                                    if (activeFilter === 'period' && !isPeriod) shouldDim = true;
+                                    if (activeFilter === 'fertile' && !isFertile) shouldDim = true;
+                                    if (activeFilter === 'ovulation' && !isOvulation) shouldDim = true;
 
                                     const isSelected = selectedDate && isSameDay(day, selectedDate);
                                     const isRangeStart = rangeStart && isSameDay(day, rangeStart);
@@ -785,6 +904,7 @@ export const CalendarPage: React.FC = () => {
                                             dayNumber={getDate(day)}
                                             isCurrentMonth={isSameMonth(day, currentMonth)}
                                             isToday={isToday(day)}
+                                            isFuture={isFuture}
                                             isPeriod={isPeriod}
                                             periodIntensity={log?.periodIntensity}
                                             isFertile={isFertile}
@@ -794,6 +914,7 @@ export const CalendarPage: React.FC = () => {
                                             isRangeStart={!!isRangeStart}
                                             isRangeEnd={!!isRangeEnd}
                                             isInRange={!!isInRange}
+                                            isDimmed={shouldDim}
                                             log={log}
                                             onClick={() => handleDayClick(day)}
                                             onMouseEnter={() => handleDayMouseEnter(day)}
@@ -808,43 +929,56 @@ export const CalendarPage: React.FC = () => {
                 </div>
 
                 {/* Interactive Legend */}
-                <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-5 md:p-6 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)]">
-                    <h3 className="text-base font-bold text-brand-text mb-4" style={{ fontWeight: 700 }}>
-                        {t('legend')}
-                    </h3>
+                <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-5 md:p-6 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)] md:sticky md:bottom-6">
+                    <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-base font-bold text-brand-text" style={{ fontWeight: 700, lineHeight: 1.3 }}>
+                            {t('legend')}
+                        </h3>
+                        {activeFilter !== 'all' && (
+                            <button
+                                onClick={() => setActiveFilter('all')}
+                                className="text-xs text-brand-text-dim hover:text-brand-primary transition-colors duration-150 flex items-center gap-1"
+                            >
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                                Limpiar filtro
+                            </button>
+                        )}
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <button
                             onClick={() => setActiveFilter(activeFilter === 'period' ? 'all' : 'period')}
-                            className={`flex items-center gap-3 p-3 rounded-xl transition-all duration-200 ${
+                            className={`flex items-center gap-3 p-3 rounded-xl transition-all duration-150 hover:scale-[1.02] active:scale-[0.98] ${
                                 activeFilter === 'period'
-                                    ? 'bg-phase-menstruation/20 border-2 border-phase-menstruation'
-                                    : 'bg-brand-surface-2 border border-brand-border hover:bg-brand-surface hover:border-phase-menstruation/30'
+                                    ? 'bg-phase-menstruation/20 border-2 border-phase-menstruation shadow-md'
+                                    : 'bg-brand-surface-2 border border-brand-border hover:bg-brand-surface hover:border-phase-menstruation/30 hover:shadow-sm'
                             }`}
                         >
                             <div className="w-5 h-5 rounded-lg bg-phase-menstruation/40 border border-phase-menstruation/40 shadow-sm flex-shrink-0"></div>
-                            <span className="text-sm font-medium text-brand-text" style={{ fontWeight: 500 }}>
+                            <span className="text-sm font-medium text-brand-text" style={{ fontWeight: 500, lineHeight: 1.3 }}>
                                 {t('menstruation')}
                             </span>
                         </button>
                         <button
                             onClick={() => setActiveFilter(activeFilter === 'fertile' ? 'all' : 'fertile')}
-                            className={`flex items-center gap-3 p-3 rounded-xl transition-all duration-200 ${
+                            className={`flex items-center gap-3 p-3 rounded-xl transition-all duration-150 hover:scale-[1.02] active:scale-[0.98] ${
                                 activeFilter === 'fertile'
-                                    ? 'bg-phase-follicular/20 border-2 border-phase-follicular'
-                                    : 'bg-brand-surface-2 border border-brand-border hover:bg-brand-surface hover:border-phase-follicular/30'
+                                    ? 'bg-phase-follicular/20 border-2 border-phase-follicular shadow-md'
+                                    : 'bg-brand-surface-2 border border-brand-border hover:bg-brand-surface hover:border-phase-follicular/30 hover:shadow-sm'
                             }`}
                         >
                             <div className="w-5 h-5 rounded-lg bg-phase-follicular/25 border border-phase-follicular/20 shadow-sm flex-shrink-0"></div>
-                            <span className="text-sm font-medium text-brand-text" style={{ fontWeight: 500 }}>
+                            <span className="text-sm font-medium text-brand-text" style={{ fontWeight: 500, lineHeight: 1.3 }}>
                                 {t('fertileWindow')}
                             </span>
                         </button>
                         <button
                             onClick={() => setActiveFilter(activeFilter === 'ovulation' ? 'all' : 'ovulation')}
-                            className={`flex items-center gap-3 p-3 rounded-xl transition-all duration-200 ${
+                            className={`flex items-center gap-3 p-3 rounded-xl transition-all duration-150 hover:scale-[1.02] active:scale-[0.98] ${
                                 activeFilter === 'ovulation'
-                                    ? 'bg-phase-ovulation/20 border-2 border-phase-ovulation'
-                                    : 'bg-brand-surface-2 border border-brand-border hover:bg-brand-surface hover:border-phase-ovulation/30'
+                                    ? 'bg-phase-ovulation/20 border-2 border-phase-ovulation shadow-md'
+                                    : 'bg-brand-surface-2 border border-brand-border hover:bg-brand-surface hover:border-phase-ovulation/30 hover:shadow-sm'
                             }`}
                         >
                             <div className="w-5 h-5 rounded-lg bg-phase-ovulation/40 border border-phase-ovulation/30 shadow-sm flex-shrink-0 flex items-center justify-center">
@@ -852,7 +986,7 @@ export const CalendarPage: React.FC = () => {
                                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                                 </svg>
                             </div>
-                            <span className="text-sm font-medium text-brand-text" style={{ fontWeight: 500 }}>
+                            <span className="text-sm font-medium text-brand-text" style={{ fontWeight: 500, lineHeight: 1.3 }}>
                                 {t('ovulation')}
                             </span>
                         </button>

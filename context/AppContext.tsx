@@ -64,13 +64,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             const today = getTodayInTimezone();
             const latestCycle = dbCycles[0];
 
-            const { avgCycleLength, avgLutealPhaseLength } = calculateAverages(dbCycles);
+            const { avgCycleLength, avgLutealPhaseLength, cycleVariability } = calculateAverages(dbCycles);
             
             const { phase, dayOfCycle } = getCyclePhase(
                 today,
                 latestCycle,
                 avgCycleLength || dbSettings.cycleLength,
-                dbSettings.lutealPhaseLength
+                avgLutealPhaseLength || dbSettings.lutealPhaseLength
             );
             setCurrentPhase(phase);
             setDayOfCycle(dayOfCycle);
@@ -78,7 +78,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             const newPredictions = calculatePredictions(
                 dbCycles,
                 avgCycleLength || dbSettings.cycleLength,
-                dbSettings.lutealPhaseLength
+                avgLutealPhaseLength || dbSettings.lutealPhaseLength,
+                dbLogs
             );
             setPredictions(newPredictions);
 
