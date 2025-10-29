@@ -1,9 +1,20 @@
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useContext, useMemo, useState, useEffect } from 'react';
 import { AppContext } from '../context/AppContext.tsx';
 import { parseISO } from 'date-fns/parseISO';
 import { differenceInDays } from 'date-fns/differenceInDays';
 import type { Cycle, Symptom, DailyLog } from '../types.ts';
 import { useTranslation } from '../hooks/useTranslation.ts';
+import { AIInsightsList } from '../components/AIInsightsList.tsx';
+import { formatInsightsForChat, addUserMessage, addAssistantMessage, type ChatMessage } from '../services/ai-chat-formatter.ts';
+import { AIChat } from '../components/AIChat.tsx';
+import { useAIInsights } from '../hooks/useAIInsights.ts';
+import type { AIInsight } from '../services/ai-insights.ts';
+import { DailyInsightView } from '../components/DailyInsightView.tsx';
+import { WeeklyInsightView } from '../components/WeeklyInsightView.tsx';
+import { MonthlyInsightView } from '../components/MonthlyInsightView.tsx';
+import { format } from 'date-fns/format';
+import { subDays } from 'date-fns/subDays';
+import { startOfMonth, endOfMonth } from 'date-fns';
 
 const intlLocales = {
     es: 'es-ES',
@@ -370,8 +381,35 @@ export const InsightsPage: React.FC = () => {
     const [showPredictions, setShowPredictions] = useState(false);
     const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    
+    // AI Mode State
+    const [analysisMode, setAnalysisMode] = useState<'simple' | 'ai'>(() => {
+        return (localStorage.getItem('analysisMode') as 'simple' | 'ai') || 'simple';
+    });
+    const [aiTimeMode, setAiTimeMode] = useState<'day' | 'week' | 'month' | 'current-cycle' | '6-months' | 'year'>('6-months');
+    const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+    const [isChatMode, setIsChatMode] = useState(false);
 
     const intlLocale = intlLocales[language] ?? 'es-ES';
+
+    // Save mode preference
+    useEffect(() => {
+        localStorage.setItem('analysisMode', analysisMode);
+    }, [analysisMode]);
+
+    // Use AI Insights hook
+    const {
+        insights: aiInsights,
+        isLoading: isGeneratingInsights,
+        saveInsight: handleSaveInsight,
+        pinInsight: handlePinInsight,
+        discardInsight: handleDiscardInsight
+    } = useAIInsights({
+        logs,
+        cycles,
+        timeRange,
+        enabled: analysisMode === 'ai' && !isChatMode
+    });
 
     // Filter cycles by time range
     const filteredCycles = useMemo(() => {
@@ -497,54 +535,258 @@ export const InsightsPage: React.FC = () => {
         URL.revokeObjectURL(url);
     };
 
+    // Chat Handlers
+    const handleStartChat = (insights: AIInsight[]) => {
+        const initialMessage = formatInsightsForChat(
+            insights,
+            `Últimos ${timeRange} meses`,
+            { showPredictions }
+        );
+        setChatMessages([initialMessage]);
+        setIsChatMode(true);
+    };
+
+    const handleBackToInsights = () => {
+        setIsChatMode(false);
+        setChatMessages([]);
+    };
+
+    const handleSendChatMessage = (message: string) => {
+        const userMsg = addUserMessage(message);
+        setChatMessages(prev => [...prev, userMsg]);
+        
+        // Simulate AI response (in real app, this would call an API)
+        setTimeout(() => {
+            const response = generateMockAIResponse(message);
+            const assistantMsg = addAssistantMessage(response);
+            setChatMessages(prev => [...prev, assistantMsg]);
+        }, 1000);
+    };
+
+    const generateMockAIResponse = (question: string): string => {
+        // Simple mock responses based on keywords
+        const lowerQ = question.toLowerCase();
+        
+        if (lowerQ.includes('dolor') || lowerQ.includes('pain')) {
+            return 'Basándome en tus datos, he notado que tu dolor es más intenso durante los primeros 2-3 días del ciclo. Te recomiendo:\n\n- Aplicar calor local (bolsa de agua caliente)\n- Considerar antiinflamatorios naturales como jengibre\n- Practicar yoga suave o estiramientos\n- Si el dolor persiste con intensidad >7/10, consulta con tu ginecólogo\n\n¿Hay algo específico sobre el dolor que quieras explorar?';
+        }
+        
+        if (lowerQ.includes('sueño') || lowerQ.includes('sleep') || lowerQ.includes('dormir')) {
+            return 'Tu patrón de sueño muestra una correlación interesante con tu ciclo. Durante la fase lútea, tiendes a dormir menos horas. Esto es común debido a cambios hormonales.\n\nRecomendaciones:\n- Mantén una rutina de sueño consistente\n- Evita cafeína después de las 14:00\n- Crea un ambiente fresco y oscuro\n- Considera suplementos de magnesio (consulta con tu médico)\n\n¿Quieres saber más sobre cómo mejorar tu calidad de sueño?';
+        }
+        
+        if (lowerQ.includes('ciclo') || lowerQ.includes('regular') || lowerQ.includes('irregular')) {
+            return 'Tu ciclo tiene una variabilidad de ±3 días, lo cual está dentro del rango normal. La mayoría de tus ciclos duran entre 26-30 días.\n\nFactores que pueden estar influyendo:\n- Niveles de estrés\n- Cambios en rutina de ejercicio\n- Patrones de sueño\n- Alimentación\n\nTu regularidad actual es buena. ¿Te gustaría explorar algún factor específico?';
+        }
+        
+        if (lowerQ.includes('fértil') || lowerQ.includes('ovulación') || lowerQ.includes('embarazo')) {
+            return 'Basándome en tu ciclo promedio de 28 días, tu próxima ventana fértil estimada sería:\n\n- Inicio: Día 11-12 del ciclo\n- Pico: Día 14\n- Fin: Día 16-17\n\nRecuerda que estos son estimados. Para mayor precisión, considera:\n- Monitorear temperatura basal\n- Usar tests de ovulación\n- Observar cambios en flujo cervical\n\n¿Necesitas más información sobre fertilidad?';
+        }
+        
+        return 'Gracias por tu pregunta. Basándome en tus datos de los últimos meses, puedo ayudarte a entender mejor tus patrones.\n\n¿Podrías ser más específico sobre qué aspecto te gustaría explorar? Por ejemplo:\n- Regularidad del ciclo\n- Manejo del dolor\n- Patrones de sueño\n- Síntomas específicos\n- Fertilidad\n- Recomendaciones de estilo de vida';
+    };
+
     return (
         <div className="min-h-screen px-4 md:px-8 pt-12 pb-24 md:pb-12">
             <div className="max-w-[1200px] mx-auto">
                 {/* Header */}
                 <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-6 md:p-8 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)] mb-6">
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                        <div>
-                            <h1 className="text-3xl md:text-4xl font-bold text-brand-text mb-2" style={{ fontWeight: 700, lineHeight: 1.3 }}>
-                                Análisis de Ciclos
-                            </h1>
-                            <p className="text-base text-brand-text-dim" style={{ fontWeight: 500, lineHeight: 1.5 }}>
-                                Descubre patrones y tendencias en tu ciclo menstrual
-                            </p>
-                        </div>
-                        
-                        {/* Filters */}
-                        <div className="flex items-center gap-2 flex-wrap">
-                            <div className="flex bg-brand-surface-2 rounded-full p-1 border border-brand-border">
-                                {([3, 6, 12] as const).map(months => (
-                                    <button
-                                        key={months}
-                                        onClick={() => setTimeRange(months)}
-                                        className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-150 ${
-                                            timeRange === months
-                                                ? 'bg-brand-primary text-white shadow-md'
-                                                : 'text-brand-text-dim hover:text-brand-text'
-                                        }`}
-                                        style={{ fontWeight: 500 }}
-                                    >
-                                        {months}m
-                                    </button>
-                                ))}
+                    <div className="flex flex-col gap-4">
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                            <div>
+                                <h1 className="text-3xl md:text-4xl font-bold text-brand-text mb-2" style={{ fontWeight: 700, lineHeight: 1.3 }}>
+                                    {isChatMode ? 'Chat de Análisis' : 'Análisis de Ciclos'}
+                                </h1>
+                                <p className="text-base text-brand-text-dim" style={{ fontWeight: 500, lineHeight: 1.5 }}>
+                                    {isChatMode 
+                                        ? 'Conversa sobre tus insights y patrones' 
+                                        : analysisMode === 'ai' 
+                                        ? 'Insights personalizados con IA en tiempo real' 
+                                        : 'Descubre patrones y tendencias en tu ciclo menstrual'
+                                    }
+                                </p>
                             </div>
                             
-                            <button
-                                onClick={exportToCSV}
-                                className="px-4 py-2 rounded-full text-sm font-medium bg-brand-surface-2 text-brand-text border border-brand-border hover:bg-brand-primary/20 hover:border-brand-primary transition-all duration-150 flex items-center gap-2"
-                                style={{ fontWeight: 500 }}
-                            >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
-                                Exportar
-                            </button>
+                            {/* Filters */}
+                            {!isChatMode && (
+                                <div className="flex items-center gap-2 flex-wrap">
+                                    <div className="flex bg-brand-surface-2 rounded-full p-1 border border-brand-border">
+                                        {([3, 6, 12] as const).map(months => (
+                                            <button
+                                                key={months}
+                                                onClick={() => setTimeRange(months)}
+                                                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-150 ${
+                                                    timeRange === months
+                                                        ? 'bg-brand-primary text-white shadow-md'
+                                                        : 'text-brand-text-dim hover:text-brand-text'
+                                                }`}
+                                                style={{ fontWeight: 500 }}
+                                            >
+                                                {months}m
+                                            </button>
+                                        ))}
+                                    </div>
+                                    
+                                    <button
+                                        onClick={exportToCSV}
+                                        className="px-4 py-2 rounded-full text-sm font-medium bg-brand-surface-2 text-brand-text border border-brand-border hover:bg-brand-primary/20 hover:border-brand-primary transition-all duration-150 flex items-center gap-2"
+                                        style={{ fontWeight: 500 }}
+                                    >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                        Exportar
+                                    </button>
+                                </div>
+                            )}
+
+                            {isChatMode && (
+                                <button
+                                    onClick={handleBackToInsights}
+                                    className="px-4 py-2 rounded-full text-sm font-medium bg-brand-surface-2 text-brand-text border border-brand-border hover:bg-brand-primary/20 hover:border-brand-primary transition-all duration-150 flex items-center gap-2"
+                                    style={{ fontWeight: 500 }}
+                                >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                                    </svg>
+                                    Volver a Insights
+                                </button>
+                            )}
                         </div>
+
+                        {/* Mode Toggle */}
+                        {!isChatMode && (
+                            <div className="flex flex-col items-center gap-3">
+                                <div className="inline-flex bg-brand-surface-2 rounded-full p-1 border border-brand-border">
+                                    <button
+                                        onClick={() => setAnalysisMode('simple')}
+                                        className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 flex items-center gap-2 ${
+                                            analysisMode === 'simple'
+                                                ? 'bg-brand-primary text-white shadow-lg'
+                                                : 'text-brand-text-dim hover:text-brand-text'
+                                        }`}
+                                        style={{ fontWeight: 600 }}
+                                    >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                        </svg>
+                                        Simple
+                                    </button>
+                                    <button
+                                        onClick={() => setAnalysisMode('ai')}
+                                        className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 flex items-center gap-2 ${
+                                            analysisMode === 'ai'
+                                                ? 'bg-gradient-to-r from-brand-primary to-brand-accent text-white shadow-lg'
+                                                : 'text-brand-text-dim hover:text-brand-text'
+                                        }`}
+                                        style={{ fontWeight: 600 }}
+                                    >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                                        </svg>
+                                        IA
+                                    </button>
+                                </div>
+
+                                {/* AI Time Mode Selector */}
+                                {analysisMode === 'ai' && (
+                                    <div className="flex flex-wrap items-center justify-center gap-2">
+                                        {[
+                                            { id: 'day', label: 'Hoy', icon: '📅' },
+                                            { id: 'week', label: 'Semana', icon: '📆' },
+                                            { id: 'month', label: 'Mes', icon: '🗓️' },
+                                            { id: 'current-cycle', label: 'Ciclo', icon: '🔄' },
+                                            { id: '6-months', label: '6M', icon: '📊' },
+                                            { id: 'year', label: 'Año', icon: '📈' }
+                                        ].map((mode) => (
+                                            <button
+                                                key={mode.id}
+                                                onClick={() => setAiTimeMode(mode.id as any)}
+                                                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 flex items-center gap-1.5 ${
+                                                    aiTimeMode === mode.id
+                                                        ? 'bg-brand-primary/20 text-brand-primary border border-brand-primary/30'
+                                                        : 'bg-brand-surface-2 text-brand-text-dim hover:text-brand-text border border-brand-border'
+                                                }`}
+                                                style={{ fontWeight: 500 }}
+                                            >
+                                                <span>{mode.icon}</span>
+                                                <span>{mode.label}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
 
+                {/* Chat Mode */}
+                {isChatMode && (
+                    <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)] p-6">
+                        <AIChat
+                            messages={chatMessages}
+                            onSendMessage={handleSendChatMessage}
+                            onBack={handleBackToInsights}
+                            isLoading={false}
+                        />
+                    </div>
+                )}
+
+                {/* AI Mode */}
+                {!isChatMode && analysisMode === 'ai' && (
+                    <>
+                        {/* Time-specific views */}
+                        {aiTimeMode === 'day' && (
+                            <DailyInsightView
+                                log={logs.find(l => l.date === format(new Date(), 'yyyy-MM-dd')) || null}
+                            />
+                        )}
+
+                        {aiTimeMode === 'week' && (
+                            <WeeklyInsightView
+                                logs={logs.filter(l => {
+                                    const logDate = parseISO(l.date);
+                                    const weekAgo = subDays(new Date(), 6);
+                                    return logDate >= weekAgo;
+                                })}
+                            />
+                        )}
+
+                        {aiTimeMode === 'month' && (
+                            <MonthlyInsightView
+                                logs={logs.filter(l => {
+                                    const logDate = parseISO(l.date);
+                                    const monthStart = startOfMonth(new Date());
+                                    const monthEnd = endOfMonth(new Date());
+                                    return logDate >= monthStart && logDate <= monthEnd;
+                                })}
+                                cycles={cycles}
+                            />
+                        )}
+
+                        {aiTimeMode === 'current-cycle' && (
+                            <div className="text-center text-brand-text-dim py-8">
+                                Vista de ciclo actual en desarrollo...
+                            </div>
+                        )}
+
+                        {/* Insights list for 6-months and year */}
+                        {(aiTimeMode === '6-months' || aiTimeMode === 'year') && (
+                            <AIInsightsList
+                                insights={aiInsights}
+                                onSave={handleSaveInsight}
+                                onPin={handlePinInsight}
+                                onDiscard={handleDiscardInsight}
+                                onStartChat={handleStartChat}
+                                isLoading={isGeneratingInsights}
+                            />
+                        )}
+                    </>
+                )}
+
+                {/* Simple Mode */}
+                {!isChatMode && analysisMode === 'simple' && (
+                    <>
                 {/* KPI Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6">
                     {/* Average Cycle Length */}
@@ -756,6 +998,8 @@ export const InsightsPage: React.FC = () => {
                         <SymptomCorrelations logs={logs} cycles={filteredCycles} symptoms={settings.customSymptoms} />
                     </div>
                 </div>
+                    </>
+                )}
             </div>
         </div>
     );
