@@ -3,15 +3,16 @@ import type { DailyLog, Cycle } from '../types.ts';
 import { format, startOfMonth, endOfMonth } from 'date-fns';
 import { parseISO } from 'date-fns/parseISO';
 import { es } from 'date-fns/locale/es';
-import { ChatCTA } from './ChatCTA.tsx';
+import { UnifiedChatCTA } from './UnifiedChatCTA.tsx';
 
 interface MonthlyInsightViewProps {
   logs: DailyLog[];
   cycles: Cycle[];
   onStartChat?: () => void;
+  mode?: 'simple' | 'ai';
 }
 
-export const MonthlyInsightView: React.FC<MonthlyInsightViewProps> = ({ logs, cycles, onStartChat }) => {
+export const MonthlyInsightView: React.FC<MonthlyInsightViewProps> = ({ logs, cycles, onStartChat, mode = 'simple' }) => {
   const today = new Date();
   const stats = calculateMonthlyStats(logs, cycles);
   const monthLabel = format(today, 'MMMM yyyy', { locale: es });
@@ -234,14 +235,24 @@ export const MonthlyInsightView: React.FC<MonthlyInsightViewProps> = ({ logs, cy
         </div>
       </div>
 
-      {/* Chat CTA */}
-      {onStartChat && (
-        <ChatCTA
-          onStartChat={onStartChat}
-          contextTitle={monthLabel}
-          contextSubtitle="Explora ciclos, síntomas frecuentes y correlaciones del mes"
-        />
-      )}
+      {/* Chat CTA Unificado */}
+      <UnifiedChatCTA
+        onStartChat={onStartChat}
+        contextTitle={monthLabel}
+        contextSubtitle="Explora ciclos, síntomas frecuentes y correlaciones del mes"
+        contextInfo={{
+          date: monthLabel,
+          cyclePhase: undefined,
+          cycleDay: undefined
+        }}
+        keyMetrics={{
+          stress: stats.avgStress,
+          sleep: stats.avgSleep,
+          mood: stats.avgMood,
+          energy: undefined
+        }}
+        mode={mode}
+      />
     </div>
   );
 };

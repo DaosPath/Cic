@@ -3,14 +3,15 @@ import type { DailyLog } from '../types.ts';
 import { format, subDays } from 'date-fns';
 import { parseISO } from 'date-fns/parseISO';
 import { es } from 'date-fns/locale/es';
-import { ChatCTA } from './ChatCTA.tsx';
+import { UnifiedChatCTA } from './UnifiedChatCTA.tsx';
 
 interface WeeklyInsightViewProps {
   logs: DailyLog[];
   onStartChat?: () => void;
+  mode?: 'simple' | 'ai';
 }
 
-export const WeeklyInsightView: React.FC<WeeklyInsightViewProps> = ({ logs, onStartChat }) => {
+export const WeeklyInsightView: React.FC<WeeklyInsightViewProps> = ({ logs, onStartChat, mode = 'simple' }) => {
   const today = new Date();
   const weekStart = subDays(today, 6);
   const stats = calculateWeeklyStats(logs);
@@ -158,14 +159,24 @@ export const WeeklyInsightView: React.FC<WeeklyInsightViewProps> = ({ logs, onSt
         </div>
       </div>
 
-      {/* Chat CTA */}
-      {onStartChat && (
-        <ChatCTA
-          onStartChat={onStartChat}
-          contextTitle={weekLabel}
-          contextSubtitle="Analiza tendencias semanales, patrones de sueño y actividad"
-        />
-      )}
+      {/* Chat CTA Unificado */}
+      <UnifiedChatCTA
+        onStartChat={onStartChat}
+        contextTitle={weekLabel}
+        contextSubtitle="Analiza tendencias semanales, patrones de sueño y actividad"
+        contextInfo={{
+          date: weekLabel,
+          cyclePhase: undefined,
+          cycleDay: undefined
+        }}
+        keyMetrics={{
+          stress: stats.avgStress,
+          sleep: stats.avgSleep,
+          mood: undefined,
+          energy: undefined
+        }}
+        mode={mode}
+      />
     </div>
   );
 };
