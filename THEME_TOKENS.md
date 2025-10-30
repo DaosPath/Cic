@@ -14,6 +14,7 @@
 - `--brand`: Color principal de la fase actual
 - `--accent`: Color de acento complementario
 - `--particle`: Color de partículas y efectos de halo
+- `--ring`: Color de anillo de foco (basado en --brand con opacidad)
 
 ### Colores Semánticos
 - `--positive`: #10B981 - Estados positivos/éxito

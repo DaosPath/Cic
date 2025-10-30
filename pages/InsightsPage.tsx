@@ -721,47 +721,70 @@ export const InsightsPage: React.FC = () => {
     return (
         <div className="min-h-screen px-4 md:px-8 pt-12 pb-24 md:pb-12">
             <div className="max-w-[1200px] mx-auto">
-                {/* Header */}
-                <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-6 md:p-8 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)] mb-6">
-                    <div className="flex flex-col gap-4">
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                            <div>
-                                <h1 className="text-3xl md:text-4xl font-bold text-brand-text mb-2" style={{ fontWeight: 700, lineHeight: 1.3 }}>
-                                    {isChatMode ? 'Chat de Análisis' : 'Análisis de Ciclos'}
-                                </h1>
-                                <p className="text-base text-brand-text-dim" style={{ fontWeight: 500, lineHeight: 1.5 }}>
-                                    {isChatMode 
-                                        ? 'Conversa sobre tus insights y patrones' 
-                                        : analysisMode === 'ai' 
-                                        ? 'Insights personalizados con IA en tiempo real' 
-                                        : 'Descubre patrones y tendencias en tu ciclo menstrual'
-                                    }
-                                </p>
-                            </div>
-                            
-                            {/* Filters */}
-                            {!isChatMode && (
-                                <div className="flex items-center gap-2 flex-wrap">
-                                    <div className="flex bg-brand-surface-2 rounded-full p-1 border border-brand-border">
-                                        {([3, 6, 12] as const).map(months => (
-                                            <button
-                                                key={months}
-                                                onClick={() => setTimeRange(months)}
-                                                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-150 ${
-                                                    timeRange === months
-                                                        ? 'bg-brand-primary text-white shadow-md'
-                                                        : 'text-brand-text-dim hover:text-brand-text'
-                                                }`}
-                                                style={{ fontWeight: 500 }}
-                                            >
-                                                {months}m
-                                            </button>
-                                        ))}
+                {/* Header - Sticky */}
+                <div className="sticky top-0 z-40 -mx-4 md:-mx-8 px-4 md:px-8 py-4 bg-[var(--bg)]/95 backdrop-blur-lg border-b border-[var(--border)] mb-6 transition-all duration-200">
+                    <div className="max-w-[1200px] mx-auto">
+                        {!isChatMode ? (
+                            <div className="flex flex-col gap-4">
+                                {/* Primera fila: Modo y Vista */}
+                                <div className="flex items-center justify-between gap-4 flex-wrap">
+                                    {/* Segmented Control: Modo (Simple | IA) */}
+                                    <div className="inline-flex bg-[var(--surface)] rounded-full p-1 border border-[var(--border)]">
+                                        <button
+                                            onClick={() => setAnalysisMode('simple')}
+                                            className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-150 min-h-[44px] focus:outline-none focus:ring-2 focus:ring-[var(--ring)] ${
+                                                analysisMode === 'simple'
+                                                    ? 'bg-[var(--brand)] text-white shadow-md'
+                                                    : 'text-[var(--text-2)] hover:bg-[var(--brand)]/12 hover:text-[var(--text)]'
+                                            }`}
+                                            style={{ fontWeight: 500 }}
+                                        >
+                                            Simple
+                                        </button>
+                                        <button
+                                            onClick={() => setAnalysisMode('ai')}
+                                            className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-150 min-h-[44px] focus:outline-none focus:ring-2 focus:ring-[var(--ring)] ${
+                                                analysisMode === 'ai'
+                                                    ? 'bg-[var(--brand)] text-white shadow-md'
+                                                    : 'text-[var(--text-2)] hover:bg-[var(--brand)]/12 hover:text-[var(--text)]'
+                                            }`}
+                                            style={{ fontWeight: 500 }}
+                                        >
+                                            IA
+                                        </button>
                                     </div>
-                                    
+
+                                    {/* Segmented Control: Vista (para modo IA) */}
+                                    {analysisMode === 'ai' && (
+                                        <div className="inline-flex bg-[var(--surface)] rounded-full p-1 border border-[var(--border)] flex-wrap">
+                                            {[
+                                                { id: 'day', label: 'Hoy' },
+                                                { id: 'week', label: 'Semana' },
+                                                { id: 'month', label: 'Mes' },
+                                                { id: 'current-cycle', label: 'Ciclo' },
+                                                { id: '6-months', label: '6M' },
+                                                { id: 'year', label: 'Año' }
+                                            ].map((mode) => (
+                                                <button
+                                                    key={mode.id}
+                                                    onClick={() => setAiTimeMode(mode.id as any)}
+                                                    className={`px-4 py-2 rounded-full text-xs font-medium transition-all duration-150 min-h-[44px] focus:outline-none focus:ring-2 focus:ring-[var(--ring)] ${
+                                                        aiTimeMode === mode.id
+                                                            ? 'bg-[var(--brand)] text-white shadow-md'
+                                                            : 'text-[var(--text-2)] hover:bg-[var(--brand)]/12 hover:text-[var(--text)]'
+                                                    }`}
+                                                    style={{ fontWeight: 500 }}
+                                                >
+                                                    {mode.label}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {/* Botón Exportar (ghost) */}
                                     <button
                                         onClick={exportToCSV}
-                                        className="px-4 py-2 rounded-full text-sm font-medium bg-brand-surface-2 text-brand-text border border-brand-border hover:bg-brand-primary/20 hover:border-brand-primary transition-all duration-150 flex items-center gap-2"
+                                        className="px-4 py-2 rounded-full text-sm font-medium text-[var(--text)] border border-[var(--border)] hover:bg-[var(--surface)] hover:border-[var(--brand)] transition-all duration-150 flex items-center gap-2 min-h-[44px] focus:outline-none focus:ring-2 focus:ring-[var(--ring)] ml-auto"
                                         style={{ fontWeight: 500 }}
                                     >
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -770,84 +793,53 @@ export const InsightsPage: React.FC = () => {
                                         Exportar
                                     </button>
                                 </div>
-                            )}
 
-                            {isChatMode && (
-                                <button
-                                    onClick={handleBackToInsights}
-                                    className="px-4 py-2 rounded-full text-sm font-medium bg-brand-surface-2 text-brand-text border border-brand-border hover:bg-brand-primary/20 hover:border-brand-primary transition-all duration-150 flex items-center gap-2"
-                                    style={{ fontWeight: 500 }}
-                                >
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                                    </svg>
-                                    Volver a Insights
-                                </button>
-                            )}
-                        </div>
+                                {/* Segunda fila: Rango (solo modo simple) */}
+                                {analysisMode === 'simple' && (
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-xs font-medium text-[var(--text-2)]" style={{ fontWeight: 500 }}>Rango:</span>
+                                        <div className="inline-flex bg-[var(--surface)] rounded-full p-1 border border-[var(--border)]">
+                                            {([3, 6, 12] as const).map(months => (
+                                                <button
+                                                    key={months}
+                                                    onClick={() => setTimeRange(months)}
+                                                    className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-150 min-h-[44px] focus:outline-none focus:ring-2 focus:ring-[var(--ring)] ${
+                                                        timeRange === months
+                                                            ? 'bg-[var(--brand)] text-white shadow-md'
+                                                            : 'text-[var(--text-2)] hover:bg-[var(--brand)]/12 hover:text-[var(--text)]'
+                                                    }`}
+                                                    style={{ fontWeight: 500 }}
+                                                >
+                                                    {months}m
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
 
-                        {/* Mode Toggle */}
-                        {!isChatMode && (
-                            <div className="flex flex-col items-center gap-3">
-                                <div className="inline-flex bg-brand-surface-2 rounded-full p-1 border border-brand-border">
-                                    <button
-                                        onClick={() => setAnalysisMode('simple')}
-                                        className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 flex items-center gap-2 ${
-                                            analysisMode === 'simple'
-                                                ? 'bg-brand-primary text-white shadow-lg'
-                                                : 'text-brand-text-dim hover:text-brand-text'
-                                        }`}
-                                        style={{ fontWeight: 600 }}
-                                    >
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                        </svg>
-                                        Simple
-                                    </button>
-                                    <button
-                                        onClick={() => setAnalysisMode('ai')}
-                                        className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 flex items-center gap-2 ${
-                                            analysisMode === 'ai'
-                                                ? 'bg-gradient-to-r from-brand-primary to-brand-accent text-white shadow-lg'
-                                                : 'text-brand-text-dim hover:text-brand-text'
-                                        }`}
-                                        style={{ fontWeight: 600 }}
-                                    >
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                                        </svg>
-                                        IA
-                                    </button>
-                                </div>
-
-                                {/* AI Time Mode Selector */}
-                                {analysisMode === 'ai' && (
-                                    <div className="flex flex-wrap items-center justify-center gap-2">
-                                        {[
-                                            { id: 'day', label: 'Hoy', icon: '📅' },
-                                            { id: 'week', label: 'Semana', icon: '📆' },
-                                            { id: 'month', label: 'Mes', icon: '🗓️' },
-                                            { id: 'current-cycle', label: 'Ciclo', icon: '🔄' },
-                                            { id: '6-months', label: '6M', icon: '📊' },
-                                            { id: 'year', label: 'Año', icon: '📈' }
-                                        ].map((mode) => (
-                                            <button
-                                                key={mode.id}
-                                                onClick={() => setAiTimeMode(mode.id as any)}
-                                                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 flex items-center gap-1.5 ${
-                                                    aiTimeMode === mode.id
-                                                        ? 'bg-brand-primary/20 text-brand-primary border border-brand-primary/30'
-                                                        : 'bg-brand-surface-2 text-brand-text-dim hover:text-brand-text border border-brand-border'
-                                                }`}
-                                                style={{ fontWeight: 500 }}
-                                            >
-                                                <span>{mode.icon}</span>
-                                                <span>{mode.label}</span>
-                                            </button>
-                                        ))}
+                                {/* Chip de Predicciones (solo si está activo) */}
+                                {showPredictions && (
+                                    <div className="flex items-center gap-2">
+                                        <div className="px-3 py-1.5 bg-[var(--brand)]/10 text-[var(--brand)] rounded-full text-xs font-medium border border-[var(--brand)]/20 flex items-center gap-2" style={{ fontWeight: 500 }}>
+                                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                            </svg>
+                                            Predicciones activas
+                                        </div>
                                     </div>
                                 )}
                             </div>
+                        ) : (
+                            <button
+                                onClick={handleBackToInsights}
+                                className="px-4 py-2 rounded-full text-sm font-medium bg-[var(--surface)] text-[var(--text)] border border-[var(--border)] hover:bg-[var(--surface-2)] hover:border-[var(--brand)] transition-all duration-150 flex items-center gap-2 min-h-[44px] focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
+                                style={{ fontWeight: 500 }}
+                            >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                                </svg>
+                                Volver a Insights
+                            </button>
                         )}
                     </div>
                 </div>
@@ -882,12 +874,24 @@ export const InsightsPage: React.FC = () => {
                 {!isChatMode && analysisMode === 'ai' && (
                     <>
                         {/* Time-specific views */}
-                        {aiTimeMode === 'day' && (
-                            <DailyInsightView
-                                log={logs.find(l => l.date === format(new Date(), 'yyyy-MM-dd')) || null}
-                                onStartChat={() => handleStartChatWithContext(createChatContext())}
-                            />
-                        )}
+                        {aiTimeMode === 'day' && (() => {
+                            const today = new Date();
+                            const todayLog = logs.find(l => l.date === format(today, 'yyyy-MM-dd'));
+                            const activeCycle = cycles.find(c => {
+                                const start = parseISO(c.startDate);
+                                const end = c.endDate ? parseISO(c.endDate) : new Date();
+                                return today >= start && today <= end;
+                            });
+                            
+                            return (
+                                <DailyInsightView
+                                    log={todayLog || null}
+                                    onStartChat={() => handleStartChatWithContext(createChatContext())}
+                                    cyclePhase={activeCycle ? getCyclePhase(activeCycle, today) : undefined}
+                                    cycleDay={activeCycle ? differenceInDays(today, parseISO(activeCycle.startDate)) + 1 : undefined}
+                                />
+                            );
+                        })()}
 
                         {aiTimeMode === 'week' && (
                             <WeeklyInsightView
