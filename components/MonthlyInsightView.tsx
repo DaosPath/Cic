@@ -3,27 +3,30 @@ import type { DailyLog, Cycle } from '../types.ts';
 import { format, startOfMonth, endOfMonth } from 'date-fns';
 import { parseISO } from 'date-fns/parseISO';
 import { es } from 'date-fns/locale/es';
+import { ChatCTA } from './ChatCTA.tsx';
 
 interface MonthlyInsightViewProps {
   logs: DailyLog[];
   cycles: Cycle[];
+  onStartChat?: () => void;
 }
 
-export const MonthlyInsightView: React.FC<MonthlyInsightViewProps> = ({ logs, cycles }) => {
+export const MonthlyInsightView: React.FC<MonthlyInsightViewProps> = ({ logs, cycles, onStartChat }) => {
   const today = new Date();
   const stats = calculateMonthlyStats(logs, cycles);
+  const monthLabel = format(today, 'MMMM yyyy', { locale: es });
 
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
       {/* Header */}
-      <div className="bg-gradient-to-r from-brand-primary/10 to-brand-accent/10 border border-brand-primary/20 rounded-xl p-5">
+      <div className="bg-gradient-to-r from-brand-primary/10 to-brand-accent/10 border border-brand-primary/20 rounded-[18px] p-5 shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
         <div className="flex items-center gap-2 mb-2">
           <span className="text-2xl">🗓️</span>
           <h2 className="text-xl font-bold text-brand-text capitalize" style={{ fontWeight: 700, lineHeight: 1.3 }}>
             {format(today, 'MMMM yyyy', { locale: es })}
           </h2>
         </div>
-        <p className="text-sm text-brand-text-dim">
+        <p className="text-sm text-brand-text-dim" style={{ fontWeight: 500, lineHeight: 1.45 }}>
           Análisis completo del mes • {logs.length} días registrados
         </p>
       </div>
@@ -58,7 +61,7 @@ export const MonthlyInsightView: React.FC<MonthlyInsightViewProps> = ({ logs, cy
 
       {/* Cycle Info */}
       {stats.cyclesThisMonth.length > 0 && (
-        <div className="bg-gradient-to-br from-pink-500/10 to-purple-500/10 border border-pink-500/20 rounded-xl p-5">
+        <div className="bg-gradient-to-br from-pink-500/10 to-purple-500/10 border border-pink-500/20 rounded-[18px] p-5 shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
           <div className="flex items-center gap-2 mb-4">
             <span className="text-lg">🔄</span>
             <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
@@ -90,7 +93,7 @@ export const MonthlyInsightView: React.FC<MonthlyInsightViewProps> = ({ logs, cy
       {/* Health Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Pain & Stress */}
-        <div className="bg-brand-surface-2 border border-brand-border rounded-xl p-5">
+        <div className="bg-brand-surface-2 border border-brand-border rounded-[18px] p-5 shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
           <h3 className="text-sm font-semibold text-brand-text mb-4" style={{ fontWeight: 600 }}>
             Dolor y Estrés
           </h3>
@@ -133,7 +136,7 @@ export const MonthlyInsightView: React.FC<MonthlyInsightViewProps> = ({ logs, cy
         </div>
 
         {/* Mood & Energy */}
-        <div className="bg-brand-surface-2 border border-brand-border rounded-xl p-5">
+        <div className="bg-brand-surface-2 border border-brand-border rounded-[18px] p-5 shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
           <h3 className="text-sm font-semibold text-brand-text mb-4" style={{ fontWeight: 600 }}>
             Ánimo y Energía
           </h3>
@@ -183,7 +186,7 @@ export const MonthlyInsightView: React.FC<MonthlyInsightViewProps> = ({ logs, cy
 
       {/* Top Symptoms */}
       {stats.topSymptoms.length > 0 && (
-        <div className="bg-brand-surface-2 border border-brand-border rounded-xl p-5">
+        <div className="bg-brand-surface-2 border border-brand-border rounded-[18px] p-5 shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
           <div className="flex items-center gap-2 mb-4">
             <span className="text-lg">🔍</span>
             <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
@@ -214,7 +217,7 @@ export const MonthlyInsightView: React.FC<MonthlyInsightViewProps> = ({ logs, cy
       )}
 
       {/* Monthly Insights */}
-      <div className="bg-gradient-to-br from-brand-primary/10 to-brand-accent/10 border border-brand-primary/20 rounded-xl p-5">
+      <div className="bg-gradient-to-br from-brand-primary/10 to-brand-accent/10 border border-brand-primary/20 rounded-[18px] p-5 shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
         <div className="flex items-center gap-2 mb-4">
           <span className="text-lg">💡</span>
           <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
@@ -225,11 +228,20 @@ export const MonthlyInsightView: React.FC<MonthlyInsightViewProps> = ({ logs, cy
           {generateMonthlyInsights(stats, logs.length).map((insight, index) => (
             <div key={index} className="flex items-start gap-2">
               <span className="text-brand-primary mt-0.5">•</span>
-              <p className="text-sm text-brand-text leading-relaxed flex-1">{insight}</p>
+              <p className="text-sm text-brand-text leading-relaxed flex-1" style={{ lineHeight: 1.6 }}>{insight}</p>
             </div>
           ))}
         </div>
       </div>
+
+      {/* Chat CTA */}
+      {onStartChat && (
+        <ChatCTA
+          onStartChat={onStartChat}
+          contextTitle={monthLabel}
+          contextSubtitle="Explora ciclos, síntomas frecuentes y correlaciones del mes"
+        />
+      )}
     </div>
   );
 };
@@ -251,10 +263,10 @@ const OverviewCard: React.FC<OverviewCardProps> = ({ icon, label, value, percent
   };
 
   return (
-    <div className="bg-brand-surface-2 border border-brand-border rounded-xl p-4">
+    <div className="bg-brand-surface-2 border border-brand-border rounded-[18px] p-4 shadow-[0_2px_8px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.18)] transition-all duration-200">
       <div className="flex items-center gap-2 mb-2">
         <span className="text-lg">{icon}</span>
-        <p className="text-xs text-brand-text-dim">{label}</p>
+        <p className="text-xs text-brand-text-dim" style={{ fontWeight: 500 }}>{label}</p>
       </div>
       <p className={`text-xl font-bold ${getStatusColor()}`} style={{ fontWeight: 700 }}>
         {value}
@@ -262,7 +274,7 @@ const OverviewCard: React.FC<OverviewCardProps> = ({ icon, label, value, percent
       {percentage !== undefined && (
         <div className="mt-2 w-full bg-brand-surface rounded-full h-1 overflow-hidden">
           <div
-            className="h-full bg-brand-primary"
+            className="h-full bg-brand-primary transition-all duration-300"
             style={{ width: `${Math.min(percentage, 100)}%` }}
           />
         </div>

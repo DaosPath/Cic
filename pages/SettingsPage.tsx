@@ -1,10 +1,11 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { AppContext } from '../context/AppContext.tsx';
-import { saveSettings, getBackupData, restoreBackupData, clearLogsAndCycles, clearAndBulkInsert } from '../services/db.ts';
-import { generateDevData } from '../services/dev-data.ts';
+import { saveSettings, getBackupData, restoreBackupData, clearLogsAndCycles, clearAndBulkInsert, upsertLog } from '../services/db.ts';
+import { generateDevData, generateLogsForDateRange, generateTodayLog, fillMissingDays } from '../services/dev-data.ts';
 import type { AppSettings } from '../types.ts';
 import { ConfirmationModal } from '../components/ConfirmationModal.tsx';
 import { useTranslation } from '../hooks/useTranslation.ts';
+import { subDays } from 'date-fns/subDays';
 
 const languageOptions = [
     { value: 'auto', labelKey: 'automatic' },
@@ -14,7 +15,7 @@ const languageOptions = [
 ] as const;
 
 export const SettingsPage: React.FC = () => {
-    const { settings, setSettings, refreshData } = useContext(AppContext);
+    const { settings, setSettings, refreshData, logs } = useContext(AppContext);
     const { t, language } = useTranslation();
     const [localSettings, setLocalSettings] = useState<AppSettings>(settings);
     const [isConfirmModalOpen, setConfirmModalOpen] = useState(false);
@@ -123,6 +124,78 @@ export const SettingsPage: React.FC = () => {
         setLocalSettings(prev => ({ ...prev, isDevMode: !devModeIntent }));
         setConfirmModalOpen(false);
         setDevModeIntent(null);
+    };
+
+    // New dev tools functions
+    const handleFillLast7Days = async () => {
+        try {
+            const endDate = new Date();
+            const startDate = subDays(endDate, 6);
+            const newLogs = generateLogsForDateRange(startDate, endDate);
+            
+            for (const log of newLogs) {
+                await upsertLog(log);
+            }
+            
+            await refreshData();
+            alert(`✅ Se generaron ${newLogs.length} registros para los últimos 7 días`);
+        } catch (error) {
+            console.error('Error filling last 7 days:', error);
+            alert('❌ Error al generar registros');
+        }
+    };
+
+    const handleFillLast30Days = async () => {
+        try {
+            const endDate = new Date();
+            const startDate = subDays(endDate, 29);
+            const newLogs = generateLogsForDateRange(startDate, endDate);
+            
+            for (const log of newLogs) {
+                await upsertLog(log);
+            }
+            
+            await refreshData();
+            alert(`✅ Se generaron ${newLogs.length} registros para los últimos 30 días`);
+        } catch (error) {
+            console.error('Error filling last 30 days:', error);
+            alert('❌ Error al generar registros');
+        }
+    };
+
+    const handleGenerateTodayLog = async () => {
+        try {
+            const todayLog = generateTodayLog();
+            await upsertLog(todayLog);
+            await refreshData();
+            alert('✅ Registro de hoy generado correctamente');
+        } catch (error) {
+            console.error('Error generating today log:', error);
+            alert('❌ Error al generar registro de hoy');
+        }
+    };
+
+    const handleFillMissingDays = async () => {
+        try {
+            const endDate = new Date();
+            const startDate = subDays(endDate, 90); // Last 3 months
+            const newLogs = fillMissingDays(logs, startDate, endDate);
+            
+            if (newLogs.length === 0) {
+                alert('ℹ️ No hay días faltantes en los últimos 90 días');
+                return;
+            }
+            
+            for (const log of newLogs) {
+                await upsertLog(log);
+            }
+            
+            await refreshData();
+            alert(`✅ Se rellenaron ${newLogs.length} días faltantes`);
+        } catch (error) {
+            console.error('Error filling missing days:', error);
+            alert('❌ Error al rellenar días faltantes');
+        }
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -504,6 +577,56 @@ export const SettingsPage: React.FC = () => {
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                             </svg>
                                             {t('logSettingsConsole')}
+                                        </button>
+
+                                        {/* Separator */}
+                                        <div className="border-t border-amber-500/20 my-2"></div>
+                                        <p className="text-xs font-semibold text-amber-400 mb-2" style={{ fontWeight: 600 }}>
+                                            🛠️ Generación de Datos
+                                        </p>
+
+                                        <button
+                                            onClick={handleGenerateTodayLog}
+                                            className="w-full bg-brand-surface-2 hover:bg-brand-surface text-brand-text font-medium py-3 px-4 rounded-xl transition-all duration-150 border border-green-500/20 hover:border-green-500/40 flex items-center justify-center gap-2"
+                                            style={{ fontWeight: 500 }}
+                                        >
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                            </svg>
+                                            Generar Registro de Hoy
+                                        </button>
+
+                                        <button
+                                            onClick={handleFillLast7Days}
+                                            className="w-full bg-brand-surface-2 hover:bg-brand-surface text-brand-text font-medium py-3 px-4 rounded-xl transition-all duration-150 border border-blue-500/20 hover:border-blue-500/40 flex items-center justify-center gap-2"
+                                            style={{ fontWeight: 500 }}
+                                        >
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            </svg>
+                                            Rellenar Últimos 7 Días
+                                        </button>
+
+                                        <button
+                                            onClick={handleFillLast30Days}
+                                            className="w-full bg-brand-surface-2 hover:bg-brand-surface text-brand-text font-medium py-3 px-4 rounded-xl transition-all duration-150 border border-purple-500/20 hover:border-purple-500/40 flex items-center justify-center gap-2"
+                                            style={{ fontWeight: 500 }}
+                                        >
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            </svg>
+                                            Rellenar Últimos 30 Días
+                                        </button>
+
+                                        <button
+                                            onClick={handleFillMissingDays}
+                                            className="w-full bg-brand-surface-2 hover:bg-brand-surface text-brand-text font-medium py-3 px-4 rounded-xl transition-all duration-150 border border-pink-500/20 hover:border-pink-500/40 flex items-center justify-center gap-2"
+                                            style={{ fontWeight: 500 }}
+                                        >
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                            </svg>
+                                            Rellenar Días Faltantes (90d)
                                         </button>
                                     </div>
                                 </div>

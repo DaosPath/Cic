@@ -3,7 +3,7 @@ import type { ChatMessage } from '../services/ai-chat-formatter.ts';
 
 interface AIChatProps {
   messages: ChatMessage[];
-  onSendMessage: (message: string) => void;
+  onSendMessage: (message: string) => Promise<void>;
   onBack: () => void;
   isLoading?: boolean;
 }
@@ -25,11 +25,12 @@ export const AIChat: React.FC<AIChatProps> = ({
     scrollToBottom();
   }, [messages]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (input.trim() && !isLoading) {
-      onSendMessage(input.trim());
+      const message = input.trim();
       setInput('');
+      await onSendMessage(message);
     }
   };
 

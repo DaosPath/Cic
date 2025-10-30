@@ -3,27 +3,30 @@ import type { DailyLog } from '../types.ts';
 import { format, subDays } from 'date-fns';
 import { parseISO } from 'date-fns/parseISO';
 import { es } from 'date-fns/locale/es';
+import { ChatCTA } from './ChatCTA.tsx';
 
 interface WeeklyInsightViewProps {
   logs: DailyLog[];
+  onStartChat?: () => void;
 }
 
-export const WeeklyInsightView: React.FC<WeeklyInsightViewProps> = ({ logs }) => {
+export const WeeklyInsightView: React.FC<WeeklyInsightViewProps> = ({ logs, onStartChat }) => {
   const today = new Date();
   const weekStart = subDays(today, 6);
   const stats = calculateWeeklyStats(logs);
+  const weekLabel = `Semana del ${format(weekStart, "d 'de' MMM", { locale: es })} al ${format(today, "d 'de' MMM", { locale: es })}`;
 
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
       {/* Header */}
-      <div className="bg-gradient-to-r from-brand-primary/10 to-brand-accent/10 border border-brand-primary/20 rounded-xl p-5">
+      <div className="bg-gradient-to-r from-brand-primary/10 to-brand-accent/10 border border-brand-primary/20 rounded-[18px] p-5 shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
         <div className="flex items-center gap-2 mb-2">
           <span className="text-2xl">📆</span>
           <h2 className="text-xl font-bold text-brand-text" style={{ fontWeight: 700, lineHeight: 1.3 }}>
             Resumen Semanal
           </h2>
         </div>
-        <p className="text-sm text-brand-text-dim">
+        <p className="text-sm text-brand-text-dim" style={{ fontWeight: 500, lineHeight: 1.45 }}>
           {format(weekStart, "d 'de' MMMM", { locale: es })} - {format(today, "d 'de' MMMM", { locale: es })}
         </p>
       </div>
@@ -57,7 +60,7 @@ export const WeeklyInsightView: React.FC<WeeklyInsightViewProps> = ({ logs }) =>
       </div>
 
       {/* Daily Breakdown */}
-      <div className="bg-brand-surface-2 border border-brand-border rounded-xl p-5">
+      <div className="bg-brand-surface-2 border border-brand-border rounded-[18px] p-5 shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
         <h3 className="text-sm font-semibold text-brand-text mb-4" style={{ fontWeight: 600 }}>
           Desglose Diario
         </h3>
@@ -65,7 +68,7 @@ export const WeeklyInsightView: React.FC<WeeklyInsightViewProps> = ({ logs }) =>
           {stats.dailyBreakdown.map((day, index) => (
             <div
               key={index}
-              className="flex items-center gap-3 p-3 bg-brand-surface rounded-lg hover:bg-brand-surface-2 transition-colors"
+              className="flex items-center gap-3 p-3 bg-brand-surface rounded-lg hover:bg-brand-surface-2 transition-all duration-150"
             >
               <div className="flex-shrink-0 w-20">
                 <p className="text-xs font-semibold text-brand-text" style={{ fontWeight: 600 }}>
@@ -111,7 +114,7 @@ export const WeeklyInsightView: React.FC<WeeklyInsightViewProps> = ({ logs }) =>
 
       {/* Activity Summary */}
       {stats.activityDays > 0 && (
-        <div className="bg-brand-surface-2 border border-brand-border rounded-xl p-5">
+        <div className="bg-brand-surface-2 border border-brand-border rounded-[18px] p-5 shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
           <div className="flex items-center gap-2 mb-3">
             <span className="text-lg">🏃</span>
             <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
@@ -138,7 +141,7 @@ export const WeeklyInsightView: React.FC<WeeklyInsightViewProps> = ({ logs }) =>
       )}
 
       {/* Patterns & Insights */}
-      <div className="bg-gradient-to-br from-brand-primary/10 to-brand-accent/10 border border-brand-primary/20 rounded-xl p-5">
+      <div className="bg-gradient-to-br from-brand-primary/10 to-brand-accent/10 border border-brand-primary/20 rounded-[18px] p-5 shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
         <div className="flex items-center gap-2 mb-4">
           <span className="text-lg">💡</span>
           <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
@@ -149,11 +152,20 @@ export const WeeklyInsightView: React.FC<WeeklyInsightViewProps> = ({ logs }) =>
           {generateWeeklyInsights(stats).map((insight, index) => (
             <div key={index} className="flex items-start gap-2">
               <span className="text-brand-primary mt-0.5">•</span>
-              <p className="text-sm text-brand-text leading-relaxed flex-1">{insight}</p>
+              <p className="text-sm text-brand-text leading-relaxed flex-1" style={{ lineHeight: 1.6 }}>{insight}</p>
             </div>
           ))}
         </div>
       </div>
+
+      {/* Chat CTA */}
+      {onStartChat && (
+        <ChatCTA
+          onStartChat={onStartChat}
+          contextTitle={weekLabel}
+          contextSubtitle="Analiza tendencias semanales, patrones de sueño y actividad"
+        />
+      )}
     </div>
   );
 };
@@ -173,10 +185,10 @@ const MetricCard: React.FC<MetricCardProps> = ({ icon, label, value, status }) =
   };
 
   return (
-    <div className={`border rounded-xl p-4 ${statusColors[status]}`}>
+    <div className={`border rounded-[18px] p-4 ${statusColors[status]} shadow-[0_2px_8px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.18)] transition-all duration-200`}>
       <div className="flex items-center gap-2 mb-2">
         <span className="text-lg">{icon}</span>
-        <p className="text-xs text-brand-text-dim">{label}</p>
+        <p className="text-xs text-brand-text-dim" style={{ fontWeight: 500 }}>{label}</p>
       </div>
       <p className="text-xl font-bold text-brand-text" style={{ fontWeight: 700 }}>
         {value}

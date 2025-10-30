@@ -5,7 +5,8 @@ import { differenceInDays } from 'date-fns/differenceInDays';
 import type { Cycle, Symptom, DailyLog } from '../types.ts';
 import { useTranslation } from '../hooks/useTranslation.ts';
 import { AIInsightsList } from '../components/AIInsightsList.tsx';
-import { formatInsightsForChat, addUserMessage, addAssistantMessage, type ChatMessage } from '../services/ai-chat-formatter.ts';
+import { formatInsightsForChat, formatContextForChat, addUserMessage, addAssistantMessage, type ChatMessage, type ChatContext } from '../services/ai-chat-formatter.ts';
+import { createChatSession, sendChatMessage, type ChatSession } from '../services/ai-chat.ts';
 import { AIChat } from '../components/AIChat.tsx';
 import { useAIInsights } from '../hooks/useAIInsights.ts';
 import type { AIInsight } from '../services/ai-insights.ts';
@@ -15,6 +16,7 @@ import { MonthlyInsightView } from '../components/MonthlyInsightView.tsx';
 import { format } from 'date-fns/format';
 import { subDays } from 'date-fns/subDays';
 import { startOfMonth, endOfMonth } from 'date-fns';
+import { es } from 'date-fns/locale/es';
 
 const intlLocales = {
     es: 'es-ES',
@@ -389,6 +391,8 @@ export const InsightsPage: React.FC = () => {
     const [aiTimeMode, setAiTimeMode] = useState<'day' | 'week' | 'month' | 'current-cycle' | '6-months' | 'year'>('6-months');
     const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
     const [isChatMode, setIsChatMode] = useState(false);
+    const [chatSession, setChatSession] = useState<ChatSession | null>(null);
+    const [isSendingMessage, setIsSendingMessage] = useState(false);
 
     const intlLocale = intlLocales[language] ?? 'es-ES';
 
@@ -542,48 +546,165 @@ export const InsightsPage: React.FC = () => {
             `Últimos ${timeRange} meses`,
             { showPredictions }
         );
+        
+        // Create a session for insights-based chat
+        const context = createChatContext();
+        const viewType = aiTimeMode === 'day' ? 'daily' : aiTimeMode === 'week' ? 'weekly' : aiTimeMode === 'month' ? 'monthly' : 'general';
+        const session = createChatSession(context, language, logs, cycles, viewType);
+        
         setChatMessages([initialMessage]);
+        setChatSession(session);
         setIsChatMode(true);
+    };
+
+    const handleStartChatWithContext = (context: ChatContext) => {
+        const initialMessage = formatContextForChat(context);
+        const viewType = context.type === 'day' ? 'daily' : context.type === 'week' ? 'weekly' : context.type === 'month' ? 'monthly' : 'general';
+        const session = createChatSession(context, language, logs, cycles, viewType);
+        setChatMessages([initialMessage]);
+        setChatSession(session);
+        setIsChatMode(true);
+    };
+
+    const createChatContext = (): ChatContext => {
+        const today = new Date();
+        const todayStr = format(today, 'yyyy-MM-dd');
+        
+        switch (aiTimeMode) {
+            case 'day':
+                return {
+                    type: 'day',
+                    title: format(today, "EEEE, d 'de' MMMM", { locale: es }),
+                    subtitle: 'Análisis completo de tu día',
+                    data: {
+                        log: logs.find(l => l.date === todayStr),
+                    }
+                };
+            
+            case 'week':
+                const weekAgo = subDays(today, 6);
+                return {
+                    type: 'week',
+                    title: `Semana del ${format(weekAgo, "d 'de' MMM")} al ${format(today, "d 'de' MMM")}`,
+                    subtitle: 'Análisis de tendencias semanales',
+                    data: {
+                        logs: logs.filter(l => {
+                            const logDate = parseISO(l.date);
+                            return logDate >= weekAgo;
+                        })
+                    }
+                };
+            
+            case 'month':
+                const monthStart = startOfMonth(today);
+                const monthEnd = endOfMonth(today);
+                return {
+                    type: 'month',
+                    title: format(today, 'MMMM yyyy', { locale: es }),
+                    subtitle: 'Análisis completo del mes',
+                    data: {
+                        logs: logs.filter(l => {
+                            const logDate = parseISO(l.date);
+                            return logDate >= monthStart && logDate <= monthEnd;
+                        }),
+                        cycles: cycles.filter(c => {
+                            const cycleDate = parseISO(c.startDate);
+                            return cycleDate >= monthStart && cycleDate <= monthEnd;
+                        })
+                    }
+                };
+            
+            case 'current-cycle':
+                return {
+                    type: 'cycle',
+                    title: 'Ciclo Actual',
+                    subtitle: 'Análisis de tu ciclo en curso',
+                    data: {
+                        cycles: [cycles[0]],
+                        logs: logs.filter(l => {
+                            if (!cycles[0]) return false;
+                            const logDate = parseISO(l.date);
+                            const cycleStart = parseISO(cycles[0].startDate);
+                            return logDate >= cycleStart;
+                        })
+                    }
+                };
+            
+            case '6-months':
+                const sixMonthsAgo = new Date();
+                sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+                return {
+                    type: '6-months',
+                    title: 'Últimos 6 Meses',
+                    subtitle: 'Análisis de patrones a medio plazo',
+                    data: {
+                        logs: logs.filter(l => parseISO(l.date) >= sixMonthsAgo),
+                        cycles: cycles.filter(c => parseISO(c.startDate) >= sixMonthsAgo)
+                    }
+                };
+            
+            case 'year':
+                const yearAgo = new Date();
+                yearAgo.setFullYear(yearAgo.getFullYear() - 1);
+                return {
+                    type: 'year',
+                    title: 'Último Año',
+                    subtitle: 'Análisis de tendencias a largo plazo',
+                    data: {
+                        logs: logs.filter(l => parseISO(l.date) >= yearAgo),
+                        cycles: cycles.filter(c => parseISO(c.startDate) >= yearAgo)
+                    }
+                };
+            
+            default:
+                return {
+                    type: '6-months',
+                    title: 'Análisis General',
+                    subtitle: 'Vista general de tus datos'
+                };
+        }
     };
 
     const handleBackToInsights = () => {
         setIsChatMode(false);
         setChatMessages([]);
+        setChatSession(null);
     };
 
-    const handleSendChatMessage = (message: string) => {
+    const handleSendChatMessage = async (message: string) => {
+        if (!chatSession) return;
+
+        // Add user message
         const userMsg = addUserMessage(message);
         setChatMessages(prev => [...prev, userMsg]);
         
-        // Simulate AI response (in real app, this would call an API)
-        setTimeout(() => {
-            const response = generateMockAIResponse(message);
+        // Update session history
+        chatSession.history.push(userMsg);
+        
+        // Set loading state
+        setIsSendingMessage(true);
+        
+        try {
+            // Get AI response
+            const response = await sendChatMessage(chatSession, message);
+            
+            // Add assistant message
             const assistantMsg = addAssistantMessage(response);
             setChatMessages(prev => [...prev, assistantMsg]);
-        }, 1000);
-    };
-
-    const generateMockAIResponse = (question: string): string => {
-        // Simple mock responses based on keywords
-        const lowerQ = question.toLowerCase();
-        
-        if (lowerQ.includes('dolor') || lowerQ.includes('pain')) {
-            return 'Basándome en tus datos, he notado que tu dolor es más intenso durante los primeros 2-3 días del ciclo. Te recomiendo:\n\n- Aplicar calor local (bolsa de agua caliente)\n- Considerar antiinflamatorios naturales como jengibre\n- Practicar yoga suave o estiramientos\n- Si el dolor persiste con intensidad >7/10, consulta con tu ginecólogo\n\n¿Hay algo específico sobre el dolor que quieras explorar?';
+            
+            // Update session history
+            chatSession.history.push(assistantMsg);
+        } catch (error) {
+            console.error('Error sending chat message:', error);
+            
+            // Add error message
+            const errorMsg = addAssistantMessage(
+                'Lo siento, hubo un error al procesar tu mensaje. Por favor, intenta de nuevo.'
+            );
+            setChatMessages(prev => [...prev, errorMsg]);
+        } finally {
+            setIsSendingMessage(false);
         }
-        
-        if (lowerQ.includes('sueño') || lowerQ.includes('sleep') || lowerQ.includes('dormir')) {
-            return 'Tu patrón de sueño muestra una correlación interesante con tu ciclo. Durante la fase lútea, tiendes a dormir menos horas. Esto es común debido a cambios hormonales.\n\nRecomendaciones:\n- Mantén una rutina de sueño consistente\n- Evita cafeína después de las 14:00\n- Crea un ambiente fresco y oscuro\n- Considera suplementos de magnesio (consulta con tu médico)\n\n¿Quieres saber más sobre cómo mejorar tu calidad de sueño?';
-        }
-        
-        if (lowerQ.includes('ciclo') || lowerQ.includes('regular') || lowerQ.includes('irregular')) {
-            return 'Tu ciclo tiene una variabilidad de ±3 días, lo cual está dentro del rango normal. La mayoría de tus ciclos duran entre 26-30 días.\n\nFactores que pueden estar influyendo:\n- Niveles de estrés\n- Cambios en rutina de ejercicio\n- Patrones de sueño\n- Alimentación\n\nTu regularidad actual es buena. ¿Te gustaría explorar algún factor específico?';
-        }
-        
-        if (lowerQ.includes('fértil') || lowerQ.includes('ovulación') || lowerQ.includes('embarazo')) {
-            return 'Basándome en tu ciclo promedio de 28 días, tu próxima ventana fértil estimada sería:\n\n- Inicio: Día 11-12 del ciclo\n- Pico: Día 14\n- Fin: Día 16-17\n\nRecuerda que estos son estimados. Para mayor precisión, considera:\n- Monitorear temperatura basal\n- Usar tests de ovulación\n- Observar cambios en flujo cervical\n\n¿Necesitas más información sobre fertilidad?';
-        }
-        
-        return 'Gracias por tu pregunta. Basándome en tus datos de los últimos meses, puedo ayudarte a entender mejor tus patrones.\n\n¿Podrías ser más específico sobre qué aspecto te gustaría explorar? Por ejemplo:\n- Regularidad del ciclo\n- Manejo del dolor\n- Patrones de sueño\n- Síntomas específicos\n- Fertilidad\n- Recomendaciones de estilo de vida';
     };
 
     return (
@@ -727,7 +848,7 @@ export const InsightsPage: React.FC = () => {
                             messages={chatMessages}
                             onSendMessage={handleSendChatMessage}
                             onBack={handleBackToInsights}
-                            isLoading={false}
+                            isLoading={isSendingMessage}
                         />
                     </div>
                 )}
@@ -739,6 +860,7 @@ export const InsightsPage: React.FC = () => {
                         {aiTimeMode === 'day' && (
                             <DailyInsightView
                                 log={logs.find(l => l.date === format(new Date(), 'yyyy-MM-dd')) || null}
+                                onStartChat={() => handleStartChatWithContext(createChatContext())}
                             />
                         )}
 
@@ -749,6 +871,7 @@ export const InsightsPage: React.FC = () => {
                                     const weekAgo = subDays(new Date(), 6);
                                     return logDate >= weekAgo;
                                 })}
+                                onStartChat={() => handleStartChatWithContext(createChatContext())}
                             />
                         )}
 
@@ -761,12 +884,38 @@ export const InsightsPage: React.FC = () => {
                                     return logDate >= monthStart && logDate <= monthEnd;
                                 })}
                                 cycles={cycles}
+                                onStartChat={() => handleStartChatWithContext(createChatContext())}
                             />
                         )}
 
                         {aiTimeMode === 'current-cycle' && (
-                            <div className="text-center text-brand-text-dim py-8">
-                                Vista de ciclo actual en desarrollo...
+                            <div className="space-y-6">
+                                <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-8 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)] text-center">
+                                    <div className="p-4 rounded-xl bg-brand-primary/15 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                                        <svg className="w-8 h-8 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                        </svg>
+                                    </div>
+                                    <h2 className="text-xl font-bold text-brand-text mb-2" style={{ fontWeight: 700 }}>
+                                        Ciclo Actual
+                                    </h2>
+                                    <p className="text-sm text-brand-text-dim" style={{ lineHeight: 1.45 }}>
+                                        Vista detallada del ciclo en curso - En desarrollo
+                                    </p>
+                                </div>
+                                
+                                <div className="bg-gradient-to-br from-brand-primary/10 via-brand-accent/10 to-brand-primary/10 border border-brand-primary/30 rounded-[18px] p-6 shadow-[0_4px_16px_rgba(0,0,0,0.15)]">
+                                    <button
+                                        onClick={() => handleStartChatWithContext(createChatContext())}
+                                        className="w-full group flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-brand-primary to-brand-accent text-white font-semibold rounded-full shadow-lg shadow-brand-primary/25 hover:shadow-xl hover:shadow-brand-primary/35 hover:scale-105 active:scale-100 transition-all duration-200"
+                                        style={{ fontWeight: 600 }}
+                                    >
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                                        </svg>
+                                        <span>Chatear sobre mi Ciclo Actual</span>
+                                    </button>
+                                </div>
                             </div>
                         )}
 
@@ -777,7 +926,10 @@ export const InsightsPage: React.FC = () => {
                                 onSave={handleSaveInsight}
                                 onPin={handlePinInsight}
                                 onDiscard={handleDiscardInsight}
-                                onStartChat={handleStartChat}
+                                onStartChat={(insights) => {
+                                    // Use insights-based chat for long-term views
+                                    handleStartChat(insights);
+                                }}
                                 isLoading={isGeneratingInsights}
                             />
                         )}

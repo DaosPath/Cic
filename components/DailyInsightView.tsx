@@ -3,15 +3,17 @@ import type { DailyLog } from '../types.ts';
 import { format } from 'date-fns/format';
 import { parseISO } from 'date-fns/parseISO';
 import { es } from 'date-fns/locale/es';
+import { ChatCTA } from './ChatCTA.tsx';
 
 interface DailyInsightViewProps {
   log: DailyLog | null;
+  onStartChat?: () => void;
 }
 
-export const DailyInsightView: React.FC<DailyInsightViewProps> = ({ log }) => {
+export const DailyInsightView: React.FC<DailyInsightViewProps> = ({ log, onStartChat }) => {
   if (!log) {
     return (
-      <div className="bg-brand-surface-2 rounded-xl p-8 border border-brand-border text-center">
+      <div className="bg-brand-surface-2 rounded-[18px] p-8 border border-brand-border text-center shadow-[0_2px_8px_rgba(0,0,0,0.15)]">
         <div className="p-4 rounded-xl bg-brand-primary/15 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
           <svg className="w-8 h-8 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -20,7 +22,7 @@ export const DailyInsightView: React.FC<DailyInsightViewProps> = ({ log }) => {
         <h2 className="text-xl font-bold text-brand-text mb-2" style={{ fontWeight: 700 }}>
           Sin Registro Hoy
         </h2>
-        <p className="text-sm text-brand-text-dim">
+        <p className="text-sm text-brand-text-dim" style={{ lineHeight: 1.45 }}>
           No hay datos registrados para el día de hoy. Registra tu información para ver el análisis.
         </p>
       </div>
@@ -57,23 +59,23 @@ export const DailyInsightView: React.FC<DailyInsightViewProps> = ({ log }) => {
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
       {/* Header */}
-      <div className="bg-gradient-to-r from-brand-primary/10 to-brand-accent/10 border border-brand-primary/20 rounded-xl p-5">
+      <div className="bg-gradient-to-r from-brand-primary/10 to-brand-accent/10 border border-brand-primary/20 rounded-[18px] p-5 shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
         <div className="flex items-center gap-2 mb-2">
           <span className="text-2xl">📅</span>
           <h2 className="text-xl font-bold text-brand-text capitalize" style={{ fontWeight: 700, lineHeight: 1.3 }}>
             {dateStr}
           </h2>
         </div>
-        <p className="text-sm text-brand-text-dim">
+        <p className="text-sm text-brand-text-dim" style={{ fontWeight: 500, lineHeight: 1.45 }}>
           Resumen completo de tu día
         </p>
       </div>
 
-      {/* Metrics Grid */}
+      {/* Metrics Grid - KPIs compactos */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {/* Period */}
         {log.periodIntensity !== undefined && log.periodIntensity > 0 && (
-          <div className="col-span-2 bg-gradient-to-br from-pink-500/10 to-pink-600/10 border border-pink-500/20 rounded-xl p-4">
+          <div className="col-span-2 bg-gradient-to-br from-pink-500/10 to-pink-600/10 border border-pink-500/20 rounded-[18px] p-4 shadow-[0_2px_8px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.18)] transition-all duration-200">
             <div className="flex items-center gap-2 mb-2">
               <span className="text-lg">🩸</span>
               <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
@@ -88,11 +90,11 @@ export const DailyInsightView: React.FC<DailyInsightViewProps> = ({ log }) => {
 
         {/* Mood */}
         {log.mood !== undefined && (
-          <div className="bg-brand-surface-2 border border-brand-border rounded-xl p-4">
+          <div className="bg-brand-surface-2 border border-brand-border rounded-[18px] p-4 shadow-[0_2px_8px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.18)] transition-all duration-200">
             <div className="flex items-center gap-2 mb-2">
               <span className="text-lg">{getMoodEmoji(log.mood)}</span>
               <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
-                Estado de Ánimo
+                Ánimo
               </h3>
             </div>
             <div className="flex items-center gap-2">
@@ -111,7 +113,7 @@ export const DailyInsightView: React.FC<DailyInsightViewProps> = ({ log }) => {
 
         {/* Energy */}
         {log.energyLevel && (
-          <div className="bg-brand-surface-2 border border-brand-border rounded-xl p-4">
+          <div className="bg-brand-surface-2 border border-brand-border rounded-[18px] p-4 shadow-[0_2px_8px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.18)] transition-all duration-200">
             <div className="flex items-center gap-2 mb-2">
               <span className="text-lg">⚡</span>
               <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
@@ -126,7 +128,7 @@ export const DailyInsightView: React.FC<DailyInsightViewProps> = ({ log }) => {
 
         {/* Pain */}
         {log.painLevel !== undefined && log.painLevel > 0 && (
-          <div className="bg-brand-surface-2 border border-brand-border rounded-xl p-4">
+          <div className="bg-brand-surface-2 border border-brand-border rounded-[18px] p-4 shadow-[0_2px_8px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.18)] transition-all duration-200">
             <div className="flex items-center gap-2 mb-2">
               <span className="text-lg">🩹</span>
               <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
@@ -149,7 +151,7 @@ export const DailyInsightView: React.FC<DailyInsightViewProps> = ({ log }) => {
 
         {/* Stress */}
         {log.stressScore !== undefined && (
-          <div className="bg-brand-surface-2 border border-brand-border rounded-xl p-4">
+          <div className="bg-brand-surface-2 border border-brand-border rounded-[18px] p-4 shadow-[0_2px_8px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.18)] transition-all duration-200">
             <div className="flex items-center gap-2 mb-2">
               <span className="text-lg">🧘</span>
               <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
@@ -172,7 +174,7 @@ export const DailyInsightView: React.FC<DailyInsightViewProps> = ({ log }) => {
 
         {/* Sleep */}
         {log.sleepHours !== undefined && (
-          <div className="bg-brand-surface-2 border border-brand-border rounded-xl p-4">
+          <div className="bg-brand-surface-2 border border-brand-border rounded-[18px] p-4 shadow-[0_2px_8px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.18)] transition-all duration-200">
             <div className="flex items-center gap-2 mb-2">
               <span className="text-lg">😴</span>
               <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
@@ -192,7 +194,7 @@ export const DailyInsightView: React.FC<DailyInsightViewProps> = ({ log }) => {
 
         {/* Water */}
         {log.waterIntake !== undefined && log.waterIntake > 0 && (
-          <div className="bg-brand-surface-2 border border-brand-border rounded-xl p-4">
+          <div className="bg-brand-surface-2 border border-brand-border rounded-[18px] p-4 shadow-[0_2px_8px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.18)] transition-all duration-200">
             <div className="flex items-center gap-2 mb-2">
               <span className="text-lg">💧</span>
               <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
@@ -207,11 +209,11 @@ export const DailyInsightView: React.FC<DailyInsightViewProps> = ({ log }) => {
 
         {/* Physical Activity */}
         {log.physicalActivity && log.physicalActivity !== 'none' && (
-          <div className="col-span-2 bg-brand-surface-2 border border-brand-border rounded-xl p-4">
+          <div className="col-span-2 bg-brand-surface-2 border border-brand-border rounded-[18px] p-4 shadow-[0_2px_8px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.18)] transition-all duration-200">
             <div className="flex items-center gap-2 mb-2">
               <span className="text-lg">🏃</span>
               <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
-                Actividad Física
+                Actividad
               </h3>
             </div>
             <div className="flex items-center gap-3">
@@ -219,9 +221,12 @@ export const DailyInsightView: React.FC<DailyInsightViewProps> = ({ log }) => {
                 {log.physicalActivity === 'light' ? 'Ligera' : log.physicalActivity === 'moderate' ? 'Moderada' : 'Intensa'}
               </span>
               {log.activityDuration && (
-                <span className="text-sm text-brand-text-dim">
-                  {log.activityDuration} min
-                </span>
+                <>
+                  <span className="text-brand-text-dim">•</span>
+                  <span className="text-sm text-brand-text-dim">
+                    {log.activityDuration} min
+                  </span>
+                </>
               )}
             </div>
           </div>
@@ -230,7 +235,7 @@ export const DailyInsightView: React.FC<DailyInsightViewProps> = ({ log }) => {
 
       {/* Symptoms */}
       {log.symptoms && log.symptoms.length > 0 && (
-        <div className="bg-brand-surface-2 border border-brand-border rounded-xl p-5">
+        <div className="bg-brand-surface-2 border border-brand-border rounded-[18px] p-5 shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
           <div className="flex items-center gap-2 mb-3">
             <span className="text-lg">🔍</span>
             <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
@@ -241,7 +246,8 @@ export const DailyInsightView: React.FC<DailyInsightViewProps> = ({ log }) => {
             {log.symptoms.map((symptomId, index) => (
               <span
                 key={index}
-                className="px-3 py-1 bg-brand-primary/20 text-brand-primary rounded-full text-xs font-medium"
+                className="px-3 py-1.5 bg-brand-primary/20 text-brand-primary rounded-full text-xs font-medium border border-brand-primary/30"
+                style={{ fontWeight: 500 }}
               >
                 {symptomId}
               </span>
@@ -252,31 +258,43 @@ export const DailyInsightView: React.FC<DailyInsightViewProps> = ({ log }) => {
 
       {/* Notes */}
       {log.notes && (
-        <div className="bg-brand-surface-2 border border-brand-border rounded-xl p-5">
+        <div className="bg-brand-surface-2 border border-brand-border rounded-[18px] p-5 shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-lg">📝</span>
             <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
               Notas
             </h3>
           </div>
-          <p className="text-sm text-brand-text leading-relaxed">
+          <p className="text-sm text-brand-text leading-relaxed" style={{ lineHeight: 1.6 }}>
             {log.notes}
           </p>
         </div>
       )}
 
       {/* AI Insights */}
-      <div className="bg-gradient-to-br from-brand-primary/10 to-brand-accent/10 border border-brand-primary/20 rounded-xl p-5">
+      <div className="bg-gradient-to-br from-brand-primary/10 to-brand-accent/10 border border-brand-primary/20 rounded-[18px] p-5 shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
         <div className="flex items-center gap-2 mb-3">
           <span className="text-lg">💡</span>
           <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
             Insight del Día
           </h3>
+          <span className="ml-auto text-xs px-2 py-0.5 bg-brand-primary/20 text-brand-primary rounded-full font-medium border border-brand-primary/30">
+            85% confianza
+          </span>
         </div>
-        <p className="text-sm text-brand-text leading-relaxed">
+        <p className="text-sm text-brand-text leading-relaxed" style={{ lineHeight: 1.6 }}>
           {generateDailyInsight(log)}
         </p>
       </div>
+
+      {/* Chat CTA */}
+      {onStartChat && (
+        <ChatCTA
+          onStartChat={onStartChat}
+          contextTitle={dateStr}
+          contextSubtitle="Pregunta sobre tus datos del día, síntomas y patrones"
+        />
+      )}
     </div>
   );
 };
