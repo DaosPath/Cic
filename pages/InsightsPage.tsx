@@ -25,6 +25,17 @@ const intlLocales = {
 } as const;
 
 // Helper functions
+const getCyclePhase = (cycle: Cycle, date: Date): string => {
+    const dayOfCycle = differenceInDays(date, parseISO(cycle.startDate)) + 1;
+    const cycleLength = cycle.length || 28;
+    
+    if (dayOfCycle <= 5) return 'Menstrual';
+    if (dayOfCycle <= 13) return 'Folicular';
+    if (dayOfCycle <= 16) return 'Ovulación';
+    if (dayOfCycle <= cycleLength) return 'Lútea';
+    return 'Post-ciclo';
+};
+
 const calculateStandardDeviation = (values: number[]): number => {
     if (values.length < 2) return 0;
     const mean = values.reduce((a, b) => a + b, 0) / values.length;
@@ -842,16 +853,30 @@ export const InsightsPage: React.FC = () => {
                 </div>
 
                 {/* Chat Mode */}
-                {isChatMode && (
-                    <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)] p-6">
-                        <AIChat
-                            messages={chatMessages}
-                            onSendMessage={handleSendChatMessage}
-                            onBack={handleBackToInsights}
-                            isLoading={isSendingMessage}
-                        />
-                    </div>
-                )}
+                {isChatMode && (() => {
+                    const today = new Date();
+                    const activeCycle = cycles.find(c => {
+                        const start = parseISO(c.startDate);
+                        const end = c.endDate ? parseISO(c.endDate) : new Date();
+                        return today >= start && today <= end;
+                    });
+                    
+                    return (
+                        <div className="fixed inset-0 bg-[var(--bg)] z-50 overflow-hidden">
+                            <AIChat
+                                messages={chatMessages}
+                                onSendMessage={handleSendChatMessage}
+                                onBack={handleBackToInsights}
+                                isLoading={isSendingMessage}
+                                contextInfo={{
+                                    timeRange: aiTimeMode === 'day' ? 'Hoy' : aiTimeMode === 'week' ? 'Esta semana' : aiTimeMode === 'month' ? 'Este mes' : undefined,
+                                    cyclePhase: activeCycle ? getCyclePhase(activeCycle, today) : undefined,
+                                    cycleDay: activeCycle ? differenceInDays(today, parseISO(activeCycle.startDate)) + 1 : undefined
+                                }}
+                            />
+                        </div>
+                    );
+                })()}
 
                 {/* AI Mode */}
                 {!isChatMode && analysisMode === 'ai' && (
