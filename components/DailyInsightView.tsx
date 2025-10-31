@@ -205,7 +205,7 @@ export const DailyInsightView: React.FC<DailyInsightViewProps> = ({
             
             <div className="flex items-center justify-center flex-1" style={{ marginTop: '8px', marginBottom: '8px' }}>
               <p className="text-3xl font-bold text-[var(--text)] tabular-nums" style={{ fontWeight: 700, fontSize: '28px', lineHeight: '1' }}>
-                {log.activityDuration || 0}
+                {log.activityDuration || 0}min
               </p>
             </div>
             
@@ -218,6 +218,177 @@ export const DailyInsightView: React.FC<DailyInsightViewProps> = ({
                     'bg-red-400'
                   }`}
                   style={{ width: log.physicalActivity === 'light' ? '33%' : log.physicalActivity === 'moderate' ? '66%' : '100%' }}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Ánimo */}
+        {log.mood !== undefined && (
+          <div className="col-span-6 md:col-span-4 lg:col-span-3 bg-[var(--surface)] border border-[var(--border)] rounded-[18px] shadow-sm hover:shadow-md transition-all duration-200 relative overflow-hidden group" style={{ height: '96px', padding: '16px' }}>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-[20px]">{getMoodEmoji(log.mood)}</span>
+              <h3 className="text-xs font-medium text-[var(--text-2)]" style={{ fontWeight: 500 }}>
+                Ánimo
+              </h3>
+            </div>
+            
+            <div className="absolute top-3 right-3 opacity-24">
+              <svg width="32" height="16" viewBox="0 0 32 16" className="text-[var(--brand)]">
+                <polyline fill="none" stroke="currentColor" strokeWidth="1.5" points="0,8 4,6 8,9 12,5 16,7 20,4 24,6 28,3 32,5" />
+              </svg>
+            </div>
+            
+            <div className="flex items-center justify-center flex-1" style={{ marginTop: '8px', marginBottom: '8px' }}>
+              <p className="text-3xl font-bold text-[var(--text)] tabular-nums" style={{ fontWeight: 700, fontSize: '28px', lineHeight: '1' }}>
+                {log.mood}/5
+              </p>
+            </div>
+            
+            <div className="mt-auto">
+              <div className="w-full bg-[var(--surface-2)] rounded-full overflow-hidden" style={{ height: '6px', borderRadius: '8px' }}>
+                <div
+                  className="h-full bg-[var(--brand)] transition-all duration-300"
+                  style={{ width: `${(log.mood / 5) * 100}%` }}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Energía */}
+        {log.energyLevel && (
+          <div className="col-span-6 md:col-span-4 lg:col-span-3 bg-[var(--surface)] border border-[var(--border)] rounded-[18px] shadow-sm hover:shadow-md transition-all duration-200 relative overflow-hidden group" style={{ height: '96px', padding: '16px' }}>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-[20px]">{getEnergyEmoji(log.energyLevel)}</span>
+              <h3 className="text-xs font-medium text-[var(--text-2)]" style={{ fontWeight: 500 }}>
+                Energía
+              </h3>
+            </div>
+            
+            <div className="absolute top-3 right-3 opacity-24">
+              <svg width="32" height="16" viewBox="0 0 32 16" className="text-[var(--accent)]">
+                <polyline fill="none" stroke="currentColor" strokeWidth="1.5" points="0,12 4,9 8,11 12,7 16,9 20,6 24,8 28,5 32,7" />
+              </svg>
+            </div>
+            
+            <div className="flex items-center justify-center flex-1" style={{ marginTop: '8px', marginBottom: '8px' }}>
+              <p className="text-2xl font-bold text-[var(--text)] capitalize" style={{ fontWeight: 700, fontSize: '24px', lineHeight: '1' }}>
+                {log.energyLevel}
+              </p>
+            </div>
+            
+            <div className="mt-auto">
+              <div className="w-full bg-[var(--surface-2)] rounded-full overflow-hidden" style={{ height: '6px', borderRadius: '8px' }}>
+                <div
+                  className={`h-full transition-all duration-300 ${
+                    log.energyLevel === 'low' ? 'bg-red-400' :
+                    log.energyLevel === 'medium' ? 'bg-amber-400' :
+                    'bg-green-400'
+                  }`}
+                  style={{ width: log.energyLevel === 'low' ? '33%' : log.energyLevel === 'medium' ? '66%' : '100%' }}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Dolor */}
+        {log.painLevel !== undefined && log.painLevel > 0 && (
+          <div className="col-span-6 md:col-span-4 lg:col-span-3 bg-[var(--surface)] border border-[var(--border)] rounded-[18px] shadow-sm hover:shadow-md transition-all duration-200 relative overflow-hidden group" style={{ height: '96px', padding: '16px' }}>
+            <div className="flex items-center gap-2 mb-2">
+              <svg className="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ width: '20px', height: '20px' }}>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+              <h3 className="text-xs font-medium text-[var(--text-2)]" style={{ fontWeight: 500 }}>
+                Dolor
+              </h3>
+            </div>
+            
+            <div className="absolute top-3 right-3 opacity-24">
+              <svg width="32" height="16" viewBox="0 0 32 16" className="text-red-400">
+                <polyline fill="none" stroke="currentColor" strokeWidth="1.5" points="0,10 4,8 8,12 12,6 16,10 20,4 24,8 28,2 32,6" />
+              </svg>
+            </div>
+            
+            <div className="flex items-center justify-center flex-1" style={{ marginTop: '8px', marginBottom: '8px' }}>
+              <p className="text-3xl font-bold text-[var(--text)] tabular-nums" style={{ fontWeight: 700, fontSize: '28px', lineHeight: '1' }}>
+                {log.painLevel}/10
+              </p>
+            </div>
+            
+            <div className="mt-auto">
+              <div className="w-full bg-[var(--surface-2)] rounded-full overflow-hidden" style={{ height: '6px', borderRadius: '8px' }}>
+                <div
+                  className="h-full bg-red-400 transition-all duration-300"
+                  style={{ width: `${(log.painLevel / 10) * 100}%` }}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Calidad del Sueño */}
+        {log.sleepQuality !== undefined && (
+          <div className="col-span-6 md:col-span-4 lg:col-span-3 bg-[var(--surface)] border border-[var(--border)] rounded-[18px] shadow-sm hover:shadow-md transition-all duration-200 relative overflow-hidden group" style={{ height: '96px', padding: '16px' }}>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-[20px]">⭐</span>
+              <h3 className="text-xs font-medium text-[var(--text-2)]" style={{ fontWeight: 500 }}>
+                Calidad Sueño
+              </h3>
+            </div>
+            
+            <div className="absolute top-3 right-3 opacity-24">
+              <svg width="32" height="16" viewBox="0 0 32 16" className="text-[var(--accent)]">
+                <polyline fill="none" stroke="currentColor" strokeWidth="1.5" points="0,11 4,8 8,9 12,6 16,7 20,5 24,6 28,4 32,5" />
+              </svg>
+            </div>
+            
+            <div className="flex items-center justify-center flex-1" style={{ marginTop: '8px', marginBottom: '8px' }}>
+              <p className="text-3xl font-bold text-[var(--text)] tabular-nums" style={{ fontWeight: 700, fontSize: '28px', lineHeight: '1' }}>
+                {log.sleepQuality}/5
+              </p>
+            </div>
+            
+            <div className="mt-auto">
+              <div className="w-full bg-[var(--surface-2)] rounded-full overflow-hidden" style={{ height: '6px', borderRadius: '8px' }}>
+                <div
+                  className="h-full bg-[var(--accent)] transition-all duration-300"
+                  style={{ width: `${(log.sleepQuality / 5) * 100}%` }}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Pasos */}
+        {log.steps !== undefined && log.steps > 0 && (
+          <div className="col-span-6 md:col-span-4 lg:col-span-3 bg-[var(--surface)] border border-[var(--border)] rounded-[18px] shadow-sm hover:shadow-md transition-all duration-200 relative overflow-hidden group" style={{ height: '96px', padding: '16px' }}>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-[20px]">👟</span>
+              <h3 className="text-xs font-medium text-[var(--text-2)]" style={{ fontWeight: 500 }}>
+                Pasos
+              </h3>
+            </div>
+            
+            <div className="absolute top-3 right-3 opacity-24">
+              <svg width="32" height="16" viewBox="0 0 32 16" className="text-[var(--brand)]">
+                <polyline fill="none" stroke="currentColor" strokeWidth="1.5" points="0,13 4,10 8,12 12,8 16,10 20,7 24,9 28,6 32,8" />
+              </svg>
+            </div>
+            
+            <div className="flex items-center justify-center flex-1" style={{ marginTop: '8px', marginBottom: '8px' }}>
+              <p className="text-2xl font-bold text-[var(--text)] tabular-nums" style={{ fontWeight: 700, fontSize: '24px', lineHeight: '1' }}>
+                {log.steps.toLocaleString()}
+              </p>
+            </div>
+            
+            <div className="mt-auto">
+              <div className="w-full bg-[var(--surface-2)] rounded-full overflow-hidden" style={{ height: '6px', borderRadius: '8px' }}>
+                <div
+                  className="h-full bg-[var(--brand)] transition-all duration-300"
+                  style={{ width: `${Math.min((log.steps / 10000) * 100, 100)}%` }}
                 />
               </div>
             </div>
@@ -269,6 +440,196 @@ export const DailyInsightView: React.FC<DailyInsightViewProps> = ({
                 {symptomId}
               </span>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Métricas Adicionales */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4" style={{ marginBottom: '24px' }}>
+        {/* Sueño Detallado */}
+        {(log.bedTime || log.wakeTime || log.napMinutes) && (
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-[18px] p-5 shadow-sm">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-lg">🛏️</span>
+              <h3 className="text-sm font-semibold text-[var(--text)]" style={{ fontWeight: 600 }}>
+                Detalles del Sueño
+              </h3>
+            </div>
+            <div className="space-y-2">
+              {log.bedTime && (
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-[var(--text-2)]">Hora de dormir</span>
+                  <span className="text-sm font-medium text-[var(--text)]">{log.bedTime}</span>
+                </div>
+              )}
+              {log.wakeTime && (
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-[var(--text-2)]">Hora de despertar</span>
+                  <span className="text-sm font-medium text-[var(--text)]">{log.wakeTime}</span>
+                </div>
+              )}
+              {log.napMinutes && log.napMinutes > 0 && (
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-[var(--text-2)]">Siesta</span>
+                  <span className="text-sm font-medium text-[var(--text)]">{log.napMinutes} min</span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Actividad Física Detallada */}
+        {(log.activityType || log.activityIntensity || log.caloriesBurned) && (
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-[18px] p-5 shadow-sm">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-lg">🏃‍♀️</span>
+              <h3 className="text-sm font-semibold text-[var(--text)]" style={{ fontWeight: 600 }}>
+                Detalles de Actividad
+              </h3>
+            </div>
+            <div className="space-y-2">
+              {log.activityType && log.activityType.length > 0 && (
+                <div>
+                  <span className="text-xs text-[var(--text-2)]">Tipo</span>
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {log.activityType.map((type, index) => (
+                      <span key={index} className="px-2 py-0.5 bg-[var(--brand)]/10 text-[var(--brand)] rounded text-xs">
+                        {type}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {log.activityIntensity && (
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-[var(--text-2)]">Intensidad (RPE)</span>
+                  <span className="text-sm font-medium text-[var(--text)]">{log.activityIntensity}/10</span>
+                </div>
+              )}
+              {log.caloriesBurned && (
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-[var(--text-2)]">Calorías quemadas</span>
+                  <span className="text-sm font-medium text-[var(--text)]">{log.caloriesBurned} kcal</span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Consumo */}
+        {(log.caffeineIntake || log.alcoholIntake || log.cravings) && (
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-[18px] p-5 shadow-sm">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-lg">☕</span>
+              <h3 className="text-sm font-semibold text-[var(--text)]" style={{ fontWeight: 600 }}>
+                Consumo
+              </h3>
+            </div>
+            <div className="space-y-2">
+              {log.caffeineIntake && log.caffeineIntake > 0 && (
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-[var(--text-2)]">Cafeína</span>
+                  <span className="text-sm font-medium text-[var(--text)]">{log.caffeineIntake} tazas</span>
+                </div>
+              )}
+              {log.alcoholIntake && log.alcoholIntake > 0 && (
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-[var(--text-2)]">Alcohol</span>
+                  <span className="text-sm font-medium text-[var(--text)]">{log.alcoholIntake} unidades</span>
+                </div>
+              )}
+              {log.cravings && log.cravings.length > 0 && (
+                <div>
+                  <span className="text-xs text-[var(--text-2)]">Antojos</span>
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {log.cravings.map((craving, index) => (
+                      <span key={index} className="px-2 py-0.5 bg-[var(--accent)]/10 text-[var(--accent)] rounded text-xs">
+                        {craving}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Métricas de Salud */}
+        {(log.restingHeartRate || log.bloodPressure || log.basalTemp || log.weight) && (
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-[18px] p-5 shadow-sm">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-lg">❤️</span>
+              <h3 className="text-sm font-semibold text-[var(--text)]" style={{ fontWeight: 600 }}>
+                Métricas de Salud
+              </h3>
+            </div>
+            <div className="space-y-2">
+              {log.restingHeartRate && (
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-[var(--text-2)]">FC en reposo</span>
+                  <span className="text-sm font-medium text-[var(--text)]">{log.restingHeartRate} bpm</span>
+                </div>
+              )}
+              {log.bloodPressure && (
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-[var(--text-2)]">Presión arterial</span>
+                  <span className="text-sm font-medium text-[var(--text)]">{log.bloodPressure} mmHg</span>
+                </div>
+              )}
+              {log.basalTemp && (
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-[var(--text-2)]">Temp. basal</span>
+                  <span className="text-sm font-medium text-[var(--text)]">{log.basalTemp}°C</span>
+                </div>
+              )}
+              {log.weight && (
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-[var(--text-2)]">Peso</span>
+                  <span className="text-sm font-medium text-[var(--text)]">{log.weight} kg</span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Medicamentos y Suplementos */}
+      {((log.medications && log.medications.length > 0) || (log.supplements && log.supplements.length > 0)) && (
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-[18px] p-5 shadow-sm" style={{ marginBottom: '24px' }}>
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-lg">💊</span>
+            <h3 className="text-sm font-semibold text-[var(--text)]" style={{ fontWeight: 600 }}>
+              Medicamentos y Suplementos
+            </h3>
+          </div>
+          <div className="space-y-3">
+            {log.medications && log.medications.length > 0 && (
+              <div>
+                <h4 className="text-xs font-medium text-[var(--text-2)] mb-2">Medicamentos</h4>
+                <div className="space-y-1">
+                  {log.medications.map((med, index) => (
+                    <div key={index} className="flex justify-between items-center text-sm">
+                      <span className="text-[var(--text)]">{med.name}</span>
+                      <div className="text-[var(--text-2)] text-xs">
+                        {med.dose} {med.time && `• ${med.time}`}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {log.supplements && log.supplements.length > 0 && (
+              <div>
+                <h4 className="text-xs font-medium text-[var(--text-2)] mb-2">Suplementos</h4>
+                <div className="flex flex-wrap gap-1">
+                  {log.supplements.map((supplement, index) => (
+                    <span key={index} className="px-2 py-0.5 bg-[var(--accent)]/10 text-[var(--accent)] rounded text-xs">
+                      {supplement}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -343,45 +704,102 @@ export const DailyInsightView: React.FC<DailyInsightViewProps> = ({
   );
 };
 
+function getMoodEmoji(mood: number): string {
+  if (mood <= 1) return '😢';
+  if (mood <= 2) return '😕';
+  if (mood <= 3) return '😐';
+  if (mood <= 4) return '🙂';
+  return '😊';
+}
+
+function getEnergyEmoji(energy: string): string {
+  if (energy === 'low') return '🔋';
+  if (energy === 'medium') return '⚡';
+  return '✨';
+}
+
 function generateDailyInsights(log: DailyLog): string[] {
   const insights: string[] = [];
 
+  // Análisis del sueño
   if (log.sleepHours !== undefined) {
     if (log.sleepHours < 6) {
       insights.push('Tu sueño fue insuficiente. Intenta dormir 7-9 horas para mejor recuperación.');
     } else if (log.sleepHours >= 7 && log.sleepHours <= 9) {
-      insights.push('Excelente descanso. Dormiste las horas recomendadas.');
+      if (log.sleepQuality && log.sleepQuality >= 4) {
+        insights.push('Excelente descanso. Dormiste las horas recomendadas con buena calidad.');
+      } else {
+        insights.push('Buena duración de sueño, pero considera mejorar la calidad del descanso.');
+      }
     }
   }
 
+  // Relación ánimo-energía
   if (log.mood !== undefined && log.energyLevel) {
-    if (log.mood <= 4 && log.energyLevel === 'low') {
-      insights.push('Tu ánimo bajo y poca energía pueden estar relacionados. Considera una caminata corta.');
+    if (log.mood <= 2 && log.energyLevel === 'low') {
+      insights.push('Tu ánimo bajo y poca energía pueden estar relacionados. Considera una caminata corta o exposición al sol.');
+    } else if (log.mood >= 4 && log.energyLevel === 'high') {
+      insights.push('¡Excelente combinación de buen ánimo y alta energía! Aprovecha este momento.');
     }
   }
 
+  // Análisis del dolor
   if (log.painLevel !== undefined && log.painLevel >= 7) {
-    insights.push('Nivel de dolor alto. Considera aplicar calor local y descansar.');
+    if (log.painLocations && log.painLocations.length > 0) {
+      insights.push(`Dolor alto en ${log.painLocations.join(', ')}. Considera aplicar calor local y descansar.`);
+    } else {
+      insights.push('Nivel de dolor alto. Considera aplicar calor local y descansar.');
+    }
   }
 
+  // Estrés y manejo
   if (log.stressScore !== undefined && log.stressScore >= 7) {
-    insights.push('Estrés elevado. Prueba técnicas de respiración o meditación.');
+    if (log.stressTriggers && log.stressTriggers.length > 0) {
+      insights.push(`Estrés elevado por ${log.stressTriggers.join(', ')}. Prueba técnicas de respiración o meditación.`);
+    } else {
+      insights.push('Estrés elevado. Prueba técnicas de respiración o meditación.');
+    }
   }
 
+  // Hidratación
   if (log.waterIntake !== undefined) {
     if (log.waterIntake < 1.5) {
       insights.push('Hidratación baja. Intenta beber al menos 2L de agua al día.');
-    } else if (log.waterIntake >= 2) {
-      insights.push('Bien hidratada. Mantén este hábito saludable.');
+    } else if (log.waterIntake >= 2.5) {
+      insights.push('¡Excelente hidratación! Mantén este hábito saludable.');
     }
   }
 
+  // Actividad física
   if (log.physicalActivity && log.physicalActivity !== 'none') {
-    insights.push('La actividad física ayuda a regular tu ciclo y mejorar tu ánimo.');
+    if (log.activityDuration && log.activityDuration >= 30) {
+      insights.push('¡Genial! Cumpliste con los 30 minutos recomendados de actividad física.');
+    } else {
+      insights.push('La actividad física ayuda a regular tu ciclo y mejorar tu ánimo.');
+    }
+  }
+
+  // Análisis de pasos
+  if (log.steps !== undefined) {
+    if (log.steps >= 10000) {
+      insights.push('¡Increíble! Superaste los 10,000 pasos recomendados.');
+    } else if (log.steps >= 7500) {
+      insights.push('Buen nivel de actividad diaria. Intenta llegar a 10,000 pasos.');
+    }
+  }
+
+  // Cafeína y sueño
+  if (log.caffeineIntake && log.caffeineIntake > 3 && log.sleepQuality && log.sleepQuality <= 2) {
+    insights.push('Alto consumo de cafeína puede estar afectando tu calidad de sueño.');
+  }
+
+  // Síntomas frecuentes
+  if (log.symptoms && log.symptoms.length >= 3) {
+    insights.push(`Registraste ${log.symptoms.length} síntomas hoy. Considera descansar más.`);
   }
 
   if (insights.length === 0) {
-    insights.push('Sigue registrando tus datos para obtener insights personalizados.');
+    insights.push('Sigue registrando tus datos para obtener insights personalizados más detallados.');
   }
 
   return insights;
