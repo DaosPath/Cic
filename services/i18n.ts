@@ -520,6 +520,216 @@ const translations: Record<Language, Translations> = {
   auto: {} as Translations,
 };
 
+type SupportedLanguage = Exclude<Language, 'auto'>;
+type EnergyLevel = 'low' | 'medium' | 'high';
+
+const FALLBACK_LANGUAGE: SupportedLanguage = 'es';
+
+const energyLevelLabels: Record<SupportedLanguage, Record<EnergyLevel, string>> = {
+  es: { low: 'Baja', medium: 'Media', high: 'Alta' },
+  en: { low: 'Low', medium: 'Medium', high: 'High' },
+  tr: { low: 'Düşük', medium: 'Orta', high: 'Yüksek' },
+};
+
+type PeriodIntensityKey = 'none' | 'spotting' | 'light' | 'medium' | 'heavy';
+
+const periodIntensityLabels: Record<SupportedLanguage, Record<PeriodIntensityKey, string>> = {
+  es: {
+    none: 'Sin flujo',
+    spotting: 'Manchado',
+    light: 'Ligero',
+    medium: 'Medio',
+    heavy: 'Abundante',
+  },
+  en: {
+    none: 'No flow',
+    spotting: 'Spotting',
+    light: 'Light',
+    medium: 'Medium',
+    heavy: 'Heavy',
+  },
+  tr: {
+    none: 'Akış yok',
+    spotting: 'Lekelenme',
+    light: 'Hafif',
+    medium: 'Orta',
+    heavy: 'Yoğun',
+  },
+};
+
+const symptomTranslations: Record<SupportedLanguage, Record<string, string>> = {
+  es: {
+    cramps: 'Cólicos',
+    fatigue: 'Fatiga',
+    headache: 'Dolor de cabeza',
+    backache: 'Dolor de espalda',
+    nausea: 'Náuseas',
+    bloating: 'Hinchazón',
+    'mood-swings': 'Cambios de humor',
+    acne: 'Acné',
+    'increased-energy': 'Mayor energía',
+    'clear-skin': 'Piel limpia',
+    'breast-tenderness': 'Sensibilidad en senos',
+    'increased-libido': 'Mayor libido',
+    'cervical-mucus': 'Moco cervical',
+    irritability: 'Irritabilidad',
+    'food-cravings': 'Antojos',
+    anxiety: 'Ansiedad',
+    cravings: 'Antojos',
+  },
+  en: {
+    cramps: 'Cramps',
+    fatigue: 'Fatigue',
+    headache: 'Headache',
+    backache: 'Back pain',
+    nausea: 'Nausea',
+    bloating: 'Bloating',
+    'mood-swings': 'Mood swings',
+    acne: 'Acne',
+    'increased-energy': 'Increased energy',
+    'clear-skin': 'Clear skin',
+    'breast-tenderness': 'Breast tenderness',
+    'increased-libido': 'Increased libido',
+    'cervical-mucus': 'Cervical mucus',
+    irritability: 'Irritability',
+    'food-cravings': 'Food cravings',
+    anxiety: 'Anxiety',
+    cravings: 'Cravings',
+  },
+  tr: {
+    cramps: 'Kramplar',
+    fatigue: 'Yorgunluk',
+    headache: 'Baş ağrısı',
+    backache: 'Sırt ağrısı',
+    nausea: 'Mide bulantısı',
+    bloating: 'Şişkinlik',
+    'mood-swings': 'Ruh hali dalgalanmaları',
+    acne: 'Akne',
+    'increased-energy': 'Artan enerji',
+    'clear-skin': 'Temiz cilt',
+    'breast-tenderness': 'Göğüs hassasiyeti',
+    'increased-libido': 'Artan libido',
+    'cervical-mucus': 'Servikal mukus',
+    irritability: 'Sinirlilik',
+    'food-cravings': 'Yeme isteği',
+    anxiety: 'Kaygı',
+    cravings: 'İstekler',
+  },
+};
+
+const camelCaseBoundary = /([a-z])([A-Z])/g;
+
+function normalizeSymptomId(symptomId: string): string {
+  return symptomId
+    .trim()
+    .replace(camelCaseBoundary, '$1-$2')
+    .replace(/[_\s]+/g, '-')
+    .replace(/-+/g, '-')
+    .toLowerCase();
+}
+
+function formatSymptomFallback(symptomId: string): string {
+  const printable = symptomId
+    .replace(camelCaseBoundary, '$1 $2')
+    .replace(/[-_]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (!printable) return symptomId;
+
+  return printable
+    .split(' ')
+    .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
+
+export function getEnergyLabel(level: string, language: Language): string {
+  if (!level) {
+    return '';
+  }
+
+  const resolvedLanguage: SupportedLanguage =
+    language === 'auto' ? FALLBACK_LANGUAGE : language;
+
+  const labels = energyLevelLabels[resolvedLanguage] ?? energyLevelLabels[FALLBACK_LANGUAGE];
+  const normalized = level.toLowerCase() as EnergyLevel;
+
+  if (labels && labels[normalized]) {
+    return labels[normalized];
+  }
+
+  return formatSymptomFallback(level);
+}
+
+export function getSymptomLabel(symptomId: string, language: Language): string {
+  if (!symptomId) {
+    return '';
+  }
+
+  const normalized = normalizeSymptomId(symptomId);
+  const resolvedLanguage: SupportedLanguage =
+    language === 'auto' ? FALLBACK_LANGUAGE : language;
+
+  const languageMap = symptomTranslations[resolvedLanguage];
+
+  if (languageMap && languageMap[normalized]) {
+    return languageMap[normalized];
+  }
+
+  const fallback =
+    symptomTranslations.es[normalized] ??
+    symptomTranslations.en[normalized] ??
+    symptomTranslations.tr[normalized];
+
+  if (fallback) {
+    return fallback;
+  }
+
+  return formatSymptomFallback(symptomId);
+}
+
+const periodIntensityValueToKey: Record<string, PeriodIntensityKey> = {
+  '0': 'none',
+  'none': 'none',
+  '1': 'spotting',
+  'spotting': 'spotting',
+  '2': 'light',
+  'light': 'light',
+  '3': 'medium',
+  'medium': 'medium',
+  '4': 'heavy',
+  'heavy': 'heavy',
+};
+
+export function getPeriodIntensityLabel(
+  level: number | string | undefined | null,
+  language: Language
+): string {
+  if (level === undefined || level === null || level === '') {
+    return '';
+  }
+
+  const keyLookup =
+    typeof level === 'number'
+      ? periodIntensityValueToKey[level.toString()]
+      : periodIntensityValueToKey[normalizeSymptomId(level)];
+
+  if (!keyLookup) {
+    return formatSymptomFallback(typeof level === 'string' ? level : level.toString());
+  }
+
+  const resolvedLanguage: SupportedLanguage =
+    language === 'auto' ? FALLBACK_LANGUAGE : language;
+
+  const label =
+    periodIntensityLabels[resolvedLanguage]?.[keyLookup] ??
+    periodIntensityLabels[FALLBACK_LANGUAGE][keyLookup];
+
+  return label ?? formatSymptomFallback(
+    typeof level === 'string' ? level : level.toString()
+  );
+}
+
 export function detectLanguage(): Language {
   const browserLang = navigator.language.toLowerCase();
 

@@ -1,5 +1,6 @@
 import type { DailyLog, Cycle } from '../types.ts';
 import { parseISO } from 'date-fns/parseISO';
+import { getEnergyLabel, getSymptomLabel } from './i18n.ts';
 
 // Tool definitions for Gemini function calling
 export const toolDefinitions = [
@@ -134,7 +135,7 @@ export class DataAnalyzer {
         }
 
         if (log.mood !== undefined) details.push(`- Ánimo: ${log.mood}/5`);
-        if (log.energyLevel) details.push(`- Energía: ${log.energyLevel}`);
+        if (log.energyLevel) details.push(`- Energía: ${getEnergyLabel(log.energyLevel, 'es')}`);
         if (log.painLevel !== undefined && log.painLevel > 0) {
             details.push(`- Dolor: ${log.painLevel}/10`);
             if (log.painLocations) details.push(`  Ubicación: ${log.painLocations.join(', ')}`);
@@ -154,7 +155,8 @@ export class DataAnalyzer {
             details.push(activity);
         }
         if (log.symptoms && log.symptoms.length > 0) {
-            details.push(`- Síntomas: ${log.symptoms.join(', ')}`);
+            const symptomList = log.symptoms.map(symptom => getSymptomLabel(symptom, 'es'));
+            details.push(`- Síntomas: ${symptomList.join(', ')}`);
         }
         if (log.notes) details.push(`- Notas: "${log.notes}"`);
 

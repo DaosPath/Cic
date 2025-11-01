@@ -16,7 +16,7 @@ const languageOptions = [
 
 export const SettingsPage: React.FC = () => {
     const { settings, setSettings, refreshData, logs } = useContext(AppContext);
-    const { t, language } = useTranslation();
+    const { t, language, translateSymptomId } = useTranslation();
     const [localSettings, setLocalSettings] = useState<AppSettings>(settings);
     const [isConfirmModalOpen, setConfirmModalOpen] = useState(false);
     const [devModeIntent, setDevModeIntent] = useState<boolean | null>(null);
@@ -230,7 +230,7 @@ export const SettingsPage: React.FC = () => {
                     log.date,
                     log.periodIntensity ?? 'N/A',
                     log.mood ?? 'N/A',
-                    log.symptoms.join(';') || 'N/A',
+                    (log.symptoms.length > 0 ? log.symptoms.map(translateSymptomId).join(';') : '') || 'N/A',
                     (log.notes || '').replace(/,/g, ';')
                 ].join(','))
             ].join('\n');

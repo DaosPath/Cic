@@ -4,6 +4,7 @@ import { format } from 'date-fns/format';
 import { parseISO } from 'date-fns/parseISO';
 import { es } from 'date-fns/locale/es';
 import { UnifiedChatCTA } from './UnifiedChatCTA.tsx';
+import { useTranslation } from '../hooks/useTranslation.ts';
 
 type AnalysisMode = 'simple' | 'ai';
 type AnalysisView = 'dia' | 'semana' | 'mes' | 'ciclo' | '6m' | 'ano';
@@ -29,6 +30,7 @@ export const DailyInsightView: React.FC<DailyInsightViewProps> = ({
   cyclePhase,
   cycleDay
 }) => {
+  const { translateEnergyLevel, translateSymptomId } = useTranslation();
 
   if (!log) {
     return (
@@ -559,7 +561,7 @@ export const DailyInsightView: React.FC<DailyInsightViewProps> = ({
             
             <div className="flex items-center justify-center flex-1" style={{ marginTop: '8px', marginBottom: '8px' }}>
               <p className="text-2xl font-bold text-[var(--text)] capitalize" style={{ fontWeight: 700, fontSize: '24px', lineHeight: '1' }}>
-                {log.energyLevel}
+                {translateEnergyLevel(log.energyLevel)}
               </p>
             </div>
             
@@ -796,7 +798,7 @@ export const DailyInsightView: React.FC<DailyInsightViewProps> = ({
                     key={index}
                     className="px-3 py-1.5 bg-[var(--brand)]/10 text-[var(--brand)] rounded-full text-xs font-medium border border-[var(--brand)]/20"
                   >
-                    {symptomId}
+                    {translateSymptomId(symptomId)}
                   </span>
                 ))}
               </div>
@@ -1276,7 +1278,7 @@ export const DailyInsightView: React.FC<DailyInsightViewProps> = ({
               <div className="flex items-center gap-2 px-3 py-1.5 bg-[var(--accent)]/20 rounded-lg">
                 <span className="text-sm">{getEnergyEmoji(log.energyLevel)}</span>
                 <span className="text-xs text-[var(--text)] capitalize" style={{ fontWeight: 500 }}>
-                  Energía {log.energyLevel}
+                  Energía {translateEnergyLevel(log.energyLevel)}
                 </span>
               </div>
             )}

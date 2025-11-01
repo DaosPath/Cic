@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { DailyLog } from '../types.ts';
 import { parseLogDescription, startVoiceRecognition, type AILogSuggestion } from '../services/ai-log-parser.ts';
+import { useTranslation } from '../hooks/useTranslation.ts';
 
 interface AILogModalProps {
   isOpen: boolean;
@@ -18,6 +19,7 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
   const [isProcessing, setIsProcessing] = useState(false);
   const [aiSuggestion, setAiSuggestion] = useState<AILogSuggestion | null>(null);
   const [stopRecording, setStopRecording] = useState<(() => void) | null>(null);
+  const { translateSymptomId } = useTranslation();
 
   if (!isOpen) return null;
 
@@ -238,7 +240,7 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
                       <div className="flex flex-wrap gap-1.5">
                         {aiSuggestion.suggestions.symptoms.map((s: string, idx: number) => (
                           <span key={idx} className="px-2 py-0.5 rounded-md bg-brand-primary/20 text-brand-primary text-xs">
-                            {s}
+                            {translateSymptomId(s)}
                           </span>
                         ))}
                       </div>

@@ -3,6 +3,7 @@ import type { DailyLog } from '../types.ts';
 import { format, subDays } from 'date-fns';
 import { parseISO } from 'date-fns/parseISO';
 import { es } from 'date-fns/locale/es';
+import { useTranslation } from '../hooks/useTranslation.ts';
 
 interface WeeklyInsightModalProps {
   logs: DailyLog[];
@@ -15,6 +16,7 @@ export const WeeklyInsightModal: React.FC<WeeklyInsightModalProps> = ({ logs, on
 
   // Calculate weekly stats
   const stats = calculateWeeklyStats(logs);
+  const { translateEnergyLevel } = useTranslation();
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
@@ -100,7 +102,7 @@ export const WeeklyInsightModal: React.FC<WeeklyInsightModalProps> = ({ logs, on
                           </span>
                         )}
                         {day.energy && (
-                          <span className="text-sm" title={`Energía: ${day.energy}`}>
+                          <span className="text-sm" title={`Energía: ${translateEnergyLevel(day.energy)}`}>
                             {getEnergyEmoji(day.energy)}
                           </span>
                         )}

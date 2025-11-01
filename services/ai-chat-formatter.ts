@@ -1,5 +1,6 @@
 import type { AIInsight } from './ai-insights.ts';
 import type { DailyLog, Cycle } from '../types.ts';
+import { getEnergyLabel, getSymptomLabel } from './i18n.ts';
 
 export interface ChatMessage {
   role: 'assistant' | 'user';
@@ -329,7 +330,7 @@ function formatDayContext(context: ChatContext): string {
     kpis.push(`😊 Ánimo: ${log.mood}/10`);
   }
   if (log.energyLevel) {
-    kpis.push(`⚡ Energía: ${log.energyLevel === 'low' ? 'Baja' : log.energyLevel === 'medium' ? 'Media' : 'Alta'}`);
+    kpis.push(`⚡ Energía: ${getEnergyLabel(log.energyLevel, 'es')}`);
   }
   if (log.painLevel !== undefined && log.painLevel > 0) {
     kpis.push(`🩹 Dolor: ${log.painLevel}/10`);
@@ -425,7 +426,7 @@ function formatMonthContext(context: ChatContext): string {
   if (topSymptoms.length > 0) {
     sections.push(`**Síntomas más frecuentes:**`);
     topSymptoms.forEach(([symptom, count]) => {
-      sections.push(`- ${symptom}: ${count} veces`);
+      sections.push(`- ${getSymptomLabel(symptom, 'es')}: ${count} veces`);
     });
     sections.push('');
   }

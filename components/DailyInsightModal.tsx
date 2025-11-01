@@ -3,6 +3,7 @@ import type { DailyLog } from '../types.ts';
 import { format } from 'date-fns/format';
 import { parseISO } from 'date-fns/parseISO';
 import { es } from 'date-fns/locale/es';
+import { useTranslation } from '../hooks/useTranslation.ts';
 
 interface DailyInsightModalProps {
   log: DailyLog | null;
@@ -10,6 +11,7 @@ interface DailyInsightModalProps {
 }
 
 export const DailyInsightModal: React.FC<DailyInsightModalProps> = ({ log, onClose }) => {
+  const { translateSymptomId } = useTranslation();
   if (!log) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
@@ -266,7 +268,7 @@ export const DailyInsightModal: React.FC<DailyInsightModalProps> = ({ log, onClo
                       key={index}
                       className="px-3 py-1 bg-brand-primary/20 text-brand-primary rounded-full text-xs font-medium"
                     >
-                      {symptomId}
+                      {translateSymptomId(symptomId)}
                     </span>
                   ))}
                 </div>

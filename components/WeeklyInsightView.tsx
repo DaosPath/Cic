@@ -4,6 +4,7 @@ import { format, subDays } from 'date-fns';
 import { parseISO } from 'date-fns/parseISO';
 import { es } from 'date-fns/locale/es';
 import { UnifiedChatCTA } from './UnifiedChatCTA.tsx';
+import { useTranslation } from '../hooks/useTranslation.ts';
 
 interface WeeklyInsightViewProps {
   logs: DailyLog[];
@@ -16,6 +17,7 @@ export const WeeklyInsightView: React.FC<WeeklyInsightViewProps> = ({ logs, onSt
   const weekStart = subDays(today, 6);
   const stats = calculateWeeklyStats(logs);
   const weekLabel = `Semana del ${format(weekStart, "d 'de' MMM", { locale: es })} al ${format(today, "d 'de' MMM", { locale: es })}`;
+  const { translateEnergyLevel } = useTranslation();
 
   return (
     <div className="max-w-[1200px] mx-auto space-y-6 animate-in fade-in duration-300">
@@ -121,7 +123,7 @@ export const WeeklyInsightView: React.FC<WeeklyInsightViewProps> = ({ logs, onSt
                       </span>
                     )}
                     {day.energy && (
-                      <span className="text-sm" title={`Energía: ${day.energy}`}>
+                      <span className="text-sm" title={`Energía: ${translateEnergyLevel(day.energy)}`}>
                         {getEnergyEmoji(day.energy)}
                       </span>
                     )}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+﻿import React, { useState, useEffect, useContext } from 'react';
 import { AppContext } from '../context/AppContext.tsx';
 import type { DailyLog } from '../types.ts';
 import { formatISO } from 'date-fns/formatISO';
@@ -15,10 +15,10 @@ export const MoodTracker: React.FC = () => {
 
     const moods = [
         { value: 1, emoji: '😣', label: t('terrible'), ariaLabel: `${t('mood')}: ${t('terrible')}` },
-        { value: 2, emoji: '😔', label: t('bad'), ariaLabel: `${t('mood')}: ${t('bad')}` },
+        { value: 2, emoji: '🙁', label: t('bad'), ariaLabel: `${t('mood')}: ${t('bad')}` },
         { value: 3, emoji: '😐', label: t('normal'), ariaLabel: `${t('mood')}: ${t('normal')}` },
         { value: 4, emoji: '🙂', label: t('good'), ariaLabel: `${t('mood')}: ${t('good')}` },
-        { value: 5, emoji: '🤩', label: t('great'), ariaLabel: `${t('mood')}: ${t('great')}` },
+        { value: 5, emoji: '😄', label: t('great'), ariaLabel: `${t('mood')}: ${t('great')}` },
     ];
 
     useEffect(() => {
@@ -58,7 +58,7 @@ export const MoodTracker: React.FC = () => {
                 <h3 className="text-base md:text-lg font-semibold text-brand-text tracking-wide" style={{ lineHeight: 1.4 }}>{t('howDoYouFeel')}</h3>
                 {showSaved && selectedMood && (
                     <span className="text-xs bg-brand-primary/20 text-brand-primary px-3 py-1 rounded-full font-medium flex items-center gap-1">
-                        <span>✓</span> Guardado
+                        <span>✅</span> Guardado
                     </span>
                 )}
             </div>
@@ -92,3 +92,5 @@ export const MoodTracker: React.FC = () => {
         </div>
     );
 };
+
+

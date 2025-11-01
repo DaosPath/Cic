@@ -288,7 +288,7 @@ interface DayEditorProps {
 
 const DayEditor: React.FC<DayEditorProps> = ({ date, log: initialLog, onSave, onClose }) => {
     const { settings } = useContext(AppContext);
-    const { t } = useTranslation();
+    const { t, translateEnergyLevel } = useTranslation();
     const [log, setLog] = useState<DailyLog>(initialLog);
     const [saved, setSaved] = useState(false);
     const [isAdvancedMode, setIsAdvancedMode] = useState(false);
@@ -585,7 +585,7 @@ const DayEditor: React.FC<DayEditorProps> = ({ date, log: initialLog, onSave, on
                                         <div className="flex justify-between">
                                             <span className="text-brand-text-dim">Energía:</span>
                                             <span className="text-brand-text font-medium">
-                                                {log.energyLevel === 'low' ? 'Baja' : log.energyLevel === 'medium' ? 'Media' : 'Alta'}
+                                                {translateEnergyLevel(log.energyLevel)}
                                             </span>
                                         </div>
                                     )}
@@ -877,7 +877,7 @@ const MonthSelector: React.FC<MonthSelectorProps> = ({ currentDate, onSelect, on
 // Main Calendar Component
 export const CalendarPage: React.FC = () => {
     const { logs, predictions, settings, refreshData, cycles } = useContext(AppContext);
-    const { t, language } = useTranslation();
+    const { t, language, translateSymptomId } = useTranslation();
     const [currentMonth, setCurrentMonth] = useState(startOfMonth(new Date()));
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
     const [hoveredDate, setHoveredDate] = useState<Date | null>(null);
@@ -1056,7 +1056,7 @@ export const CalendarPage: React.FC = () => {
                 log.date,
                 log.periodIntensity || '',
                 log.mood || '',
-                (log.symptoms || []).join(';'),
+                (log.symptoms || []).map(translateSymptomId).join(';'),
                 (log.notes || '').replace(/,/g, ';')
             ].join(','))
         ].join('\n');
