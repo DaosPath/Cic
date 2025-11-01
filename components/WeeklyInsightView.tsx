@@ -19,20 +19,27 @@ export const WeeklyInsightView: React.FC<WeeklyInsightViewProps> = ({ logs, onSt
 
   return (
     <div className="max-w-[1200px] mx-auto space-y-6 animate-in fade-in duration-300">
-      {/* Header Sticky */}
-      <div className="sticky top-0 z-10 bg-brand-bg/95 backdrop-blur-sm border-b border-brand-border pb-4 mb-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <h2 className="text-xl font-bold text-brand-text" style={{ fontWeight: 700, lineHeight: 1.3 }}>
-              Resumen Semanal
-            </h2>
-            <div className="px-3 py-1 bg-brand-primary/10 border border-brand-primary/20 rounded-full">
-              <span className="text-xs font-medium text-brand-primary">
-                {format(weekStart, "d MMM", { locale: es })} - {format(today, "d MMM", { locale: es })}
-              </span>
-            </div>
+      {/* Banner mejorado */}
+      <div 
+        className="border border-[#2a2a2a] rounded-[20px] p-6 shadow-[0_4px_16px_rgba(0,0,0,0.3)]"
+        style={{
+          background: 'linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(15, 15, 15, 0.98) 50%, rgba(0, 0, 0, 1) 100%)'
+        }}
+      >
+        <div className="flex items-center justify-between gap-4 mb-4">
+          <h1 className="text-2xl font-bold text-white" style={{ fontWeight: 700, lineHeight: 1.2, letterSpacing: '-0.02em' }}>
+            Resumen Semanal
+          </h1>
+          <div className="px-3 py-1.5 bg-brand-primary/20 rounded-full">
+            <span className="text-sm font-semibold text-brand-primary tabular-nums" style={{ fontWeight: 600 }}>
+              7 días
+            </span>
           </div>
         </div>
+        <div className="h-px bg-[var(--border)] mb-4" />
+        <p className="text-sm text-[var(--text-2)]" style={{ fontWeight: 500, lineHeight: 1.5 }}>
+          {format(weekStart, "d 'de' MMM", { locale: es })} - {format(today, "d 'de' MMM", { locale: es })} • {stats.totalLogs} días registrados
+        </p>
       </div>
 
       {/* KPI Cards */}
@@ -82,23 +89,28 @@ export const WeeklyInsightView: React.FC<WeeklyInsightViewProps> = ({ logs, onSt
       </div>
 
       {/* Desglose Diario */}
-      <div className="bg-brand-surface border border-brand-border rounded-[18px] shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
-        <div className="p-5 border-b border-brand-border">
-          <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
+      <div 
+        className="border border-[#2a2a2a] rounded-[18px] shadow-[0_4px_16px_rgba(0,0,0,0.3)]"
+        style={{
+          background: 'linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(15, 15, 15, 0.98) 50%, rgba(0, 0, 0, 1) 100%)'
+        }}
+      >
+        <div className="p-5 border-b border-[#2a2a2a]">
+          <h3 className="text-sm font-semibold text-white" style={{ fontWeight: 600 }}>
             Desglose Diario
           </h3>
         </div>
-        <div className="divide-y divide-brand-border">
+        <div className="divide-y divide-[#2a2a2a]">
           {stats.dailyBreakdown.map((day, index) => (
             <div
               key={index}
-              className="flex items-center gap-4 px-5 py-3 hover:bg-brand-surface-2 transition-colors duration-150"
+              className="flex items-center gap-4 px-5 py-3 hover:bg-[var(--surface-2)] transition-colors duration-150"
             >
               <div className="flex-shrink-0 w-16">
-                <p className="text-xs font-semibold text-brand-text" style={{ fontWeight: 600 }}>
+                <p className="text-xs font-semibold text-white" style={{ fontWeight: 600 }}>
                   {day.dayName}
                 </p>
-                <p className="text-xs text-brand-text-2">{day.date}</p>
+                <p className="text-xs text-[var(--text-2)]">{day.date}</p>
               </div>
               <div className="flex-1 flex items-center gap-2 flex-wrap">
                 {day.hasData ? (
@@ -114,12 +126,12 @@ export const WeeklyInsightView: React.FC<WeeklyInsightViewProps> = ({ logs, onSt
                       </span>
                     )}
                     {day.pain !== undefined && day.pain > 0 && (
-                      <span className="text-xs px-2 py-1 bg-brand-primary/12 text-brand-primary rounded-md font-medium">
+                      <span className="text-xs px-2 py-1 bg-brand-primary/20 text-brand-primary rounded-md font-medium">
                         Dolor {day.pain}
                       </span>
                     )}
                     {day.sleep !== undefined && (
-                      <span className="text-xs px-2 py-1 bg-brand-accent/12 text-brand-accent rounded-md font-medium">
+                      <span className="text-xs px-2 py-1 bg-brand-accent/20 text-brand-accent rounded-md font-medium">
                         {day.sleep}h
                       </span>
                     )}
@@ -128,9 +140,9 @@ export const WeeklyInsightView: React.FC<WeeklyInsightViewProps> = ({ logs, onSt
                     )}
                   </>
                 ) : (
-                  <button className="text-xs px-2 py-1 bg-brand-border/12 text-brand-text-2 rounded-md hover:bg-brand-border/16 hover:text-brand-text transition-colors duration-150 font-medium">
+                  <span className="text-xs px-2 py-1 bg-[var(--surface-2)] text-[var(--text-2)] rounded-md font-medium">
                     Sin registro
-                  </button>
+                  </span>
                 )}
               </div>
             </div>
@@ -141,47 +153,52 @@ export const WeeklyInsightView: React.FC<WeeklyInsightViewProps> = ({ logs, onSt
       {/* Métricas Semanales */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Actividad Física */}
-        <div className="bg-brand-surface border border-brand-border rounded-[18px] p-5 shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
+        <div 
+          className="border border-[#2a2a2a] rounded-[18px] p-5 shadow-[0_4px_16px_rgba(0,0,0,0.3)]"
+          style={{
+            background: 'linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(15, 15, 15, 0.98) 50%, rgba(0, 0, 0, 1) 100%)'
+          }}
+        >
           <div className="flex items-center gap-2 mb-4">
             <span className="text-lg">🏃</span>
-            <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
+            <h3 className="text-sm font-semibold text-white" style={{ fontWeight: 600 }}>
               Actividad Física
             </h3>
           </div>
           <div className="space-y-4">
             <div className="flex items-end gap-4">
               <div>
-                <p className="text-2xl font-bold text-brand-text" style={{ fontWeight: 700 }}>
+                <p className="text-2xl font-bold text-white tabular-nums" style={{ fontWeight: 700 }}>
                   {stats.activityDays}/7
                 </p>
-                <p className="text-xs text-brand-text-2">días activos</p>
+                <p className="text-xs text-[var(--text-2)]">días activos</p>
               </div>
               <div className="flex-1">
-                <div className="relative w-full bg-brand-surface-2 rounded-full h-3 overflow-hidden">
+                <div className="relative w-full bg-[var(--surface-2)] rounded-full h-3 overflow-hidden">
                   <div
                     className={`h-full transition-all duration-300 ${
                       stats.activityDays >= 5 
-                        ? 'bg-green-500/16 border-r-2 border-green-500' 
+                        ? 'bg-green-500/20 border-r-2 border-green-500' 
                         : stats.activityDays >= 3 
-                        ? 'bg-amber-500/16 border-r-2 border-amber-500' 
-                        : 'bg-red-500/16 border-r-2 border-red-500'
+                        ? 'bg-amber-500/20 border-r-2 border-amber-500' 
+                        : 'bg-red-500/20 border-r-2 border-red-500'
                     }`}
                     style={{ width: `${(stats.activityDays / 7) * 100}%` }}
                   />
                   {/* Meta marker */}
                   <div 
-                    className="absolute top-0 bottom-0 w-0.5 bg-brand-text-2/40"
+                    className="absolute top-0 bottom-0 w-0.5 bg-[var(--text-2)]/40"
                     style={{ left: `${(5 / 7) * 100}%` }}
                   />
                 </div>
-                <p className="text-xs text-brand-text-2 mt-1">Meta: 5 días/semana</p>
+                <p className="text-xs text-[var(--text-2)] mt-1">Meta: 5 días/semana</p>
               </div>
             </div>
             {stats.totalActivityMinutes > 0 && (
-              <div className="pt-2 border-t border-brand-border">
+              <div className="pt-2 border-t border-[#2a2a2a]">
                 <div className="flex justify-between items-center">
-                  <span className="text-xs text-brand-text-2">Total minutos</span>
-                  <span className="text-sm font-medium text-brand-text">{stats.totalActivityMinutes} min</span>
+                  <span className="text-xs text-[var(--text-2)]">Total minutos</span>
+                  <span className="text-sm font-medium text-white tabular-nums">{stats.totalActivityMinutes} min</span>
                 </div>
               </div>
             )}
@@ -189,53 +206,63 @@ export const WeeklyInsightView: React.FC<WeeklyInsightViewProps> = ({ logs, onSt
         </div>
 
         {/* Calidad del Sueño */}
-        <div className="bg-brand-surface border border-brand-border rounded-[18px] p-5 shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
+        <div 
+          className="border border-[#2a2a2a] rounded-[18px] p-5 shadow-[0_4px_16px_rgba(0,0,0,0.3)]"
+          style={{
+            background: 'linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(15, 15, 15, 0.98) 50%, rgba(0, 0, 0, 1) 100%)'
+          }}
+        >
           <div className="flex items-center gap-2 mb-4">
             <span className="text-lg">🌙</span>
-            <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
+            <h3 className="text-sm font-semibold text-white" style={{ fontWeight: 600 }}>
               Calidad del Sueño
             </h3>
           </div>
           <div className="space-y-3">
             <div className="flex justify-between items-center">
-              <span className="text-xs text-brand-text-2">Promedio horas</span>
-              <span className="text-sm font-medium text-brand-text">{stats.avgSleep.toFixed(1)}h</span>
+              <span className="text-xs text-[var(--text-2)]">Promedio horas</span>
+              <span className="text-sm font-medium text-white tabular-nums">{stats.avgSleep.toFixed(1)}h</span>
             </div>
             {stats.avgSleepQuality > 0 && (
               <div className="flex justify-between items-center">
-                <span className="text-xs text-brand-text-2">Calidad promedio</span>
-                <span className="text-sm font-medium text-brand-text">{stats.avgSleepQuality.toFixed(1)}/5</span>
+                <span className="text-xs text-[var(--text-2)]">Calidad promedio</span>
+                <span className="text-sm font-medium text-white tabular-nums">{stats.avgSleepQuality.toFixed(1)}/5</span>
               </div>
             )}
             <div className="flex justify-between items-center">
-              <span className="text-xs text-brand-text-2">Días con buen sueño</span>
-              <span className="text-sm font-medium text-brand-text">{stats.goodSleepDays}/7</span>
+              <span className="text-xs text-[var(--text-2)]">Días con buen sueño</span>
+              <span className="text-sm font-medium text-white tabular-nums">{stats.goodSleepDays}/7</span>
             </div>
           </div>
         </div>
 
         {/* Bienestar Mental */}
-        <div className="bg-brand-surface border border-brand-border rounded-[18px] p-5 shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
+        <div 
+          className="border border-[#2a2a2a] rounded-[18px] p-5 shadow-[0_4px_16px_rgba(0,0,0,0.3)]"
+          style={{
+            background: 'linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(15, 15, 15, 0.98) 50%, rgba(0, 0, 0, 1) 100%)'
+          }}
+        >
           <div className="flex items-center gap-2 mb-4">
             <span className="text-lg">🧠</span>
-            <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
+            <h3 className="text-sm font-semibold text-white" style={{ fontWeight: 600 }}>
               Bienestar Mental
             </h3>
           </div>
           <div className="space-y-3">
             {stats.avgMood > 0 && (
               <div className="flex justify-between items-center">
-                <span className="text-xs text-brand-text-2">Ánimo promedio</span>
-                <span className="text-sm font-medium text-brand-text">{stats.avgMood.toFixed(1)}/5</span>
+                <span className="text-xs text-[var(--text-2)]">Ánimo promedio</span>
+                <span className="text-sm font-medium text-white tabular-nums">{stats.avgMood.toFixed(1)}/5</span>
               </div>
             )}
             <div className="flex justify-between items-center">
-              <span className="text-xs text-brand-text-2">Días con estrés alto</span>
-              <span className="text-sm font-medium text-brand-text">{stats.highStressDays}/7</span>
+              <span className="text-xs text-[var(--text-2)]">Días con estrés alto</span>
+              <span className="text-sm font-medium text-white tabular-nums">{stats.highStressDays}/7</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-xs text-brand-text-2">Días con energía alta</span>
-              <span className="text-sm font-medium text-brand-text">{stats.highEnergyDays}/7</span>
+              <span className="text-xs text-[var(--text-2)]">Días con energía alta</span>
+              <span className="text-sm font-medium text-white tabular-nums">{stats.highEnergyDays}/7</span>
             </div>
           </div>
         </div>
@@ -243,18 +270,23 @@ export const WeeklyInsightView: React.FC<WeeklyInsightViewProps> = ({ logs, onSt
 
       {/* Síntomas más Frecuentes */}
       {stats.topSymptoms.length > 0 && (
-        <div className="bg-brand-surface border border-brand-border rounded-[18px] p-5 shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
+        <div 
+          className="border border-[#2a2a2a] rounded-[18px] p-5 shadow-[0_4px_16px_rgba(0,0,0,0.3)]"
+          style={{
+            background: 'linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(15, 15, 15, 0.98) 50%, rgba(0, 0, 0, 1) 100%)'
+          }}
+        >
           <div className="flex items-center gap-2 mb-4">
             <span className="text-lg">🔍</span>
-            <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
+            <h3 className="text-sm font-semibold text-white" style={{ fontWeight: 600 }}>
               Síntomas más Frecuentes
             </h3>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {stats.topSymptoms.map((symptom, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-brand-surface-2 rounded-lg">
-                <span className="text-sm text-brand-text">{symptom.name}</span>
-                <span className="text-xs px-2 py-1 bg-brand-primary/12 text-brand-primary rounded-full font-medium">
+              <div key={index} className="flex items-center justify-between p-3 bg-[var(--surface-2)] rounded-lg">
+                <span className="text-sm text-white">{symptom.name}</span>
+                <span className="text-xs px-2 py-1 bg-brand-primary/20 text-brand-primary rounded-full font-medium tabular-nums">
                   {symptom.count}
                 </span>
               </div>
@@ -265,36 +297,41 @@ export const WeeklyInsightView: React.FC<WeeklyInsightViewProps> = ({ logs, onSt
 
       {/* Tendencias de Consumo */}
       {(stats.avgCaffeine > 0 || stats.avgAlcohol > 0 || stats.topCravings.length > 0) && (
-        <div className="bg-brand-surface border border-brand-border rounded-[18px] p-5 shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
+        <div 
+          className="border border-[#2a2a2a] rounded-[18px] p-5 shadow-[0_4px_16px_rgba(0,0,0,0.3)]"
+          style={{
+            background: 'linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(15, 15, 15, 0.98) 50%, rgba(0, 0, 0, 1) 100%)'
+          }}
+        >
           <div className="flex items-center gap-2 mb-4">
             <span className="text-lg">☕</span>
-            <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
+            <h3 className="text-sm font-semibold text-white" style={{ fontWeight: 600 }}>
               Tendencias de Consumo
             </h3>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {stats.avgCaffeine > 0 && (
-              <div className="text-center p-3 bg-brand-surface-2 rounded-lg">
-                <p className="text-2xl font-bold text-brand-text" style={{ fontWeight: 700 }}>
+              <div className="text-center p-3 bg-[var(--surface-2)] rounded-lg">
+                <p className="text-2xl font-bold text-white tabular-nums" style={{ fontWeight: 700 }}>
                   {stats.avgCaffeine.toFixed(1)}
                 </p>
-                <p className="text-xs text-brand-text-2">tazas cafeína/día</p>
+                <p className="text-xs text-[var(--text-2)]">tazas cafeína/día</p>
               </div>
             )}
             {stats.avgAlcohol > 0 && (
-              <div className="text-center p-3 bg-brand-surface-2 rounded-lg">
-                <p className="text-2xl font-bold text-brand-text" style={{ fontWeight: 700 }}>
+              <div className="text-center p-3 bg-[var(--surface-2)] rounded-lg">
+                <p className="text-2xl font-bold text-white tabular-nums" style={{ fontWeight: 700 }}>
                   {stats.avgAlcohol.toFixed(1)}
                 </p>
-                <p className="text-xs text-brand-text-2">unidades alcohol/día</p>
+                <p className="text-xs text-[var(--text-2)]">unidades alcohol/día</p>
               </div>
             )}
             {stats.topCravings.length > 0 && (
-              <div className="p-3 bg-brand-surface-2 rounded-lg">
-                <p className="text-xs text-brand-text-2 mb-2">Antojos frecuentes</p>
+              <div className="p-3 bg-[var(--surface-2)] rounded-lg">
+                <p className="text-xs text-[var(--text-2)] mb-2">Antojos frecuentes</p>
                 <div className="flex flex-wrap gap-1">
                   {stats.topCravings.slice(0, 3).map((craving, index) => (
-                    <span key={index} className="px-2 py-0.5 bg-brand-accent/12 text-brand-accent rounded text-xs">
+                    <span key={index} className="px-2 py-0.5 bg-brand-accent/20 text-brand-accent rounded text-xs">
                       {craving}
                     </span>
                   ))}
@@ -306,23 +343,28 @@ export const WeeklyInsightView: React.FC<WeeklyInsightViewProps> = ({ logs, onSt
       )}
 
       {/* Patrones de la Semana */}
-      <div className="bg-brand-surface border border-brand-border rounded-[18px] p-5 shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
+      <div 
+        className="border border-[#2a2a2a] rounded-[18px] p-5 shadow-[0_4px_16px_rgba(0,0,0,0.3)]"
+        style={{
+          background: 'linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(15, 15, 15, 0.98) 50%, rgba(0, 0, 0, 1) 100%)'
+        }}
+      >
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <span className="text-lg">💡</span>
-            <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
+            <h3 className="text-sm font-semibold text-white" style={{ fontWeight: 600 }}>
               Patrones de la Semana
             </h3>
           </div>
-          <div className="px-2 py-1 bg-brand-primary/12 text-brand-primary rounded-md">
+          <div className="px-2 py-1 bg-brand-primary/20 text-brand-primary rounded-md">
             <span className="text-xs font-medium">Alta confianza</span>
           </div>
         </div>
         <div className="space-y-3">
           {generateWeeklyInsights(stats).map((insight, index) => (
             <div key={index} className="flex items-start gap-3">
-              <span className="text-brand-primary mt-0.5 text-xs">•</span>
-              <p className="text-sm text-brand-text leading-relaxed flex-1" style={{ lineHeight: 1.6 }}>
+              <span className="text-brand-primary mt-1 text-sm font-bold">•</span>
+              <p className="text-sm text-white leading-relaxed flex-1" style={{ lineHeight: 1.6 }}>
                 {insight}
               </p>
             </div>
@@ -362,11 +404,16 @@ interface MetricCardProps {
 
 const MetricCard: React.FC<MetricCardProps> = ({ icon, label, value, type, sparklineData }) => {
   const isHabit = type === 'habit';
-  const colorClass = isHabit ? 'text-brand-accent' : 'text-brand-primary/80';
-  const bgClass = isHabit ? 'bg-brand-accent/12' : 'bg-brand-primary/12';
+  const colorClass = isHabit ? 'text-brand-accent' : 'text-brand-primary';
 
   return (
-    <div className={`relative h-[100px] border border-brand-border rounded-[18px] p-4 ${bgClass} shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.12)] transition-all duration-150 focus-within:ring-2 focus-within:ring-brand-primary/20`}>
+    <div 
+      className="relative border border-[#2a2a2a] rounded-[18px] p-4 shadow-[0_4px_16px_rgba(0,0,0,0.3)] hover:shadow-[0_6px_24px_rgba(0,0,0,0.4)] transition-all duration-200"
+      style={{
+        height: '100px',
+        background: 'linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(15, 15, 15, 0.98) 50%, rgba(0, 0, 0, 1) 100%)'
+      }}
+    >
       {/* Mini Sparkline */}
       <div className="absolute top-3 right-3">
         <MiniSparkline data={sparklineData} color={isHabit ? 'accent' : 'primary'} />
@@ -374,10 +421,10 @@ const MetricCard: React.FC<MetricCardProps> = ({ icon, label, value, type, spark
       
       <div className="flex items-center gap-2 mb-3">
         <span className="text-[20px] leading-none">{icon}</span>
-        <p className="text-xs text-brand-text-2 font-medium">{label}</p>
+        <p className="text-xs text-[var(--text-2)] font-medium">{label}</p>
       </div>
       
-      <p className={`text-[28px] font-bold ${colorClass} leading-none`} style={{ fontWeight: 700 }}>
+      <p className={`text-[28px] font-bold ${colorClass} leading-none tabular-nums`} style={{ fontWeight: 700 }}>
         {value}
       </p>
     </div>
