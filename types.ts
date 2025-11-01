@@ -11,7 +11,7 @@ export interface DailyLog {
   date: string;
   
   // Menstruation - Extended
-  periodIntensity?: 0 | 1 | 2 | 3; // 0: None, 1: Spotting, 2: Light, 3: Medium, 4: Heavy
+  periodIntensity?: 0 | 1 | 2 | 3 | 4; // 0: None, 1: Spotting, 2: Light, 3: Medium, 4: Heavy
   periodColor?: 'bright-red' | 'dark-red' | 'brown' | 'pink';
   periodConsistency?: 'watery' | 'thick' | 'clotty';
   hasClots?: boolean;
