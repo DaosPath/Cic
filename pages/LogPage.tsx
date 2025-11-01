@@ -156,38 +156,114 @@ export const LogPage: React.FC = () => {
     return (
         <div className="min-h-screen px-4 md:px-8 pt-12 pb-24 md:pb-12">
             <div className="max-w-[1140px] mx-auto">
-                <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-6 md:p-8 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)] mb-6 md:mb-8">
-                    <div className="text-center">
-                        <h1 className="text-3xl md:text-4xl font-bold mb-2 text-brand-text tracking-tight" style={{ fontWeight: 700, lineHeight: 1.45 }}>{t('dailyRecord')}</h1>
-                        <p className="text-base md:text-lg text-brand-text-dim/80 font-medium" style={{ fontWeight: 500, lineHeight: 1.45 }}>
+                {/* Header mejorado con mejor contraste */}
+                <div 
+                    className="relative p-6 md:p-8 rounded-[18px] border shadow-[0_8px_24px_rgba(0,0,0,0.35)] mb-6 md:mb-8 overflow-hidden"
+                    style={{
+                        background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.85) 0%, rgba(20, 20, 20, 0.9) 50%, rgba(10, 10, 10, 0.95) 100%)',
+                        borderColor: 'rgba(255, 255, 255, 0.1)'
+                    }}
+                >
+                    {/* Gradiente decorativo de fondo */}
+                    <div 
+                        className="absolute inset-0 opacity-20 pointer-events-none"
+                        style={{
+                            background: 'radial-gradient(circle at top right, var(--brand-primary) 0%, transparent 50%), radial-gradient(circle at bottom left, var(--brand-accent) 0%, transparent 50%)'
+                        }}
+                    />
+                    
+                    <div className="relative text-center">
+                        <h1 
+                            className="text-3xl md:text-4xl font-bold mb-2 tracking-tight"
+                            style={{ 
+                                fontWeight: 700, 
+                                lineHeight: 1.45,
+                                color: 'rgba(255, 255, 255, 0.95)',
+                                textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
+                            }}
+                        >
+                            {t('dailyRecord')}
+                        </h1>
+                        <p 
+                            className="text-base md:text-lg font-medium"
+                            style={{ 
+                                fontWeight: 500, 
+                                lineHeight: 1.45,
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }}
+                        >
                             {formattedDate}
                         </p>
-                        <div className="mt-4 w-16 h-0.5 bg-gradient-to-r from-brand-primary to-brand-accent mx-auto rounded-full"></div>
+                        <div className="mt-4 w-16 h-0.5 bg-gradient-to-r from-brand-primary to-brand-accent mx-auto rounded-full shadow-lg"></div>
                         
                         {/* Action Buttons */}
                         <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
-                            {/* AI Registration Button */}
+                            {/* AI Registration Button - Mejorado */}
                             <button
                                 onClick={() => setIsAIModalOpen(true)}
-                                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-brand-primary to-brand-accent text-white font-semibold hover:shadow-lg hover:shadow-brand-primary/30 transition-all duration-150 hover:scale-105 active:scale-95"
-                                style={{ fontWeight: 600 }}
+                                className="group relative inline-flex items-center gap-2.5 px-8 py-3.5 rounded-2xl font-semibold transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] overflow-hidden"
+                                style={{ 
+                                    fontWeight: 600,
+                                    background: 'linear-gradient(135deg, #f59e0b 0%, #f97316 50%, #ea580c 100%)',
+                                    boxShadow: '0 4px 16px rgba(245, 158, 11, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1) inset'
+                                }}
                             >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                                {/* Brillo animado en hover */}
+                                <div 
+                                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                                    style={{
+                                        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%, rgba(255, 255, 255, 0.2) 100%)',
+                                        backgroundSize: '200% 100%',
+                                        animation: 'shimmer 2s infinite'
+                                    }}
+                                />
+                                
+                                {/* Icono con animación */}
+                                <svg 
+                                    className="w-5 h-5 relative z-10 group-hover:rotate-12 transition-transform duration-300" 
+                                    fill="none" 
+                                    stroke="currentColor" 
+                                    viewBox="0 0 24 24"
+                                    style={{ color: 'rgba(255, 255, 255, 0.95)' }}
+                                >
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                                 </svg>
-                                Registro con IA
+                                
+                                <span 
+                                    className="relative z-10"
+                                    style={{ 
+                                        color: 'rgba(255, 255, 255, 0.95)',
+                                        textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)'
+                                    }}
+                                >
+                                    Registro con IA
+                                </span>
+                                
+                                {/* Partículas decorativas */}
+                                <div className="absolute top-1 right-2 w-1 h-1 bg-white/40 rounded-full group-hover:animate-ping" />
+                                <div className="absolute bottom-2 left-3 w-1 h-1 bg-white/30 rounded-full group-hover:animate-ping" style={{ animationDelay: '0.2s' }} />
                             </button>
 
-                            {/* Mode Toggle */}
-                            <div className="flex bg-brand-surface-2 rounded-xl p-1 border border-brand-border">
+                            {/* Mode Toggle - Mejorado */}
+                            <div 
+                                className="flex rounded-xl p-1"
+                                style={{
+                                    background: 'rgba(0, 0, 0, 0.4)',
+                                    border: '1px solid rgba(255, 255, 255, 0.1)'
+                                }}
+                            >
                                 <button
                                     onClick={() => setIsAdvancedMode(false)}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
+                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                                         !isAdvancedMode
-                                            ? 'bg-brand-primary text-white shadow-md'
-                                            : 'text-brand-text-dim hover:text-brand-text'
+                                            ? 'shadow-lg'
+                                            : 'hover:bg-white/5'
                                     }`}
-                                    style={{ fontWeight: 500 }}
+                                    style={{ 
+                                        fontWeight: 500,
+                                        background: !isAdvancedMode ? 'linear-gradient(135deg, var(--brand-primary), var(--brand-accent))' : 'transparent',
+                                        color: !isAdvancedMode ? 'white' : 'rgba(255, 255, 255, 0.6)'
+                                    }}
                                 >
                                     <svg className="w-4 h-4 inline-block mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -196,12 +272,16 @@ export const LogPage: React.FC = () => {
                                 </button>
                                 <button
                                     onClick={() => setIsAdvancedMode(true)}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
+                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                                         isAdvancedMode
-                                            ? 'bg-brand-primary text-white shadow-md'
-                                            : 'text-brand-text-dim hover:text-brand-text'
+                                            ? 'shadow-lg'
+                                            : 'hover:bg-white/5'
                                     }`}
-                                    style={{ fontWeight: 500 }}
+                                    style={{ 
+                                        fontWeight: 500,
+                                        background: isAdvancedMode ? 'linear-gradient(135deg, var(--brand-primary), var(--brand-accent))' : 'transparent',
+                                        color: isAdvancedMode ? 'white' : 'rgba(255, 255, 255, 0.6)'
+                                    }}
                                 >
                                     <svg className="w-4 h-4 inline-block mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
