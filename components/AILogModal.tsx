@@ -19,7 +19,9 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
   const [isProcessing, setIsProcessing] = useState(false);
   const [aiSuggestion, setAiSuggestion] = useState<AILogSuggestion | null>(null);
   const [stopRecording, setStopRecording] = useState<(() => void) | null>(null);
-  const { translateSymptomId } = useTranslation();
+  const { translateSymptomId, language } = useTranslation();
+  const cardClasses = 'bg-brand-surface-2 rounded-xl p-4';
+  const highlightCard = 'bg-brand-surface-3 rounded-xl p-4';
 
   if (!isOpen) return null;
 
@@ -53,11 +55,16 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
 
     setIsProcessing(true);
     try {
-      const result = await parseLogDescription(description);
+      const result = await parseLogDescription(description, language);
       setAiSuggestion(result);
       setStep('review');
     } catch (error) {
-      alert('Error al procesar la descripción. Por favor, intenta de nuevo.');
+      const errorMessages = {
+        es: 'Error al procesar la descripción. Por favor, intenta de nuevo.',
+        en: 'Error processing description. Please try again.',
+        tr: 'Açıklama işlenirken hata oluştu. Lütfen tekrar deneyin.'
+      };
+      alert(errorMessages[language] || errorMessages.es);
     } finally {
       setIsProcessing(false);
     }
@@ -94,9 +101,9 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-brand-surface rounded-[18px] border border-brand-border shadow-[0_8px_32px_rgba(0,0,0,0.4)] max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col animate-in zoom-in-95 duration-200">
+      <div className="bg-brand-surface rounded-[18px] shadow-[0_8px_32px_rgba(0,0,0,0.45)] max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col animate-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="p-6 border-b border-brand-border flex items-center justify-between">
+        <div className="p-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-brand-primary/15">
               <svg className="w-5 h-5 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -125,12 +132,12 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6">
           {step === 'input' ? (
-            <div className="space-y-6">
-              {/* Instructions */}
-              <div className="bg-brand-primary/10 border border-brand-primary/20 rounded-xl p-4">
-                <p className="text-sm text-brand-text leading-relaxed mb-2">
-                  <strong className="font-semibold">Ejemplos de lo que puedes decir:</strong>
-                </p>
+              <div className="space-y-6">
+                {/* Instructions */}
+                <div className={highlightCard}>
+                  <p className="text-sm text-brand-text leading-relaxed mb-2">
+                    <strong className="font-semibold">Ejemplos de lo que puedes decir:</strong>
+                  </p>
                 <ul className="text-xs text-brand-text-dim space-y-1 leading-relaxed">
                   <li>• "Menstruación abundante rojo oscuro con coágulos, usé 4 toallas, dolor 7/10 con cólicos"</li>
                   <li>• "Migraña con aura nivel 8, tomé ibuprofeno 400mg, dormí mal 5 horas"</li>
@@ -149,7 +156,7 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Escribe o dicta cómo te sientes hoy, qué síntomas tienes, tu nivel de energía..."
-                  className="w-full bg-brand-surface-2 text-brand-text placeholder:text-brand-text-dim/70 p-4 rounded-xl border border-brand-border focus:ring-2 focus:ring-brand-primary/50 focus:border-brand-primary outline-none transition-all duration-150 min-h-[150px] resize-none"
+                  className="w-full bg-brand-surface-2 text-brand-text placeholder:text-brand-text-dim/70 p-4 rounded-[18px] focus:ring-2 focus:ring-brand-primary/50 outline-none transition-all duration-150 min-h-[150px] resize-none"
                   disabled={isRecording || isProcessing}
                 />
                 <div className="flex items-center justify-between mt-2">
@@ -171,10 +178,8 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
               <button
                 onClick={handleVoiceInput}
                 disabled={isProcessing}
-                className={`w-full py-4 px-6 rounded-xl font-semibold transition-all duration-150 flex items-center justify-center gap-3 ${
-                  isRecording
-                    ? 'bg-red-500/20 text-red-400 border-2 border-red-500/50 animate-pulse'
-                    : 'bg-brand-surface-2 text-brand-text border border-brand-border hover:border-brand-primary/30 hover:bg-brand-surface'
+                className={`w-full py-4 px-6 rounded-[18px] font-semibold transition-all duration-150 flex items-center justify-center gap-3 bg-brand-surface-2 text-brand-text ${
+                  isRecording ? 'ring-1 ring-red-500/40 bg-red-500/10 text-red-400 animate-pulse' : ''
                 }`}
                 style={{ fontWeight: 600 }}
               >
@@ -188,7 +193,7 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
             <div className="space-y-6">
               {/* Confidence Score */}
               {aiSuggestion && (
-                <div className="bg-brand-surface-2 rounded-xl p-4 border border-brand-border">
+                <div className={cardClasses}>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
                       Confianza del análisis
@@ -216,7 +221,7 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
 
               {/* Summary */}
               {aiSuggestion && (
-                <div className="bg-brand-primary/10 border border-brand-primary/20 rounded-xl p-4">
+                <div className={highlightCard}>
                   <h3 className="text-sm font-semibold text-brand-text mb-2" style={{ fontWeight: 600 }}>
                     Resumen detectado
                   </h3>
@@ -235,7 +240,7 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
 
                   {/* Special sections for arrays */}
                   {aiSuggestion.suggestions.symptoms && aiSuggestion.suggestions.symptoms.length > 0 && (
-                    <div className="bg-brand-surface-2 rounded-xl p-3 border border-brand-border">
+                    <div className="bg-brand-surface-2 rounded-xl p-3">
                       <div className="text-xs font-semibold text-brand-text-dim mb-2">Síntomas</div>
                       <div className="flex flex-wrap gap-1.5">
                         {aiSuggestion.suggestions.symptoms.map((s: string, idx: number) => (
@@ -248,7 +253,7 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
                   )}
 
                   {aiSuggestion.suggestions.medications && aiSuggestion.suggestions.medications.length > 0 && (
-                    <div className="bg-brand-surface-2 rounded-xl p-3 border border-brand-border">
+                    <div className="bg-brand-surface-2 rounded-xl p-3">
                       <div className="text-xs font-semibold text-brand-text-dim mb-2">Medicamentos</div>
                       <div className="space-y-1">
                         {aiSuggestion.suggestions.medications.map((m: any, idx: number) => (
@@ -261,7 +266,7 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
                   )}
 
                   {aiSuggestion.suggestions.periodProducts && aiSuggestion.suggestions.periodProducts.length > 0 && (
-                    <div className="bg-brand-surface-2 rounded-xl p-3 border border-brand-border">
+                    <div className="bg-brand-surface-2 rounded-xl p-3">
                       <div className="text-xs font-semibold text-brand-text-dim mb-2">Productos menstruales</div>
                       <div className="text-sm text-brand-text">
                         {aiSuggestion.suggestions.periodProducts.map((p: string) => {
@@ -273,7 +278,7 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
                   )}
 
                   {aiSuggestion.suggestions.activityType && aiSuggestion.suggestions.activityType.length > 0 && (
-                    <div className="bg-brand-surface-2 rounded-xl p-3 border border-brand-border">
+                    <div className="bg-brand-surface-2 rounded-xl p-3">
                       <div className="text-xs font-semibold text-brand-text-dim mb-2">Tipo de actividad</div>
                       <div className="text-sm text-brand-text">
                         {aiSuggestion.suggestions.activityType.map((a: string) => {
@@ -285,7 +290,7 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
                   )}
 
                   {aiSuggestion.suggestions.painLocations && aiSuggestion.suggestions.painLocations.length > 0 && (
-                    <div className="bg-brand-surface-2 rounded-xl p-3 border border-brand-border">
+                    <div className="bg-brand-surface-2 rounded-xl p-3">
                       <div className="text-xs font-semibold text-brand-text-dim mb-2">Ubicación del dolor</div>
                       <div className="text-sm text-brand-text">
                         {aiSuggestion.suggestions.painLocations.map((p: string) => {
@@ -297,7 +302,7 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
                   )}
 
                   {aiSuggestion.suggestions.cravings && aiSuggestion.suggestions.cravings.length > 0 && (
-                    <div className="bg-brand-surface-2 rounded-xl p-3 border border-brand-border">
+                    <div className="bg-brand-surface-2 rounded-xl p-3">
                       <div className="text-xs font-semibold text-brand-text-dim mb-2">Antojos</div>
                       <div className="text-sm text-brand-text">
                         {aiSuggestion.suggestions.cravings.map((c: string) => {
@@ -309,7 +314,7 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
                   )}
 
                   {aiSuggestion.suggestions.supplements && aiSuggestion.suggestions.supplements.length > 0 && (
-                    <div className="bg-brand-surface-2 rounded-xl p-3 border border-brand-border">
+                    <div className="bg-brand-surface-2 rounded-xl p-3">
                       <div className="text-xs font-semibold text-brand-text-dim mb-2">Suplementos</div>
                       <div className="text-sm text-brand-text">
                         {aiSuggestion.suggestions.supplements.map((s: string) => {
@@ -321,7 +326,7 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
                   )}
 
                   {aiSuggestion.suggestions.stressTriggers && aiSuggestion.suggestions.stressTriggers.length > 0 && (
-                    <div className="bg-brand-surface-2 rounded-xl p-3 border border-brand-border">
+                    <div className="bg-brand-surface-2 rounded-xl p-3">
                       <div className="text-xs font-semibold text-brand-text-dim mb-2">Detonantes de estrés</div>
                       <div className="text-sm text-brand-text">
                         {aiSuggestion.suggestions.stressTriggers.map((t: string) => {
@@ -468,7 +473,7 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
 
               {/* Ambiguous Fields Warning */}
               {aiSuggestion && aiSuggestion.ambiguousFields.length > 0 && (
-                <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4">
+                <div className="bg-amber-500/10 rounded-xl p-4">
                   <div className="flex items-start gap-3">
                     <svg className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />

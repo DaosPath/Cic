@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from '../hooks/useTranslation.ts';
 import type { AIInsight } from '../services/ai-insights.ts';
 
 interface SavedInsightsProps {
@@ -14,6 +15,7 @@ export const SavedInsights: React.FC<SavedInsightsProps> = ({
   onRemoveSaved,
   onUnpin
 }) => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'saved' | 'pinned'>('pinned');
 
   const insights = activeTab === 'saved' ? savedInsights : pinnedInsights;
@@ -22,17 +24,17 @@ export const SavedInsights: React.FC<SavedInsightsProps> = ({
     return (
       <div className="bg-brand-surface-2 rounded-xl p-8 border border-brand-border text-center">
         <div className="p-3 rounded-xl bg-brand-primary/15 w-12 h-12 mx-auto mb-3 flex items-center justify-center">
-          <svg className="w-6 h-6 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-          </svg>
+            <svg className="w-6 h-6 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+            </svg>
         </div>
         <p className="text-sm text-brand-text-dim">
           {activeTab === 'saved' 
-            ? 'No tienes insights guardados' 
-            : 'No tienes insights fijados'
+            ? t('noSavedInsights') 
+            : t('noPinnedInsights')
           }
         </p>
-      </div>
+    </div>
     );
   }
 
@@ -49,7 +51,7 @@ export const SavedInsights: React.FC<SavedInsightsProps> = ({
           }`}
           style={{ fontWeight: 500 }}
         >
-          📌 Fijados ({pinnedInsights.length})
+          {t('savedInsightsTabPinned')} ({pinnedInsights.length})
         </button>
         <button
           onClick={() => setActiveTab('saved')}
@@ -60,10 +62,9 @@ export const SavedInsights: React.FC<SavedInsightsProps> = ({
           }`}
           style={{ fontWeight: 500 }}
         >
-          💾 Guardados ({savedInsights.length})
+          {t('savedInsightsTabSaved')} ({savedInsights.length})
         </button>
       </div>
-
       {/* Insights List */}
       <div className="space-y-3">
         {insights.map(insight => (

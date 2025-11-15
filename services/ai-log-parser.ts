@@ -1,4 +1,4 @@
-import type { DailyLog } from '../types.ts';
+import type { DailyLog, Language } from '../types.ts';
 
 export interface AILogSuggestion {
   confidence: number; // 0-100
@@ -7,11 +7,80 @@ export interface AILogSuggestion {
   summary: string;
 }
 
+// Patrones multiidioma para detección
+const patterns = {
+  menstruation: {
+    es: /menstruación|periodo|regla|sangrado|spotting/,
+    en: /menstruation|period|bleeding|spotting/,
+    tr: /adet|regl|kanama|lekelenme/
+  },
+  intensity: {
+    spotting: {
+      es: /spotting|manchado|muy\s+poco/,
+      en: /spotting|very\s+light/,
+      tr: /lekelenme|çok\s+az/
+    },
+    heavy: {
+      es: /abundante|mucho|intens|pesad/,
+      en: /heavy|abundant|intense/,
+      tr: /bol|yoğun|şiddetli/
+    },
+    light: {
+      es: /ligero|poco|leve/,
+      en: /light|mild/,
+      tr: /hafif|az/
+    },
+    medium: {
+      es: /medio|normal|moderado/,
+      en: /medium|normal|moderate/,
+      tr: /orta|normal/
+    }
+  },
+  color: {
+    brightRed: {
+      es: /rojo\s+vivo|rojo\s+brillante/,
+      en: /bright\s+red/,
+      tr: /parlak\s+kırmızı/
+    },
+    darkRed: {
+      es: /rojo\s+oscuro/,
+      en: /dark\s+red/,
+      tr: /koyu\s+kırmızı/
+    },
+    brown: {
+      es: /marrón|café/,
+      en: /brown/,
+      tr: /kahverengi/
+    },
+    pink: {
+      es: /rosa|rosado/,
+      en: /pink/,
+      tr: /pembe/
+    }
+  }
+};
+
 /**
  * Parse user's natural language description and extract log data
  * This is a mock implementation - in production, this would call an AI API
  */
-export async function parseLogDescription(description: string): Promise<AILogSuggestion> {
+const promptTemplatesBase = {
+  es: `Eres un asistente de salud menstrual que traduce descripciones del ciclo en datos estructurados. Lee el texto del usuario y responde con la informacion objetiva que encontraras: intensidad del sangrado, color, consistencia y sintomas principales. Manten el tono empatico y responde solo con informacion de salud general.`,
+  en: `You are a menstrual health assistant. Parse the user's diary-style description and extract structured data like flow intensity, color, consistency, and key symptoms. Stay empathetic and factual without giving medical diagnoses.`,
+  tr: `Adet sagligi asistanisin ve kullanicinin gunlugu gibi yazdigi ifadeyi analiz ederek akis yogunlugu, renk, kivam ve ana semptomlari cikaracaksin. Duyarli ama nesnel bir uslupla sadece genel bilgiler ver.`
+};
+
+const promptTemplates: Record<Language, string> = {
+  ...promptTemplatesBase,
+  auto: promptTemplatesBase.es,
+};
+
+export function buildAILogPrompt(description: string, language: Language = 'es'): string {
+  const template = promptTemplates[language] ?? promptTemplates.es;
+  return `${template}\n\nTexto: ${description.trim()}\n\nNecesito una respuesta estructurada para llenar el registro.`;
+}
+
+export async function parseLogDescription(description: string, language: Language = 'es'): Promise<AILogSuggestion> {
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 1500));
 
@@ -31,19 +100,19 @@ export async function parseLogDescription(description: string): Promise<AILogSug
   const ambiguousFields: string[] = [];
   let confidence = 70;
 
-  // ===== MENSTRUATION - Extended =====
-  if (lowerDesc.match(/menstruación|periodo|regla|sangrado|spotting/)) {
+  // ===== MENSTRUATION - Extended (Multiidioma) =====
+  if (lowerDesc.match(patterns.menstruation[language])) {
     // Intensity
-    if (lowerDesc.match(/spotting|manchado|muy\s+poco/)) {
+    if (lowerDesc.match(patterns.intensity.spotting[language])) {
       suggestions.periodIntensity = 1;
       confidence += 5;
-    } else if (lowerDesc.match(/abundante|mucho|intens|pesad/)) {
+    } else if (lowerDesc.match(patterns.intensity.heavy[language])) {
       suggestions.periodIntensity = 3;
       confidence += 5;
-    } else if (lowerDesc.match(/ligero|poco|leve/)) {
+    } else if (lowerDesc.match(patterns.intensity.light[language])) {
       suggestions.periodIntensity = 2;
       confidence += 5;
-    } else if (lowerDesc.match(/medio|normal|moderado/)) {
+    } else if (lowerDesc.match(patterns.intensity.medium[language])) {
       suggestions.periodIntensity = 2;
       confidence += 5;
     } else {
@@ -52,50 +121,92 @@ export async function parseLogDescription(description: string): Promise<AILogSug
     }
 
     // Color
-    if (lowerDesc.match(/rojo\s+vivo|rojo\s+brillante/)) {
+    if (lowerDesc.match(patterns.color.brightRed[language])) {
       suggestions.periodColor = 'bright-red';
       confidence += 3;
-    } else if (lowerDesc.match(/rojo\s+oscuro/)) {
+    } else if (lowerDesc.match(patterns.color.darkRed[language])) {
       suggestions.periodColor = 'dark-red';
       confidence += 3;
-    } else if (lowerDesc.match(/marrón|café/)) {
+    } else if (lowerDesc.match(patterns.color.brown[language])) {
       suggestions.periodColor = 'brown';
       confidence += 3;
-    } else if (lowerDesc.match(/rosa|rosado/)) {
+    } else if (lowerDesc.match(patterns.color.pink[language])) {
       suggestions.periodColor = 'pink';
       confidence += 3;
     }
 
-    // Consistency
-    if (lowerDesc.match(/acuoso|líquido|aguado/)) {
+    // Consistency (multiidioma)
+    const consistencyPatterns = {
+      watery: {
+        es: /acuoso|líquido|aguado/,
+        en: /watery|liquid/,
+        tr: /sulu|akıcı/
+      },
+      thick: {
+        es: /espeso|denso|grueso/,
+        en: /thick|dense/,
+        tr: /kalın|yoğun/
+      }
+    };
+    
+    if (lowerDesc.match(consistencyPatterns.watery[language])) {
       suggestions.periodConsistency = 'watery';
       confidence += 3;
-    } else if (lowerDesc.match(/espeso|denso|grueso/)) {
+    } else if (lowerDesc.match(consistencyPatterns.thick[language])) {
       suggestions.periodConsistency = 'thick';
       confidence += 3;
     }
 
-    // Clots
-    if (lowerDesc.match(/coágulo|coagulo/)) {
+    // Clots (multiidioma)
+    const clotPatterns = {
+      es: /coágulo|coagulo/,
+      en: /clot|clots/,
+      tr: /pıhtı/
+    };
+    
+    if (lowerDesc.match(clotPatterns[language])) {
       suggestions.hasClots = true;
       suggestions.periodConsistency = 'clotty';
       confidence += 3;
     }
 
-    // Products
-    if (lowerDesc.match(/toalla|compresa|pad/)) {
+    // Products (multiidioma)
+    const productPatterns = {
+      pad: {
+        es: /toalla|compresa|pad/,
+        en: /pad|sanitary\s+pad/,
+        tr: /ped|hijyenik\s+ped/
+      },
+      tampon: {
+        es: /tampón|tampon/,
+        en: /tampon/,
+        tr: /tampon/
+      },
+      cup: {
+        es: /copa\s+menstrual|copa/,
+        en: /menstrual\s+cup|cup/,
+        tr: /adet\s+kabı|fincan/
+      },
+      disc: {
+        es: /disco\s+menstrual|disco/,
+        en: /menstrual\s+disc|disc/,
+        tr: /adet\s+diski|disk/
+      }
+    };
+    
+    if (lowerDesc.match(productPatterns.pad[language])) {
       suggestions.periodProducts?.push('pad');
       confidence += 2;
     }
-    if (lowerDesc.match(/tampón|tampon/)) {
+    if (lowerDesc.match(productPatterns.tampon[language])) {
       suggestions.periodProducts?.push('tampon');
       confidence += 2;
     }
-    if (lowerDesc.match(/copa\s+menstrual|copa/)) {
+    if (lowerDesc.match(productPatterns.cup[language])) {
       suggestions.periodProducts?.push('cup');
       confidence += 2;
     }
-    if (lowerDesc.match(/disco\s+menstrual|disco/)) {
+    if (lowerDesc.match(productPatterns.disc[language])) {
       suggestions.periodProducts?.push('disc');
       confidence += 2;
     }

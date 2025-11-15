@@ -58,18 +58,18 @@ export const MoodTracker: React.FC = () => {
                 <h3 className="text-base md:text-lg font-semibold text-brand-text tracking-wide" style={{ lineHeight: 1.4 }}>{t('howDoYouFeel')}</h3>
                 {showSaved && selectedMood && (
                     <span className="text-xs bg-brand-primary/20 text-brand-primary px-3 py-1 rounded-full font-medium flex items-center gap-1">
-                        <span>✅</span> Guardado
+                        <span>✅</span> {t('logSaved')}
                     </span>
                 )}
             </div>
-            <div className="flex justify-between items-start gap-2 md:gap-3 mb-5">
+            <div className="flex flex-wrap justify-start items-start gap-3 mb-5 overflow-hidden">
                 {moods.map(mood => (
                     <button
                         key={mood.value}
                         onClick={() => handleMoodSelect(mood.value)}
-                        className={`flex flex-col items-center gap-2 rounded-xl p-2 md:p-3 transition-all duration-300 hover:scale-105 active:scale-100 flex-1 ${
+                        className={`flex flex-col items-center gap-2 rounded-xl p-2 md:p-3 transition duration-300 transform-gpu basis-[60px] ${
                             selectedMood === mood.value 
-                                ? 'bg-brand-primary/20 scale-105 shadow-lg ring-2 ring-brand-primary/50 shadow-brand-primary/20' 
+                                ? 'bg-brand-primary/20 shadow-lg ring-2 ring-brand-primary/50 shadow-brand-primary/20' 
                                 : 'hover:bg-brand-surface/50'
                         }`}
                         aria-label={mood.ariaLabel}
@@ -86,7 +86,7 @@ export const MoodTracker: React.FC = () => {
                     onClick={() => window.location.hash = '/log'}
                     className="bg-brand-primary text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-brand-accent transition-all duration-300 hover:shadow-lg hover:shadow-brand-primary/30 hover:scale-[1.02]"
                 >
-                    Registrar síntomas
+                    {t('logSymptoms')}
                 </button>
             </div>
         </div>

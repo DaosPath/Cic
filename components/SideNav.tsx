@@ -18,7 +18,7 @@ export const SideNav: React.FC = () => {
       <div className="flex flex-col gap-2 flex-1">
         <div className="p-4 mb-4">
           <div className="text-2xl font-bold text-brand-primary">Aura Ciclo</div>
-          <div className="text-xs text-brand-text-dim mt-1">Salud menstrual inteligente</div>
+          <div className="text-xs text-brand-text-dim mt-1">{t('appTagline')}</div>
         </div>
         {navItems.map((item) => (
           <NavLink

@@ -44,6 +44,7 @@ export interface Translations {
   dailyRecord: string;
   menstruationIntensity: string;
   noFlow: string;
+  spotting: string;
   light: string;
   medium: string;
   heavy: string;
@@ -120,6 +121,50 @@ export interface Translations {
   aiUnavailable: string;
   aiFallbackMessage: string;
 
+  // Additional UI copy
+  appTagline: string;
+  logSymptoms: string;
+  savedInsightsTabPinned: string;
+  savedInsightsTabSaved: string;
+  noSavedInsights: string;
+  noPinnedInsights: string;
+  chatWithAI: string;
+  chatInsightsDescription: string;
+  startChat: string;
+  chatContextLabel: string;
+  chatContextLog: string;
+  devToolsHeading: string;
+  devFillLast7: string;
+  devFillLast30: string;
+  devFillMissing: string;
+  devGeneratedLogs: string;
+  devGeneratedToday: string;
+  devGenerateError: string;
+  devTodayError: string;
+  devNoMissingDays: string;
+  devFilledMissingDays: string;
+  devFillMissingError: string;
+  deleteDataModalTitle: string;
+  deleteWarning: string;
+  discreteModeDescription: string;
+  generateTodayLog: string;
+  unsavedChanges: string;
+  discardChanges: string;
+  cyclePhasesTitle: string;
+  indicatorsTitle: string;
+  ovulationDayIndicator: string;
+  periodIntensityIndicator: string;
+  moodRecordedIndicator: string;
+  symptomsRecordedIndicator: string;
+  notesWrittenIndicator: string;
+  predictionUnconfirmed: string;
+  today: string;
+  predictions: string;
+  exportCsv: string;
+  exportICal: string;
+  simplifiedMode: string;
+  advancedMode: string;
+
   // Common
   save: string;
   cancel: string;
@@ -127,6 +172,7 @@ export interface Translations {
   delete: string;
   edit: string;
   close: string;
+  noMedicationsAdded: string;
 }
 
 const translations: Record<Language, Translations> = {
@@ -174,6 +220,7 @@ const translations: Record<Language, Translations> = {
     dailyRecord: 'Registro del día',
     menstruationIntensity: 'Menstruación',
     noFlow: 'Sin sangrado',
+    spotting: 'Manchado',
     light: 'Ligero',
     medium: 'Medio',
     heavy: 'Abundante',
@@ -250,6 +297,50 @@ const translations: Record<Language, Translations> = {
     aiUnavailable: 'API de Gemini no configurada. El consejo del día no está disponible.',
     aiFallbackMessage: 'Cuida de ti hoy. Escucha a tu cuerpo y dale lo que necesita.',
 
+    // Additional UI copy
+    appTagline: 'Salud menstrual inteligente',
+    logSymptoms: 'Registrar síntomas',
+    savedInsightsTabPinned: 'Fijados',
+    savedInsightsTabSaved: 'Guardados',
+    noSavedInsights: 'No tienes insights guardados',
+    noPinnedInsights: 'No tienes insights fijados',
+    chatWithAI: 'Chatear con IA',
+    chatInsightsDescription: 'Analiza tu registro de hoy y obtén recomendaciones personalizadas',
+    startChat: 'Iniciar Chat',
+    chatContextLabel: 'Contexto:',
+    chatContextLog: 'Registro de {date}',
+    devToolsHeading: '🛠️ Generación de Datos',
+    devFillLast7: 'Rellenar Últimos 7 Días',
+    devFillLast30: 'Rellenar Últimos 30 Días',
+    devFillMissing: 'Rellenar Días Faltantes (90d)',
+    devGeneratedLogs: '✅ Se generaron {count} registros para los últimos {range} días',
+    devGeneratedToday: '✅ Registro de hoy generado correctamente',
+    devGenerateError: '❌ Error al generar registros',
+    devTodayError: '❌ Error al generar registro de hoy',
+    devNoMissingDays: 'ℹ️ No hay días faltantes en los últimos 90 días',
+    devFilledMissingDays: '✅ Se rellenaron {count} días faltantes',
+    devFillMissingError: '❌ Error al rellenar días faltantes',
+    deleteDataModalTitle: '⚠️ Eliminar todos los datos',
+    deleteWarning: 'Esta acción es permanente y no se puede deshacer. Todos tus datos serán eliminados.',
+    discreteModeDescription: 'Oculta términos específicos en la interfaz para mayor privacidad en espacios públicos',
+    generateTodayLog: 'Generar Registro de Hoy',
+    unsavedChanges: 'Cambios no guardados',
+    discardChanges: 'Descartar',
+    cyclePhasesTitle: 'Fases del ciclo',
+    indicatorsTitle: 'Indicadores',
+    ovulationDayIndicator: 'Día de ovulación',
+    periodIntensityIndicator: 'Intensidad menstrual (1-3)',
+    moodRecordedIndicator: 'Estado de ánimo registrado',
+    symptomsRecordedIndicator: 'Síntomas registrados',
+    notesWrittenIndicator: 'Notas escritas',
+    predictionUnconfirmed: 'Predicción (no confirmado)',
+    today: 'Hoy',
+    predictions: 'Predicciones',
+    exportCsv: 'Exportar CSV',
+    exportICal: 'Exportar iCal',
+    simplifiedMode: 'Simplificado',
+    advancedMode: 'Avanzado',
+
     // Common
     save: 'Guardar',
     cancel: 'Cancelar',
@@ -257,6 +348,7 @@ const translations: Record<Language, Translations> = {
     delete: 'Eliminar',
     edit: 'Editar',
     close: 'Cerrar',
+    noMedicationsAdded: 'No hay medicamentos agregados',
   },
 
   en: {
@@ -303,6 +395,7 @@ const translations: Record<Language, Translations> = {
     dailyRecord: 'Daily log',
     menstruationIntensity: 'Period flow',
     noFlow: 'No flow',
+    spotting: 'Spotting',
     light: 'Light',
     medium: 'Medium',
     heavy: 'Heavy',
@@ -379,6 +472,50 @@ const translations: Record<Language, Translations> = {
     aiUnavailable: 'Gemini API key not configured. The daily tip is unavailable.',
     aiFallbackMessage: 'Take care of yourself today. Listen to your body and give it what it needs.',
 
+    // Additional UI copy
+    appTagline: 'Smart menstrual health',
+    logSymptoms: 'Log symptoms',
+    savedInsightsTabPinned: 'Pinned',
+    savedInsightsTabSaved: 'Saved',
+    noSavedInsights: 'No saved insights yet',
+    noPinnedInsights: 'No pinned insights yet',
+    chatWithAI: 'Chat with AI',
+    chatInsightsDescription: 'Analyze today\'s log and get personalized recommendations',
+    startChat: 'Start chat',
+    chatContextLabel: 'Context:',
+    chatContextLog: 'Log from {date}',
+    devToolsHeading: '🛠️ Data generation',
+    devFillLast7: 'Fill last 7 days',
+    devFillLast30: 'Fill last 30 days',
+    devFillMissing: 'Fill missing days (90d)',
+    devGeneratedLogs: '✅ Generated {count} logs for the last {range} days',
+    devGeneratedToday: '✅ Today\'s log generated successfully',
+    devGenerateError: '❌ Failed to generate logs',
+    devTodayError: '❌ Failed to generate today\'s log',
+    devNoMissingDays: 'ℹ️ No missing days in the past 90 days',
+    devFilledMissingDays: '✅ Filled {count} missing days',
+    devFillMissingError: '❌ Failed to fill missing days',
+    deleteDataModalTitle: '⚠️ Delete all data',
+    deleteWarning: 'This action is permanent and cannot be undone. All of your data will be deleted.',
+    discreteModeDescription: 'Hide specific menstrual terms for extra privacy in public spaces',
+    generateTodayLog: 'Generate today\'s log',
+    unsavedChanges: 'Unsaved changes',
+    discardChanges: 'Discard',
+    cyclePhasesTitle: 'Cycle phases',
+    indicatorsTitle: 'Indicators',
+    ovulationDayIndicator: 'Ovulation day',
+    periodIntensityIndicator: 'Period intensity (1-3)',
+    moodRecordedIndicator: 'Mood recorded',
+    symptomsRecordedIndicator: 'Symptoms recorded',
+    notesWrittenIndicator: 'Notes written',
+    predictionUnconfirmed: 'Prediction (unconfirmed)',
+    today: 'Today',
+    predictions: 'Predictions',
+    exportCsv: 'Export CSV',
+    exportICal: 'Export iCal',
+    simplifiedMode: 'Simplified',
+    advancedMode: 'Advanced',
+
     // Common
     save: 'Save',
     cancel: 'Cancel',
@@ -386,6 +523,7 @@ const translations: Record<Language, Translations> = {
     delete: 'Delete',
     edit: 'Edit',
     close: 'Close',
+    noMedicationsAdded: 'No medications added',
   },
 
   tr: {
@@ -432,6 +570,7 @@ const translations: Record<Language, Translations> = {
     dailyRecord: 'Günlük kayıt',
     menstruationIntensity: 'Adet akışı',
     noFlow: 'Akış yok',
+    spotting: 'Lekelenme',
     light: 'Hafif',
     medium: 'Orta',
     heavy: 'Yoğun',
@@ -508,6 +647,50 @@ const translations: Record<Language, Translations> = {
     aiUnavailable: 'Gemini API anahtarı ayarlı değil. Günlük öneri kullanılamıyor.',
     aiFallbackMessage: 'Bugün kendine iyi bak. Bedenini dinle ve ihtiyaç duyduğunu ona ver.',
 
+    // Additional UI copy
+    appTagline: 'Akıllı adet sağlığı',
+    logSymptoms: 'Semptomları kaydet',
+    savedInsightsTabPinned: 'Sabitlenenler',
+    savedInsightsTabSaved: 'Kaydedilenler',
+    noSavedInsights: 'Kaydedilmiş iç görü yok',
+    noPinnedInsights: 'Sabitlenmiş iç görü yok',
+    chatWithAI: 'Yapay zekâ ile sohbet',
+    chatInsightsDescription: 'Bugünkü kaydını analiz et ve kişiselleştirilmiş öneriler al',
+    startChat: 'Sohbeti başlat',
+    chatContextLabel: 'Bağlam:',
+    chatContextLog: '{date} kaydı',
+    devToolsHeading: '🛠️ Veri oluşturma',
+    devFillLast7: 'Son 7 günü doldur',
+    devFillLast30: 'Son 30 günü doldur',
+    devFillMissing: 'Eksik günleri doldur (90g)',
+    devGeneratedLogs: '✅ Son {range} gün için {count} kayıt üretildi',
+    devGeneratedToday: '✅ Bugünün kaydı başarıyla oluşturuldu',
+    devGenerateError: '❌ Kayıt oluşturulamadı',
+    devTodayError: '❌ Bugünün kaydı oluşturulamadı',
+    devNoMissingDays: 'ℹ️ Son 90 günde eksik gün yok',
+    devFilledMissingDays: '✅ {count} eksik gün dolduruldu',
+    devFillMissingError: '❌ Eksik günler doldurulamadı',
+    deleteDataModalTitle: '⚠️ Tüm verileri sil',
+    deleteWarning: 'Bu işlem kalıcıdır ve geri alınamaz. Tüm verileriniz silinecektir.',
+    discreteModeDescription: 'Kamuya açık alanlarda gizliliği artırmak için belirli adet terimlerini gizle',
+    generateTodayLog: 'Bugünün kaydını oluştur',
+    unsavedChanges: 'Kaydedilmemiş değişiklikler',
+    discardChanges: 'İptal et',
+    cyclePhasesTitle: 'Döngü aşamaları',
+    indicatorsTitle: 'Göstergeler',
+    ovulationDayIndicator: 'Ovulasyon günü',
+    periodIntensityIndicator: 'Adet yoğunluğu (1-3)',
+    moodRecordedIndicator: 'Kaydedilmiş ruh hali',
+    symptomsRecordedIndicator: 'Kaydedilmiş belirtiler',
+    notesWrittenIndicator: 'Yazılmış notlar',
+    predictionUnconfirmed: 'Tahmin (onaylanmamış)',
+    today: 'Bugün',
+    predictions: 'Tahminler',
+    exportCsv: 'CSV dışa aktar',
+    exportICal: 'iCal dışa aktar',
+    simplifiedMode: 'Basitleştirilmiş',
+    advancedMode: 'Gelişmiş',
+
     // Common
     save: 'Kaydet',
     cancel: 'İptal',
@@ -515,6 +698,7 @@ const translations: Record<Language, Translations> = {
     delete: 'Sil',
     edit: 'Düzenle',
     close: 'Kapat',
+    noMedicationsAdded: 'İlaç eklenmedi',
   },
 
   auto: {} as Translations,

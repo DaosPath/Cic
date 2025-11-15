@@ -10,6 +10,7 @@ import {
     CollapsibleSection,
     ChipSelectorWithCustom
 } from './LogFieldComponents.tsx';
+import { useTranslation } from '../hooks/useTranslation.ts';
 
 interface LogSectionsProps {
     log: DailyLog;
@@ -19,9 +20,10 @@ interface LogSectionsProps {
 }
 
 export const MenstruationSection: React.FC<LogSectionsProps> = ({ log, setLog, openSections, toggleSection }) => {
+    const { t } = useTranslation();
     return (
         <CollapsibleSection
-            title="Menstruación"
+            title={t('menstruation')}
             icon={<svg className="w-5 h-5 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>}
             isOpen={openSections.menstruation}
             onToggle={() => toggleSection('menstruation')}
@@ -29,14 +31,14 @@ export const MenstruationSection: React.FC<LogSectionsProps> = ({ log, setLog, o
         >
             <div className="space-y-4">
                 <div>
-                    <label className="block text-sm font-semibold text-brand-text mb-2">Intensidad</label>
+                    <label className="block text-sm font-semibold text-brand-text mb-2">{t('menstruationIntensity')}</label>
                     <SingleSelector
                         options={[
-                            { value: '0', label: 'Sin flujo' },
-                            { value: '1', label: 'Spotting' },
-                            { value: '2', label: 'Ligero' },
-                            { value: '3', label: 'Medio' },
-                            { value: '4', label: 'Abundante' }
+                            { value: '0', label: t('noFlow') },
+                            { value: '1', label: t('spotting') || 'Spotting' },
+                            { value: '2', label: t('light') },
+                            { value: '3', label: t('medium') },
+                            { value: '4', label: t('heavy') }
                         ]}
                         selected={log.periodIntensity?.toString()}
                         onChange={(v) => setLog({ ...log, periodIntensity: v ? parseInt(v) as any : undefined })}
@@ -587,6 +589,7 @@ export const ActivitySection: React.FC<LogSectionsProps> = ({ log, setLog, openS
 };
 
 export const MedicationSection: React.FC<LogSectionsProps> = ({ log, setLog, openSections, toggleSection }) => {
+    const { t } = useTranslation();
     const addMedication = () => {
         const medications = log.medications || [];
         setLog({ ...log, medications: [...medications, { name: '', dose: '' }] });
@@ -654,7 +657,7 @@ export const MedicationSection: React.FC<LogSectionsProps> = ({ log, setLog, ope
                             </div>
                         ))}
                         {(!log.medications || log.medications.length === 0) && (
-                            <p className="text-xs text-brand-text-dim italic">No hay medicamentos agregados</p>
+                            <p className="text-xs text-brand-text-dim italic">{t('noMedicationsAdded')}</p>
                         )}
                     </div>
                 </div>
