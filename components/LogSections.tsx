@@ -138,9 +138,10 @@ export const MenstruationSection: React.FC<LogSectionsProps> = ({ log, setLog, o
 };
 
 export const FertilitySection: React.FC<LogSectionsProps> = ({ log, setLog, openSections, toggleSection }) => {
+    const { t } = useTranslation();
     return (
         <CollapsibleSection
-            title="Fertilidad"
+            title={t('fertility')}
             icon={<svg className="w-5 h-5 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
             isOpen={openSections.fertility}
             onToggle={() => toggleSection('fertility')}
@@ -231,9 +232,10 @@ export const FertilitySection: React.FC<LogSectionsProps> = ({ log, setLog, open
 };
 
 export const PainSection: React.FC<LogSectionsProps> = ({ log, setLog, openSections, toggleSection }) => {
+    const { t } = useTranslation();
     return (
         <CollapsibleSection
-            title="Dolor"
+            title={t('pain')}
             icon={<svg className="w-5 h-5 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
             isOpen={openSections.pain}
             onToggle={() => toggleSection('pain')}
@@ -285,9 +287,10 @@ export const PainSection: React.FC<LogSectionsProps> = ({ log, setLog, openSecti
 // Continue in next message due to length...
 
 export const MentalSection: React.FC<LogSectionsProps> = ({ log, setLog, openSections, toggleSection }) => {
+    const { t } = useTranslation();
     return (
         <CollapsibleSection
-            title="Estado Mental & Libido"
+            title={t('mentalAndLibido')}
             icon={<svg className="w-5 h-5 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.01M15 10h1.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
             isOpen={openSections.mental}
             onToggle={() => toggleSection('mental')}
@@ -373,9 +376,10 @@ export const MentalSection: React.FC<LogSectionsProps> = ({ log, setLog, openSec
 };
 
 export const SleepSection: React.FC<LogSectionsProps> = ({ log, setLog, openSections, toggleSection }) => {
+    const { t } = useTranslation();
     return (
         <CollapsibleSection
-            title="Sueño & Hábitos"
+            title={t('sleepHabits')}
             icon={<svg className="w-5 h-5 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>}
             isOpen={openSections.sleep}
             onToggle={() => toggleSection('sleep')}
@@ -487,9 +491,10 @@ export const SleepSection: React.FC<LogSectionsProps> = ({ log, setLog, openSect
 };
 
 export const ActivitySection: React.FC<LogSectionsProps> = ({ log, setLog, openSections, toggleSection }) => {
+    const { t } = useTranslation();
     return (
         <CollapsibleSection
-            title="Actividad Física"
+            title={t('activity')}
             icon={<svg className="w-5 h-5 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>}
             isOpen={openSections.activity}
             onToggle={() => toggleSection('activity')}
@@ -609,7 +614,7 @@ export const MedicationSection: React.FC<LogSectionsProps> = ({ log, setLog, ope
 
     return (
         <CollapsibleSection
-            title="Medicación & Cuidado"
+            title={t('medicationCare')}
             icon={<svg className="w-5 h-5 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>}
             isOpen={openSections.medication}
             onToggle={() => toggleSection('medication')}
@@ -734,9 +739,10 @@ export const MedicationSection: React.FC<LogSectionsProps> = ({ log, setLog, ope
 };
 
 export const HealthSection: React.FC<LogSectionsProps> = ({ log, setLog, openSections, toggleSection }) => {
+    const { t } = useTranslation();
     return (
         <CollapsibleSection
-            title="Salud & Tests"
+            title={t('healthAndTests')}
             icon={<svg className="w-5 h-5 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>}
             isOpen={openSections.health}
             onToggle={() => toggleSection('health')}

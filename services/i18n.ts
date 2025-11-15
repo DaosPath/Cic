@@ -164,6 +164,13 @@ export interface Translations {
   exportICal: string;
   simplifiedMode: string;
   advancedMode: string;
+  fertility: string;
+  pain: string;
+  mentalAndLibido: string;
+  sleepHabits: string;
+  activity: string;
+  medicationCare: string;
+  healthAndTests: string;
 
   // Common
   save: string;
@@ -340,6 +347,13 @@ const translations: Record<Language, Translations> = {
     exportICal: 'Exportar iCal',
     simplifiedMode: 'Simplificado',
     advancedMode: 'Avanzado',
+    fertility: 'Fertilidad',
+    pain: 'Dolor',
+    mentalAndLibido: 'Estado mental & Libido',
+    sleepHabits: 'Sueño & Hábitos',
+    activity: 'Actividad física',
+    medicationCare: 'Medicación & Cuidado',
+    healthAndTests: 'Salud & Tests',
 
     // Common
     save: 'Guardar',
@@ -515,6 +529,13 @@ const translations: Record<Language, Translations> = {
     exportICal: 'Export iCal',
     simplifiedMode: 'Simplified',
     advancedMode: 'Advanced',
+    fertility: 'Fertility',
+    pain: 'Pain',
+    mentalAndLibido: 'Mental state & Libido',
+    sleepHabits: 'Sleep & Habits',
+    activity: 'Physical activity',
+    medicationCare: 'Medication & Care',
+    healthAndTests: 'Health & Tests',
 
     // Common
     save: 'Save',
@@ -690,6 +711,13 @@ const translations: Record<Language, Translations> = {
     exportICal: 'iCal dışa aktar',
     simplifiedMode: 'Basitleştirilmiş',
     advancedMode: 'Gelişmiş',
+    fertility: 'Doğurganlık',
+    pain: 'Ağrı',
+    mentalAndLibido: 'Zihinsel durum & Libido',
+    sleepHabits: 'Uyku & Alışkanlıklar',
+    activity: 'Fiziksel aktivite',
+    medicationCare: 'İlaç & Bakım',
+    healthAndTests: 'Sağlık & Testler',
 
     // Common
     save: 'Kaydet',
