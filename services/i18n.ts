@@ -293,6 +293,31 @@ export interface Translations {
   logSymptoms: string;
   savedInsightsTabPinned: string;
   savedInsightsTabSaved: string;
+  kpiCycleAverage: string;
+  kpiVariability: string;
+  kpiRegularity: string;
+  kpiPeriodDuration: string;
+  cycleDurationTitle: string;
+  cycleHistoryTitle: string;
+  cycleLabel: string;
+  chartDurationLabel: string;
+  chartMovingAverageLabel: string;
+  chartIrregularLabel: string;
+  symptomAnalysisTitle: string;
+  symptomHeatmapTitle: string;
+  symptomHeatmapNoData: string;
+  phaseMenstruation: string;
+  phaseFollicular: string;
+  phaseOvulation: string;
+  phaseLuteal: string;
+  phaseShortMenstruation: string;
+  phaseShortFollicular: string;
+  phaseShortOvulation: string;
+  phaseShortLuteal: string;
+  correlationsTitle: string;
+  correlationNoData: string;
+  correlationMatchSingular: string;
+  correlationMatchPlural: string;
   noSavedInsights: string;
   noPinnedInsights: string;
   chatWithAI: string;
@@ -419,6 +444,33 @@ const translations: Record<Language, Translations> = {
     exportData: 'Exportar',
     noLogTodayTitle: 'Sin registro hoy',
     noLogTodayDescription: 'No hay datos registrados para el día de hoy. Registra tu información para ver el análisis.',
+
+    // Insights dashboard
+    kpiCycleAverage: 'Promedio del ciclo (días)',
+    kpiVariability: 'Variabilidad (días)',
+    kpiRegularity: 'Regularidad',
+    kpiPeriodDuration: 'Duración de menstruación (días)',
+    cycleDurationTitle: 'Duración de Ciclos',
+    cycleHistoryTitle: 'Historial de Ciclos',
+    cycleLabel: 'Ciclo {number}',
+    chartDurationLabel: 'Duración',
+    chartMovingAverageLabel: 'Media móvil',
+    chartIrregularLabel: 'Irregular',
+    symptomAnalysisTitle: 'Análisis de Síntomas',
+    symptomHeatmapTitle: 'Heatmap de Síntomas',
+    symptomHeatmapNoData: 'No hay datos de síntomas',
+    phaseMenstruation: 'Menstruación',
+    phaseFollicular: 'Folicular',
+    phaseOvulation: 'Ovulación',
+    phaseLuteal: 'Lútea',
+    phaseShortMenstruation: 'Men',
+    phaseShortFollicular: 'Fol',
+    phaseShortOvulation: 'Ovu',
+    phaseShortLuteal: 'Lut',
+    correlationsTitle: 'Correlaciones',
+    correlationNoData: 'No hay suficientes datos para correlaciones',
+    correlationMatchSingular: '{count} coincidencia',
+    correlationMatchPlural: '{count} coincidencias',
 
     // Advanced logging modules
     menstruationColorLabel: 'Color',
@@ -983,6 +1035,32 @@ const translations: Record<Language, Translations> = {
     startChat: 'Start chat',
     chatContextLabel: 'Context:',
     chatContextLog: 'Log from {date}',
+    // Insights dashboard
+    kpiCycleAverage: 'Average cycle length (days)',
+    kpiVariability: 'Variability (days)',
+    kpiRegularity: 'Regularity',
+    kpiPeriodDuration: 'Average menstruation (days)',
+    cycleDurationTitle: 'Cycle duration',
+    cycleHistoryTitle: 'Cycle history',
+    cycleLabel: 'Cycle {number}',
+    chartDurationLabel: 'Duration',
+    chartMovingAverageLabel: 'Moving average',
+    chartIrregularLabel: 'Irregular',
+    symptomAnalysisTitle: 'Symptom analysis',
+    symptomHeatmapTitle: 'Symptom heatmap',
+    symptomHeatmapNoData: 'No symptom data available',
+    phaseMenstruation: 'Menstruation',
+    phaseFollicular: 'Follicular',
+    phaseOvulation: 'Ovulation',
+    phaseLuteal: 'Luteal',
+    phaseShortMenstruation: 'Men',
+    phaseShortFollicular: 'Fol',
+    phaseShortOvulation: 'Ovu',
+    phaseShortLuteal: 'Lut',
+    correlationsTitle: 'Correlations',
+    correlationNoData: 'Not enough data for correlations',
+    correlationMatchSingular: '{count} coincidence',
+    correlationMatchPlural: '{count} coincidences',
     devToolsHeading: '🛠️ Data generation',
     devFillLast7: 'Fill last 7 days',
     devFillLast30: 'Fill last 30 days',
@@ -1323,6 +1401,32 @@ const translations: Record<Language, Translations> = {
     startChat: 'Sohbeti başlat',
     chatContextLabel: 'Bağlam:',
     chatContextLog: '{date} kaydı',
+    // Insights dashboard
+    kpiCycleAverage: 'Döngü ortalaması (gün)',
+    kpiVariability: 'Değişkenlik (gün)',
+    kpiRegularity: 'Düzenlilik',
+    kpiPeriodDuration: 'Adet süresi (gün)',
+    cycleDurationTitle: 'Döngü süresi',
+    cycleHistoryTitle: 'Döngü geçmişi',
+    cycleLabel: 'Döngü {number}',
+    chartDurationLabel: 'Süre',
+    chartMovingAverageLabel: 'Hareketli ortalama',
+    chartIrregularLabel: 'Düzensiz',
+    symptomAnalysisTitle: 'Belirti analizi',
+    symptomHeatmapTitle: 'Belirti heatmap\'i',
+    symptomHeatmapNoData: 'Belirti verisi yok',
+    phaseMenstruation: 'Adet',
+    phaseFollicular: 'Foliküler',
+    phaseOvulation: 'Ovulasyon',
+    phaseLuteal: 'Luteal',
+    phaseShortMenstruation: 'Men',
+    phaseShortFollicular: 'Fol',
+    phaseShortOvulation: 'Ovu',
+    phaseShortLuteal: 'Lut',
+    correlationsTitle: 'Korelasyonlar',
+    correlationNoData: 'Korelasyonlar için yeterli veri yok',
+    correlationMatchSingular: '{count} eşleşme',
+    correlationMatchPlural: '{count} eşleşme',
     devToolsHeading: '🛠️ Veri oluşturma',
     devFillLast7: 'Son 7 günü doldur',
     devFillLast30: 'Son 30 günü doldur',

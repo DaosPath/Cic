@@ -64,6 +64,7 @@ const calculateMovingAverage = (data: number[], window: number): number[] => {
 
 // Cycle Length Chart Component
 const CycleLengthChart: React.FC<{ cycles: Cycle[]; avgCycleLength: number }> = ({ cycles, avgCycleLength }) => {
+    const { t } = useTranslation();
     const validCycles = cycles.filter(c => c.length && c.length >= 21 && c.length <= 45).reverse();
 
     if (validCycles.length === 0) {
@@ -138,15 +139,15 @@ const CycleLengthChart: React.FC<{ cycles: Cycle[]; avgCycleLength: number }> = 
             <div className="flex items-center justify-between text-xs text-brand-text-dim mt-2 pt-2 border-t border-brand-border">
                 <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-sm bg-gradient-to-t from-purple-500/60 to-purple-500/90" />
-                    <span>Duración</span>
+                    <span>{t('chartDurationLabel')}</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-brand-accent border-2 border-brand-surface" />
-                    <span>Media móvil</span>
+                    <span>{t('chartMovingAverageLabel')}</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-sm bg-gradient-to-t from-orange-500/60 to-orange-500/90" />
-                    <span>Irregular</span>
+                    <span>{t('chartIrregularLabel')}</span>
                 </div>
             </div>
         </div>
@@ -204,13 +205,18 @@ const SymptomHeatmap: React.FC<{ logs: DailyLog[]; cycles: Cycle[]; symptoms: Sy
         return data;
     }, [logs, cycles, topSymptoms]);
 
-    const phases = ['Menstruación', 'Folicular', 'Ovulación', 'Lútea'];
+    const { t, translateSymptomId } = useTranslation();
+    const phaseKeys = ['phaseMenstruation', 'phaseFollicular', 'phaseOvulation', 'phaseLuteal'] as const;
+    const phaseShortKeys = ['phaseShortMenstruation', 'phaseShortFollicular', 'phaseShortOvulation', 'phaseShortLuteal'] as const;
+    const phaseLabels = phaseKeys.map(key => t(key));
+    const phaseShortLabels = phaseShortKeys.map(key => t(key));
+    const phases = phaseLabels;
     const phaseColors = ['#ef4444', '#f59e0b', '#8b5cf6', '#ec4899'];
 
     if (topSymptoms.length === 0) {
         return (
             <div className="flex items-center justify-center h-48 text-brand-text-dim">
-                No hay datos de síntomas
+                {t('symptomHeatmapNoData')}
             </div>
         );
     }
@@ -222,7 +228,7 @@ const SymptomHeatmap: React.FC<{ logs: DailyLog[]; cycles: Cycle[]; symptoms: Sy
             {topSymptoms.map(symptom => (
                 <div key={symptom.id} className="space-y-1">
                     <div className="text-xs font-semibold text-brand-text truncate" style={{ fontWeight: 600 }}>
-                        {symptom.name}
+                        {translateSymptomId(symptom.id)}
                     </div>
                     <div className="grid grid-cols-4 gap-1">
                         {phases.map((phase, phaseIndex) => {
@@ -261,7 +267,7 @@ const SymptomHeatmap: React.FC<{ logs: DailyLog[]; cycles: Cycle[]; symptoms: Sy
                             className="w-3 h-3 rounded"
                             style={{ backgroundColor: phaseColors[index] }}
                         />
-                        <span className="text-[10px] text-brand-text-dim">{phase.slice(0, 3)}</span>
+                    <span className="text-[10px] text-brand-text-dim">{phaseShortLabels[index]}</span>
                     </div>
                 ))}
             </div>
@@ -322,10 +328,12 @@ const SymptomCorrelations: React.FC<{ logs: DailyLog[]; cycles: Cycle[]; symptom
         return pairs.sort((a, b) => b.correlation - a.correlation).slice(0, 6);
     }, [logs]);
 
+    const { t, translateSymptomId } = useTranslation();
+
     if (correlations.length === 0) {
         return (
             <div className="flex items-center justify-center h-48 text-brand-text-dim">
-                No hay suficientes datos para correlaciones
+                {t('correlationNoData')}
             </div>
         );
     }
@@ -344,7 +352,7 @@ const SymptomCorrelations: React.FC<{ logs: DailyLog[]; cycles: Cycle[]; symptom
                             <div className="flex items-center gap-2 flex-1 min-w-0">
                                 <div className="w-2 h-2 rounded-full bg-brand-primary flex-shrink-0" />
                                 <span className="text-xs font-semibold text-brand-text truncate" style={{ fontWeight: 600 }}>
-                                    {symptom1.name}
+                                    {translateSymptomId(symptom1.id)}
                                 </span>
                             </div>
                             <svg className="w-4 h-4 text-brand-text-dim flex-shrink-0 mx-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -353,7 +361,7 @@ const SymptomCorrelations: React.FC<{ logs: DailyLog[]; cycles: Cycle[]; symptom
                             <div className="flex items-center gap-2 flex-1 min-w-0">
                                 <div className="w-2 h-2 rounded-full bg-brand-accent flex-shrink-0" />
                                 <span className="text-xs font-semibold text-brand-text truncate" style={{ fontWeight: 600 }}>
-                                    {symptom2.name}
+                                    {translateSymptomId(symptom2.id)}
                                 </span>
                             </div>
                         </div>
@@ -374,9 +382,11 @@ const SymptomCorrelations: React.FC<{ logs: DailyLog[]; cycles: Cycle[]; symptom
                         </div>
 
                         <div className="flex items-center justify-between text-xs">
-                            <span className="text-brand-text-dim">
-                                {corr.count} coincidencia{corr.count !== 1 ? 's' : ''}
-                            </span>
+                        <span className="text-brand-text-dim">
+                            {corr.count === 1
+                                ? t('correlationMatchSingular', { count: corr.count })
+                                : t('correlationMatchPlural', { count: corr.count })}
+                        </span>
                             <span className="font-semibold text-brand-text" style={{ fontWeight: 600 }}>
                                 {corr.correlation}%
                             </span>
@@ -390,7 +400,7 @@ const SymptomCorrelations: React.FC<{ logs: DailyLog[]; cycles: Cycle[]; symptom
 
 export const InsightsPage: React.FC = () => {
     const { cycles, logs, settings, toggleFavoriteSymptom } = useContext(AppContext);
-    const { t, language } = useTranslation();
+    const { t, language, translateSymptomId } = useTranslation();
     const [timeRange, setTimeRange] = useState<3 | 6 | 12>(6);
     const [showPredictions, setShowPredictions] = useState(false);
     const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
@@ -1034,7 +1044,7 @@ export const InsightsPage: React.FC = () => {
                                     {kpis.avgCycleLength}
                                 </div>
                                 <div className="text-sm text-brand-text-dim" style={{ fontWeight: 500 }}>
-                                    Promedio del ciclo (días)
+                                    {t('kpiCycleAverage')}
                                 </div>
                             </div>
 
@@ -1051,7 +1061,7 @@ export const InsightsPage: React.FC = () => {
                                     ±{kpis.variability}
                                 </div>
                                 <div className="text-sm text-brand-text-dim" style={{ fontWeight: 500 }}>
-                                    Variabilidad (días)
+                                    {t('kpiVariability')}
                                 </div>
                             </div>
 
@@ -1068,7 +1078,7 @@ export const InsightsPage: React.FC = () => {
                                     {kpis.regularity}%
                                 </div>
                                 <div className="text-sm text-brand-text-dim" style={{ fontWeight: 500 }}>
-                                    Regularidad
+                                    {t('kpiRegularity')}
                                 </div>
                             </div>
 
@@ -1085,7 +1095,7 @@ export const InsightsPage: React.FC = () => {
                                     {kpis.avgPeriodDuration}
                                 </div>
                                 <div className="text-sm text-brand-text-dim" style={{ fontWeight: 500 }}>
-                                    Duración menstruación (días)
+                                    {t('kpiPeriodDuration')}
                                 </div>
                             </div>
                         </div>
@@ -1102,7 +1112,7 @@ export const InsightsPage: React.FC = () => {
                                             </svg>
                                         </div>
                                         <h2 className="text-lg font-bold text-brand-text" style={{ fontWeight: 700, lineHeight: 1.3 }}>
-                                            Duración de Ciclos
+                                            {t('cycleDurationTitle')}
                                         </h2>
                                     </div>
                                 </div>
@@ -1120,7 +1130,7 @@ export const InsightsPage: React.FC = () => {
                                         </svg>
                                     </div>
                                     <h2 className="text-lg font-bold text-brand-text" style={{ fontWeight: 700, lineHeight: 1.3 }}>
-                                        Historial de Ciclos
+                                        {t('cycleHistoryTitle')}
                                     </h2>
                                 </div>
                                 <div className="space-y-2 h-64 overflow-y-auto pr-2">
@@ -1129,7 +1139,7 @@ export const InsightsPage: React.FC = () => {
                                             <div className="flex justify-between items-center">
                                                 <div>
                                                     <div className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
-                                                        Ciclo {filteredCycles.length - index}
+                                                        {t('cycleLabel', { number: filteredCycles.length - index })}
                                                     </div>
                                                     <div className="text-xs text-brand-text-dim">
                                                         {new Intl.DateTimeFormat(intlLocale, { day: 'numeric', month: 'short', year: 'numeric' }).format(parseISO(cycle.startDate))}
@@ -1161,7 +1171,7 @@ export const InsightsPage: React.FC = () => {
                                     </svg>
                                 </div>
                                 <h2 className="text-lg font-bold text-brand-text" style={{ fontWeight: 700, lineHeight: 1.3 }}>
-                                    Análisis de Síntomas
+                                    {t('symptomAnalysisTitle')}
                                 </h2>
                             </div>
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
@@ -1180,11 +1190,11 @@ export const InsightsPage: React.FC = () => {
                                                 </svg>
                                             </button>
                                         </div>
-                                        <div className="text-sm font-semibold text-brand-text mb-1 truncate" style={{ fontWeight: 600 }}>
-                                            {symptom.name}
-                                        </div>
+                                            <div className="text-sm font-semibold text-brand-text mb-1 truncate" style={{ fontWeight: 600 }}>
+                                                {translateSymptomId(symptom.id)}
+                                            </div>
                                         <div className="text-xs text-brand-text-dim">
-                                            {symptom.count} registro{symptom.count !== 1 ? 's' : ''}
+                                            {symptom.count} {symptom.count === 1 ? t('record') : t('records')}
                                         </div>
                                     </div>
                                 ))}
@@ -1202,7 +1212,7 @@ export const InsightsPage: React.FC = () => {
                                         </svg>
                                     </div>
                                     <h2 className="text-lg font-bold text-brand-text" style={{ fontWeight: 700, lineHeight: 1.3 }}>
-                                        Heatmap de Síntomas
+                                        {t('symptomHeatmapTitle')}
                                     </h2>
                                 </div>
                                 <SymptomHeatmap logs={logs} cycles={filteredCycles} symptoms={settings.customSymptoms} />
@@ -1217,7 +1227,7 @@ export const InsightsPage: React.FC = () => {
                                         </svg>
                                     </div>
                                     <h2 className="text-lg font-bold text-brand-text" style={{ fontWeight: 700, lineHeight: 1.3 }}>
-                                        Correlaciones
+                                        {t('correlationsTitle')}
                                     </h2>
                                 </div>
                                 <SymptomCorrelations logs={logs} cycles={filteredCycles} symptoms={settings.customSymptoms} />
