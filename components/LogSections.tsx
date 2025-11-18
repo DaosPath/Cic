@@ -48,13 +48,13 @@ export const MenstruationSection: React.FC<LogSectionsProps> = ({ log, setLog, o
                 {log.periodIntensity && log.periodIntensity > 0 && (
                     <>
                         <div>
-                            <label className="block text-sm font-semibold text-brand-text mb-2">Color</label>
+                            <label className="block text-sm font-semibold text-brand-text mb-2">{t('menstruationColorLabel')}</label>
                             <SingleSelector
                                 options={[
-                                    { value: 'bright-red', label: 'Rojo vivo' },
-                                    { value: 'dark-red', label: 'Rojo oscuro' },
-                                    { value: 'brown', label: 'Marrón' },
-                                    { value: 'pink', label: 'Rosa' }
+                                    { value: 'bright-red', label: t('menstruationColorBrightRed') },
+                                    { value: 'dark-red', label: t('menstruationColorDarkRed') },
+                                    { value: 'brown', label: t('menstruationColorBrown') },
+                                    { value: 'pink', label: t('menstruationColorPink') }
                                 ]}
                                 selected={log.periodColor}
                                 onChange={(v) => setLog({ ...log, periodColor: v as any })}
@@ -62,12 +62,12 @@ export const MenstruationSection: React.FC<LogSectionsProps> = ({ log, setLog, o
                         </div>
 
                         <div>
-                            <label className="block text-sm font-semibold text-brand-text mb-2">Consistencia</label>
+                            <label className="block text-sm font-semibold text-brand-text mb-2">{t('menstruationConsistencyLabel')}</label>
                             <SingleSelector
                                 options={[
-                                    { value: 'watery', label: 'Acuoso' },
-                                    { value: 'thick', label: 'Espeso' },
-                                    { value: 'clotty', label: 'Con coágulos' }
+                                    { value: 'watery', label: t('menstruationConsistencyWatery') },
+                                    { value: 'thick', label: t('menstruationConsistencyThick') },
+                                    { value: 'clotty', label: t('menstruationConsistencyClotty') }
                                 ]}
                                 selected={log.periodConsistency}
                                 onChange={(v) => setLog({ ...log, periodConsistency: v as any })}
@@ -77,17 +77,17 @@ export const MenstruationSection: React.FC<LogSectionsProps> = ({ log, setLog, o
                         <ToggleSwitch
                             checked={log.hasClots || false}
                             onChange={(v) => setLog({ ...log, hasClots: v })}
-                            label="Coágulos"
+                            label={t('menstruationClots')}
                         />
 
                         <div>
-                            <label className="block text-sm font-semibold text-brand-text mb-2">Productos usados</label>
+                            <label className="block text-sm font-semibold text-brand-text mb-2">{t('menstruationProductsLabel')}</label>
                             <ChipSelector
                                 options={[
-                                    { value: 'pad', label: 'Toalla' },
-                                    { value: 'tampon', label: 'Tampón' },
-                                    { value: 'cup', label: 'Copa' },
-                                    { value: 'disc', label: 'Disco' }
+                                    { value: 'pad', label: t('menstruationProductPad') },
+                                    { value: 'tampon', label: t('menstruationProductTampon') },
+                                    { value: 'cup', label: t('menstruationProductCup') },
+                                    { value: 'disc', label: t('menstruationProductDisc') }
                                 ]}
                                 selected={log.periodProducts || []}
                                 onChange={(v) => setLog({ ...log, periodProducts: v as any })}
@@ -96,7 +96,7 @@ export const MenstruationSection: React.FC<LogSectionsProps> = ({ log, setLog, o
 
                         <div className="grid grid-cols-2 gap-3">
                             <div>
-                                <label className="block text-sm font-semibold text-brand-text mb-2">Talla</label>
+                                <label className="block text-sm font-semibold text-brand-text mb-2">{t('menstruationProductSize')}</label>
                                 <SingleSelector
                                     options={[
                                         { value: 'small', label: 'S' },
@@ -108,7 +108,7 @@ export const MenstruationSection: React.FC<LogSectionsProps> = ({ log, setLog, o
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-semibold text-brand-text mb-2">Cantidad</label>
+                                <label className="block text-sm font-semibold text-brand-text mb-2">{t('menstruationProductQuantity')}</label>
                                 <NumberInput
                                     value={log.productCount}
                                     onChange={(v) => setLog({ ...log, productCount: v })}
@@ -122,12 +122,12 @@ export const MenstruationSection: React.FC<LogSectionsProps> = ({ log, setLog, o
                             <ToggleSwitch
                                 checked={log.hasLeaks || false}
                                 onChange={(v) => setLog({ ...log, hasLeaks: v })}
-                                label="Fugas"
+                                label={t('menstruationLeaks')}
                             />
                             <ToggleSwitch
                                 checked={log.periodStartedToday || false}
                                 onChange={(v) => setLog({ ...log, periodStartedToday: v })}
-                                label="Inicio hoy"
+                                label={t('menstruationStartedToday')}
                             />
                         </div>
                     </>
@@ -148,12 +148,12 @@ export const FertilitySection: React.FC<LogSectionsProps> = ({ log, setLog, open
         >
             <div className="space-y-4">
                 <div>
-                    <label className="block text-sm font-semibold text-brand-text mb-2">Test de ovulación (LH)</label>
+                    <label className="block text-sm font-semibold text-brand-text mb-2">{t('ovulationTestLabel')}</label>
                     <SingleSelector
                         options={[
-                            { value: 'positive', label: 'Positivo' },
-                            { value: 'negative', label: 'Negativo' },
-                            { value: 'unclear', label: 'Indeterminado' }
+                            { value: 'positive', label: t('ovulationTestPositive') },
+                            { value: 'negative', label: t('ovulationTestNegative') },
+                            { value: 'unclear', label: t('ovulationTestIndeterminate') }
                         ]}
                         selected={log.ovulationTest}
                         onChange={(v) => setLog({ ...log, ovulationTest: v as any })}
@@ -161,14 +161,14 @@ export const FertilitySection: React.FC<LogSectionsProps> = ({ log, setLog, open
                 </div>
 
                 <div>
-                    <label className="block text-sm font-semibold text-brand-text mb-2">Flujo cervical</label>
+                    <label className="block text-sm font-semibold text-brand-text mb-2">{t('cervicalFlowLabel')}</label>
                     <SingleSelector
                         options={[
-                            { value: 'dry', label: 'Seco' },
-                            { value: 'sticky', label: 'Pegajoso' },
-                            { value: 'creamy', label: 'Cremoso' },
-                            { value: 'watery', label: 'Acuoso' },
-                            { value: 'egg-white', label: 'Clara de huevo' }
+                            { value: 'dry', label: t('cervicalFlowDry') },
+                            { value: 'sticky', label: t('cervicalFlowSticky') },
+                            { value: 'creamy', label: t('cervicalFlowCreamy') },
+                            { value: 'watery', label: t('cervicalFlowWatery') },
+                            { value: 'egg-white', label: t('cervicalFlowEggWhite') }
                         ]}
                         selected={log.cervicalFluid}
                         onChange={(v) => setLog({ ...log, cervicalFluid: v as any })}
@@ -177,34 +177,34 @@ export const FertilitySection: React.FC<LogSectionsProps> = ({ log, setLog, open
 
                 <div className="grid grid-cols-3 gap-3">
                     <div>
-                        <label className="block text-sm font-semibold text-brand-text mb-2">Posición</label>
+                        <label className="block text-sm font-semibold text-brand-text mb-2">{t('cervixPositionLabel')}</label>
                         <SingleSelector
                             options={[
-                                { value: 'high', label: 'Alta' },
-                                { value: 'medium', label: 'Media' },
-                                { value: 'low', label: 'Baja' }
+                                { value: 'high', label: t('cervixPositionHigh') },
+                                { value: 'medium', label: t('cervixPositionMedium') },
+                                { value: 'low', label: t('cervixPositionLow') }
                             ]}
                             selected={log.cervixPosition}
                             onChange={(v) => setLog({ ...log, cervixPosition: v as any })}
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-semibold text-brand-text mb-2">Firmeza</label>
+                        <label className="block text-sm font-semibold text-brand-text mb-2">{t('cervixFirmnessLabel')}</label>
                         <SingleSelector
                             options={[
-                                { value: 'firm', label: 'Firme' },
-                                { value: 'soft', label: 'Suave' }
+                                { value: 'firm', label: t('cervixFirmnessFirm') },
+                                { value: 'soft', label: t('cervixFirmnessSoft') }
                             ]}
                             selected={log.cervixFirmness}
                             onChange={(v) => setLog({ ...log, cervixFirmness: v as any })}
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-semibold text-brand-text mb-2">Apertura</label>
+                        <label className="block text-sm font-semibold text-brand-text mb-2">{t('cervixOpeningLabel')}</label>
                         <SingleSelector
                             options={[
-                                { value: 'open', label: 'Abierto' },
-                                { value: 'closed', label: 'Cerrado' }
+                                { value: 'open', label: t('cervixOpeningOpen') },
+                                { value: 'closed', label: t('cervixOpeningClosed') }
                             ]}
                             selected={log.cervixOpening}
                             onChange={(v) => setLog({ ...log, cervixOpening: v as any })}
@@ -216,13 +216,13 @@ export const FertilitySection: React.FC<LogSectionsProps> = ({ log, setLog, open
                     <ToggleSwitch
                         checked={log.sexualActivity || false}
                         onChange={(v) => setLog({ ...log, sexualActivity: v })}
-                        label="Actividad sexual"
+                        label={t('sexualActivityLabel')}
                     />
                     {log.sexualActivity && (
                         <ToggleSwitch
                             checked={log.protection || false}
                             onChange={(v) => setLog({ ...log, protection: v })}
-                            label="Protección"
+                            label={t('protectionLabel')}
                         />
                     )}
                 </div>
@@ -242,7 +242,7 @@ export const PainSection: React.FC<LogSectionsProps> = ({ log, setLog, openSecti
         >
             <div className="space-y-4">
                 <div>
-                    <label className="block text-sm font-semibold text-brand-text mb-2">Nivel de dolor (0-10)</label>
+                    <label className="block text-sm font-semibold text-brand-text mb-2">{t('painLevelLabel')}</label>
                     <ScaleSlider
                         value={log.painLevel}
                         onChange={(v) => setLog({ ...log, painLevel: v })}
@@ -254,13 +254,13 @@ export const PainSection: React.FC<LogSectionsProps> = ({ log, setLog, openSecti
                 {log.painLevel !== undefined && log.painLevel > 0 && (
                     <>
                         <div>
-                            <label className="block text-sm font-semibold text-brand-text mb-2">Ubicación</label>
+                            <label className="block text-sm font-semibold text-brand-text mb-2">{t('painLocationLabel')}</label>
                             <ChipSelector
                                 options={[
-                                    { value: 'cramps', label: 'Cólicos' },
-                                    { value: 'headache', label: 'Cabeza' },
-                                    { value: 'back', label: 'Espalda' },
-                                    { value: 'breasts', label: 'Senos' }
+                                    { value: 'cramps', label: t('painLocationCramps') },
+                                    { value: 'headache', label: t('painLocationHeadache') },
+                                    { value: 'back', label: t('painLocationBack') },
+                                    { value: 'breasts', label: t('painLocationBreasts') }
                                 ]}
                                 selected={log.painLocations || []}
                                 onChange={(v) => setLog({ ...log, painLocations: v })}
@@ -268,12 +268,12 @@ export const PainSection: React.FC<LogSectionsProps> = ({ log, setLog, openSecti
                         </div>
 
                         <div>
-                            <label className="block text-sm font-semibold text-brand-text mb-2">Duración aproximada</label>
+                            <label className="block text-sm font-semibold text-brand-text mb-2">{t('painDurationLabel')}</label>
                             <input
                                 type="text"
                                 value={log.painDuration || ''}
                                 onChange={(e) => setLog({ ...log, painDuration: e.target.value || undefined })}
-                                placeholder="ej: 2 horas, todo el día"
+                                placeholder={t('painDurationPlaceholder')}
                                 className="w-full bg-brand-surface text-brand-text placeholder:text-brand-text-dim/70 p-3 rounded-xl border border-brand-border focus:ring-2 focus:ring-brand-primary/50 focus:border-brand-primary outline-none transition-all duration-150"
                             />
                         </div>
@@ -297,19 +297,19 @@ export const MentalSection: React.FC<LogSectionsProps> = ({ log, setLog, openSec
         >
             <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-3">
-                    <ToggleSwitch checked={log.anxiety || false} onChange={(v) => setLog({ ...log, anxiety: v })} label="Ansiedad" />
-                    <ToggleSwitch checked={log.sadness || false} onChange={(v) => setLog({ ...log, sadness: v })} label="Tristeza" />
-                    <ToggleSwitch checked={log.irritability || false} onChange={(v) => setLog({ ...log, irritability: v })} label="Irritabilidad" />
-                    <ToggleSwitch checked={log.calmness || false} onChange={(v) => setLog({ ...log, calmness: v })} label="Calma" />
+                    <ToggleSwitch checked={log.anxiety || false} onChange={(v) => setLog({ ...log, anxiety: v })} label={t('mentalAnxiety')} />
+                    <ToggleSwitch checked={log.sadness || false} onChange={(v) => setLog({ ...log, sadness: v })} label={t('mentalSadness')} />
+                    <ToggleSwitch checked={log.irritability || false} onChange={(v) => setLog({ ...log, irritability: v })} label={t('mentalIrritability')} />
+                    <ToggleSwitch checked={log.calmness || false} onChange={(v) => setLog({ ...log, calmness: v })} label={t('mentalCalmness')} />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-semibold text-brand-text mb-2">Motivación</label>
+                    <label className="block text-sm font-semibold text-brand-text mb-2">{t('mentalMotivationLabel')}</label>
                     <SingleSelector
                         options={[
-                            { value: 'low', label: 'Baja' },
-                            { value: 'medium', label: 'Media' },
-                            { value: 'high', label: 'Alta' }
+                            { value: 'low', label: t('mentalMotivationLow') },
+                            { value: 'medium', label: t('mentalMotivationMedium') },
+                            { value: 'high', label: t('mentalMotivationHigh') }
                         ]}
                         selected={log.motivation}
                         onChange={(v) => setLog({ ...log, motivation: v as any })}
@@ -317,12 +317,12 @@ export const MentalSection: React.FC<LogSectionsProps> = ({ log, setLog, openSec
                 </div>
 
                 <div>
-                    <label className="block text-sm font-semibold text-brand-text mb-2">Libido</label>
+                    <label className="block text-sm font-semibold text-brand-text mb-2">{t('mentalLibidoLabel')}</label>
                     <SingleSelector
                         options={[
-                            { value: 'low', label: 'Baja' },
-                            { value: 'normal', label: 'Normal' },
-                            { value: 'high', label: 'Alta' }
+                            { value: 'low', label: t('mentalLibidoLow') },
+                            { value: 'normal', label: t('mentalLibidoNormal') },
+                            { value: 'high', label: t('mentalLibidoHigh') }
                         ]}
                         selected={log.libido}
                         onChange={(v) => setLog({ ...log, libido: v as any })}
@@ -330,7 +330,7 @@ export const MentalSection: React.FC<LogSectionsProps> = ({ log, setLog, openSec
                 </div>
 
                 <div>
-                    <label className="block text-sm font-semibold text-brand-text mb-2">Estrés (0-10)</label>
+                    <label className="block text-sm font-semibold text-brand-text mb-2">{t('mentalStressLabel')}</label>
                     <ScaleSlider
                         value={log.stressScore}
                         onChange={(v) => setLog({ ...log, stressScore: v })}
@@ -341,30 +341,30 @@ export const MentalSection: React.FC<LogSectionsProps> = ({ log, setLog, openSec
 
                 {log.stressScore !== undefined && log.stressScore > 3 && (
                     <div>
-                        <label className="block text-sm font-semibold text-brand-text mb-2">Detonantes</label>
+                        <label className="block text-sm font-semibold text-brand-text mb-2">{t('mentalStressTriggersLabel')}</label>
                         <ChipSelectorWithCustom
                             predefinedOptions={[
-                                { value: 'work', label: 'Trabajo' },
-                                { value: 'study', label: 'Estudio' },
-                                { value: 'relationship', label: 'Relación' },
-                                { value: 'family', label: 'Familia' },
-                                { value: 'health', label: 'Salud' },
-                                { value: 'money', label: 'Dinero' }
+                                { value: 'work', label: t('mentalStressTriggerWork') },
+                                { value: 'study', label: t('mentalStressTriggerStudy') },
+                                { value: 'relationship', label: t('mentalStressTriggerRelationship') },
+                                { value: 'family', label: t('mentalStressTriggerFamily') },
+                                { value: 'health', label: t('mentalStressTriggerHealth') },
+                                { value: 'money', label: t('mentalStressTriggerMoney') }
                             ]}
                             selected={log.stressTriggers || []}
                             onChange={(v) => setLog({ ...log, stressTriggers: v })}
-                            placeholder="Ej: Tráfico, Examen..."
+                            placeholder={t('mentalStressTriggerPlaceholder')}
                         />
                     </div>
                 )}
 
                 <div>
-                    <label className="block text-sm font-semibold text-brand-text mb-2">Energía</label>
+                    <label className="block text-sm font-semibold text-brand-text mb-2">{t('energyLabel')}</label>
                     <SingleSelector
                         options={[
-                            { value: 'low', label: 'Baja' },
-                            { value: 'medium', label: 'Media' },
-                            { value: 'high', label: 'Alta' }
+                            { value: 'low', label: t('low') },
+                            { value: 'medium', label: t('medium') },
+                            { value: 'high', label: t('high') }
                         ]}
                         selected={log.energyLevel}
                         onChange={(v) => setLog({ ...log, energyLevel: v as any })}
@@ -387,7 +387,7 @@ export const SleepSection: React.FC<LogSectionsProps> = ({ log, setLog, openSect
             <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-3">
                     <div>
-                        <label className="block text-sm font-semibold text-brand-text mb-2">Horas de sueño</label>
+                        <label className="block text-sm font-semibold text-brand-text mb-2">{t('sleepHoursLabel')}</label>
                         <NumberInput
                             value={log.sleepHours}
                             onChange={(v) => setLog({ ...log, sleepHours: v })}
@@ -399,7 +399,7 @@ export const SleepSection: React.FC<LogSectionsProps> = ({ log, setLog, openSect
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-semibold text-brand-text mb-2">Calidad (1-5)</label>
+                        <label className="block text-sm font-semibold text-brand-text mb-2">{t('sleepQualityLabel')}</label>
                         <ScaleSlider
                             value={log.sleepQuality}
                             onChange={(v) => setLog({ ...log, sleepQuality: v as any })}
@@ -411,14 +411,14 @@ export const SleepSection: React.FC<LogSectionsProps> = ({ log, setLog, openSect
 
                 <div className="grid grid-cols-2 gap-3">
                     <div>
-                        <label className="block text-sm font-semibold text-brand-text mb-2">Hora de dormir</label>
+                        <label className="block text-sm font-semibold text-brand-text mb-2">{t('sleepBedTimeLabel')}</label>
                         <TimeInput
                             value={log.bedTime}
                             onChange={(v) => setLog({ ...log, bedTime: v })}
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-semibold text-brand-text mb-2">Hora de despertar</label>
+                        <label className="block text-sm font-semibold text-brand-text mb-2">{t('sleepWakeTimeLabel')}</label>
                         <TimeInput
                             value={log.wakeTime}
                             onChange={(v) => setLog({ ...log, wakeTime: v })}
@@ -427,7 +427,7 @@ export const SleepSection: React.FC<LogSectionsProps> = ({ log, setLog, openSect
                 </div>
 
                 <div>
-                    <label className="block text-sm font-semibold text-brand-text mb-2">Siesta (minutos)</label>
+                    <label className="block text-sm font-semibold text-brand-text mb-2">{t('sleepNapLabel')}</label>
                     <NumberInput
                         value={log.napMinutes}
                         onChange={(v) => setLog({ ...log, napMinutes: v })}
@@ -439,7 +439,7 @@ export const SleepSection: React.FC<LogSectionsProps> = ({ log, setLog, openSect
 
                 <div className="grid grid-cols-3 gap-3">
                     <div>
-                        <label className="block text-sm font-semibold text-brand-text mb-2">Agua (L)</label>
+                        <label className="block text-sm font-semibold text-brand-text mb-2">{t('sleepWaterLabel')}</label>
                         <NumberInput
                             value={log.waterIntake}
                             onChange={(v) => setLog({ ...log, waterIntake: v })}
@@ -451,7 +451,7 @@ export const SleepSection: React.FC<LogSectionsProps> = ({ log, setLog, openSect
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-semibold text-brand-text mb-2">Cafeína</label>
+                        <label className="block text-sm font-semibold text-brand-text mb-2">{t('sleepCaffeineLabel')}</label>
                         <NumberInput
                             value={log.caffeineIntake}
                             onChange={(v) => setLog({ ...log, caffeineIntake: v })}
@@ -460,7 +460,7 @@ export const SleepSection: React.FC<LogSectionsProps> = ({ log, setLog, openSect
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-semibold text-brand-text mb-2">Alcohol</label>
+                        <label className="block text-sm font-semibold text-brand-text mb-2">{t('sleepAlcoholLabel')}</label>
                         <NumberInput
                             value={log.alcoholIntake}
                             onChange={(v) => setLog({ ...log, alcoholIntake: v })}
@@ -471,18 +471,18 @@ export const SleepSection: React.FC<LogSectionsProps> = ({ log, setLog, openSect
                 </div>
 
                 <div>
-                    <label className="block text-sm font-semibold text-brand-text mb-2">Antojos</label>
+                    <label className="block text-sm font-semibold text-brand-text mb-2">{t('cravingsLabel')}</label>
                     <ChipSelectorWithCustom
                         predefinedOptions={[
-                            { value: 'sweet', label: 'Dulce' },
-                            { value: 'salty', label: 'Salado' },
-                            { value: 'chocolate', label: 'Chocolate' },
-                            { value: 'spicy', label: 'Picante' },
-                            { value: 'carbs', label: 'Carbohidratos' }
+                            { value: 'sweet', label: t('cravingsSweet') },
+                            { value: 'salty', label: t('cravingsSalty') },
+                            { value: 'chocolate', label: t('cravingsChocolate') },
+                            { value: 'spicy', label: t('cravingsSpicy') },
+                            { value: 'carbs', label: t('cravingsCarbs') }
                         ]}
                         selected={log.cravings || []}
                         onChange={(v) => setLog({ ...log, cravings: v })}
-                        placeholder="Ej: Pizza, Helado..."
+                        placeholder={t('cravingsPlaceholder')}
                     />
                 </div>
             </div>
@@ -501,13 +501,13 @@ export const ActivitySection: React.FC<LogSectionsProps> = ({ log, setLog, openS
         >
             <div className="space-y-4">
                 <div>
-                    <label className="block text-sm font-semibold text-brand-text mb-2">Intensidad</label>
+                    <label className="block text-sm font-semibold text-brand-text mb-2">{t('activityIntensityLabel')}</label>
                     <SingleSelector
                         options={[
-                            { value: 'none', label: 'Ninguna' },
-                            { value: 'light', label: 'Suave' },
-                            { value: 'moderate', label: 'Moderada' },
-                            { value: 'intense', label: 'Intensa' }
+                            { value: 'none', label: t('activityIntensityNone') },
+                            { value: 'light', label: t('activityIntensityLight') },
+                            { value: 'moderate', label: t('activityIntensityModerate') },
+                            { value: 'intense', label: t('activityIntensityIntense') }
                         ]}
                         selected={log.physicalActivity}
                         onChange={(v) => setLog({ ...log, physicalActivity: v as any })}
@@ -517,25 +517,25 @@ export const ActivitySection: React.FC<LogSectionsProps> = ({ log, setLog, openS
                 {log.physicalActivity && log.physicalActivity !== 'none' && (
                     <>
                         <div>
-                            <label className="block text-sm font-semibold text-brand-text mb-2">Tipo de actividad</label>
+                            <label className="block text-sm font-semibold text-brand-text mb-2">{t('activityTypeLabel')}</label>
                             <ChipSelectorWithCustom
                                 predefinedOptions={[
-                                    { value: 'walking', label: 'Caminar' },
-                                    { value: 'running', label: 'Correr' },
-                                    { value: 'strength', label: 'Fuerza' },
-                                    { value: 'yoga', label: 'Yoga' },
-                                    { value: 'cycling', label: 'Ciclismo' },
-                                    { value: 'swimming', label: 'Natación' }
+                                    { value: 'walking', label: t('activityTypeWalking') },
+                                    { value: 'running', label: t('activityTypeRunning') },
+                                    { value: 'strength', label: t('activityTypeStrength') },
+                                    { value: 'yoga', label: t('activityTypeYoga') },
+                                    { value: 'cycling', label: t('activityTypeCycling') },
+                                    { value: 'swimming', label: t('activityTypeSwimming') }
                                 ]}
                                 selected={log.activityType || []}
                                 onChange={(v) => setLog({ ...log, activityType: v })}
-                                placeholder="Ej: Pilates, Baile..."
+                                placeholder={t('activityTypePlaceholder')}
                             />
                         </div>
 
                         <div className="grid grid-cols-2 gap-3">
                             <div>
-                                <label className="block text-sm font-semibold text-brand-text mb-2">Duración (min)</label>
+                                <label className="block text-sm font-semibold text-brand-text mb-2">{t('activityDurationLabel')}</label>
                                 <NumberInput
                                     value={log.activityDuration}
                                     onChange={(v) => setLog({ ...log, activityDuration: v })}
@@ -545,7 +545,7 @@ export const ActivitySection: React.FC<LogSectionsProps> = ({ log, setLog, openS
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-semibold text-brand-text mb-2">RPE (1-10)</label>
+                                <label className="block text-sm font-semibold text-brand-text mb-2">{t('activityRpeLabel')}</label>
                                 <ScaleSlider
                                     value={log.activityIntensity}
                                     onChange={(v) => setLog({ ...log, activityIntensity: v })}
@@ -557,7 +557,7 @@ export const ActivitySection: React.FC<LogSectionsProps> = ({ log, setLog, openS
 
                         <div className="grid grid-cols-3 gap-3">
                             <div>
-                                <label className="block text-sm font-semibold text-brand-text mb-2">Pasos</label>
+                                <label className="block text-sm font-semibold text-brand-text mb-2">{t('activityStepsLabel')}</label>
                                 <NumberInput
                                     value={log.steps}
                                     onChange={(v) => setLog({ ...log, steps: v })}
@@ -566,7 +566,7 @@ export const ActivitySection: React.FC<LogSectionsProps> = ({ log, setLog, openS
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-semibold text-brand-text mb-2">FC reposo</label>
+                                <label className="block text-sm font-semibold text-brand-text mb-2">{t('activityRestingHrLabel')}</label>
                                 <NumberInput
                                     value={log.restingHeartRate}
                                     onChange={(v) => setLog({ ...log, restingHeartRate: v })}
@@ -576,7 +576,7 @@ export const ActivitySection: React.FC<LogSectionsProps> = ({ log, setLog, openS
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-semibold text-brand-text mb-2">Calorías</label>
+                                <label className="block text-sm font-semibold text-brand-text mb-2">{t('activityCaloriesLabel')}</label>
                                 <NumberInput
                                     value={log.caloriesBurned}
                                     onChange={(v) => setLog({ ...log, caloriesBurned: v })}
@@ -623,7 +623,7 @@ export const MedicationSection: React.FC<LogSectionsProps> = ({ log, setLog, ope
                 {/* Medications */}
                 <div>
                     <div className="flex items-center justify-between mb-2">
-                        <label className="block text-sm font-semibold text-brand-text">Medicamentos</label>
+                        <label className="block text-sm font-semibold text-brand-text">{t('medicationsLabel')}</label>
                         <button
                             onClick={addMedication}
                             className="text-xs font-medium text-brand-primary hover:text-brand-primary/80 flex items-center gap-1"
@@ -631,7 +631,7 @@ export const MedicationSection: React.FC<LogSectionsProps> = ({ log, setLog, ope
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                             </svg>
-                            Agregar
+                            {t('addMedication')}
                         </button>
                     </div>
                     <div className="space-y-2">
@@ -641,14 +641,14 @@ export const MedicationSection: React.FC<LogSectionsProps> = ({ log, setLog, ope
                                     type="text"
                                     value={med.name}
                                     onChange={(e) => updateMedication(index, 'name', e.target.value)}
-                                    placeholder="Nombre"
+                                    placeholder={t('medicationNamePlaceholder')}
                                     className="flex-1 bg-brand-surface text-brand-text placeholder:text-brand-text-dim/70 p-2 rounded-lg border border-brand-border focus:ring-2 focus:ring-brand-primary/50 focus:border-brand-primary outline-none transition-all duration-150 text-sm"
                                 />
                                 <input
                                     type="text"
                                     value={med.dose}
                                     onChange={(e) => updateMedication(index, 'dose', e.target.value)}
-                                    placeholder="Dosis"
+                                    placeholder={t('medicationDosePlaceholder')}
                                     className="w-24 bg-brand-surface text-brand-text placeholder:text-brand-text-dim/70 p-2 rounded-lg border border-brand-border focus:ring-2 focus:ring-brand-primary/50 focus:border-brand-primary outline-none transition-all duration-150 text-sm"
                                 />
                                 <button
@@ -668,29 +668,29 @@ export const MedicationSection: React.FC<LogSectionsProps> = ({ log, setLog, ope
                 </div>
 
                 <div>
-                    <label className="block text-sm font-semibold text-brand-text mb-2">Suplementos</label>
+                    <label className="block text-sm font-semibold text-brand-text mb-2">{t('supplementsLabel')}</label>
                     <ChipSelectorWithCustom
                         predefinedOptions={[
-                            { value: 'iron', label: 'Hierro' },
-                            { value: 'magnesium', label: 'Magnesio' },
-                            { value: 'omega3', label: 'Omega-3' },
-                            { value: 'vitaminD', label: 'Vitamina D' },
-                            { value: 'calcium', label: 'Calcio' },
-                            { value: 'zinc', label: 'Zinc' }
+                            { value: 'iron', label: t('supplementIron') },
+                            { value: 'magnesium', label: t('supplementMagnesium') },
+                            { value: 'omega3', label: t('supplementOmega3') },
+                            { value: 'vitaminD', label: t('supplementVitaminD') },
+                            { value: 'calcium', label: t('supplementCalcium') },
+                            { value: 'zinc', label: t('supplementZinc') }
                         ]}
                         selected={log.supplements || []}
                         onChange={(v) => setLog({ ...log, supplements: v })}
-                        placeholder="Ej: Vitamina B12, Colágeno..."
+                        placeholder={t('supplementsPlaceholder')}
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-semibold text-brand-text mb-2">Anticonceptivo</label>
+                    <label className="block text-sm font-semibold text-brand-text mb-2">{t('contraceptionLabel')}</label>
                     <input
                         type="text"
                         value={log.contraception || ''}
                         onChange={(e) => setLog({ ...log, contraception: e.target.value || undefined })}
-                        placeholder="ej: Píldora, DIU"
+                        placeholder={t('contraceptionPlaceholder')}
                         className="w-full bg-brand-surface text-brand-text placeholder:text-brand-text-dim/70 p-3 rounded-xl border border-brand-border focus:ring-2 focus:ring-brand-primary/50 focus:border-brand-primary outline-none transition-all duration-150"
                     />
                 </div>
@@ -698,7 +698,7 @@ export const MedicationSection: React.FC<LogSectionsProps> = ({ log, setLog, ope
                 {log.contraception && (
                     <div className="grid grid-cols-2 gap-3">
                         <div>
-                            <label className="block text-sm font-semibold text-brand-text mb-2">Día del blíster</label>
+                            <label className="block text-sm font-semibold text-brand-text mb-2">{t('contraceptionDayLabel')}</label>
                             <NumberInput
                                 value={log.contraceptionDay}
                                 onChange={(v) => setLog({ ...log, contraceptionDay: v })}
@@ -707,30 +707,30 @@ export const MedicationSection: React.FC<LogSectionsProps> = ({ log, setLog, ope
                                 max={28}
                             />
                         </div>
-                        <div className="flex items-end">
-                            <ToggleSwitch
-                                checked={log.hasIUD || false}
-                                onChange={(v) => setLog({ ...log, hasIUD: v })}
-                                label="Tengo DIU"
-                            />
-                        </div>
+                            <div className="flex items-end">
+                                <ToggleSwitch
+                                    checked={log.hasIUD || false}
+                                    onChange={(v) => setLog({ ...log, hasIUD: v })}
+                                    label={t('iudLabel')}
+                                />
+                            </div>
                     </div>
                 )}
 
                 <div>
-                    <label className="block text-sm font-semibold text-brand-text mb-2">Remedios caseros</label>
+                    <label className="block text-sm font-semibold text-brand-text mb-2">{t('homeRemediesLabel')}</label>
                     <ChipSelectorWithCustom
                         predefinedOptions={[
-                            { value: 'heating-pad', label: 'Bolsa de calor' },
-                            { value: 'cold-compress', label: 'Compresa fría' },
-                            { value: 'tea', label: 'Té' },
-                            { value: 'bath', label: 'Baño caliente' },
-                            { value: 'massage', label: 'Masaje' },
-                            { value: 'meditation', label: 'Meditación' }
+                            { value: 'heating-pad', label: t('homeRemedyHeatingPad') },
+                            { value: 'cold-compress', label: t('homeRemedyColdCompress') },
+                            { value: 'tea', label: t('homeRemedyTea') },
+                            { value: 'bath', label: t('homeRemedyHotBath') },
+                            { value: 'massage', label: t('homeRemedyMassage') },
+                            { value: 'meditation', label: t('homeRemedyMeditation') }
                         ]}
                         selected={log.homeRemedies || []}
                         onChange={(v) => setLog({ ...log, homeRemedies: v })}
-                        placeholder="Ej: Aromaterapia, Yoga..."
+                        placeholder={t('homeRemediesPlaceholder')}
                     />
                 </div>
             </div>
@@ -750,7 +750,7 @@ export const HealthSection: React.FC<LogSectionsProps> = ({ log, setLog, openSec
             <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-3">
                     <div>
-                        <label className="block text-sm font-semibold text-brand-text mb-2">Temperatura basal (°C)</label>
+                        <label className="block text-sm font-semibold text-brand-text mb-2">{t('basalTemperatureLabel')}</label>
                         <NumberInput
                             value={log.basalTemp}
                             onChange={(v) => setLog({ ...log, basalTemp: v })}
@@ -762,7 +762,7 @@ export const HealthSection: React.FC<LogSectionsProps> = ({ log, setLog, openSec
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-semibold text-brand-text mb-2">Peso (kg)</label>
+                        <label className="block text-sm font-semibold text-brand-text mb-2">{t('weightLabel')}</label>
                         <NumberInput
                             value={log.weight}
                             onChange={(v) => setLog({ ...log, weight: v })}
@@ -775,12 +775,12 @@ export const HealthSection: React.FC<LogSectionsProps> = ({ log, setLog, openSec
                 </div>
 
                 <div>
-                    <label className="block text-sm font-semibold text-brand-text mb-2">Test de embarazo</label>
+                    <label className="block text-sm font-semibold text-brand-text mb-2">{t('pregnancyTestLabel')}</label>
                     <SingleSelector
                         options={[
-                            { value: 'positive', label: 'Positivo' },
-                            { value: 'negative', label: 'Negativo' },
-                            { value: 'not-taken', label: 'No realizado' }
+                            { value: 'positive', label: t('positive') },
+                            { value: 'negative', label: t('negative') },
+                            { value: 'not-taken', label: t('notTaken') }
                         ]}
                         selected={log.pregnancyTest}
                         onChange={(v) => setLog({ ...log, pregnancyTest: v as any })}
@@ -791,17 +791,17 @@ export const HealthSection: React.FC<LogSectionsProps> = ({ log, setLog, openSec
                     <ToggleSwitch
                         checked={log.hasColdSymptoms || false}
                         onChange={(v) => setLog({ ...log, hasColdSymptoms: v })}
-                        label="Síntomas resfriado"
+                        label={t('coldSymptomsLabel')}
                     />
                     <ToggleSwitch
                         checked={log.hasCovidSymptoms || false}
                         onChange={(v) => setLog({ ...log, hasCovidSymptoms: v })}
-                        label="Síntomas COVID"
+                        label={t('covidSymptomsLabel')}
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-semibold text-brand-text mb-2">Presión arterial</label>
+                    <label className="block text-sm font-semibold text-brand-text mb-2">{t('bloodPressureLabel')}</label>
                     <input
                         type="text"
                         value={log.bloodPressure || ''}

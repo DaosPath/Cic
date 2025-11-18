@@ -56,6 +56,160 @@ export interface Translations {
   logSaved: string;
   loading: string;
 
+  // Advanced logging modules
+  menstruationColorLabel: string;
+  menstruationColorBrightRed: string;
+  menstruationColorDarkRed: string;
+  menstruationColorBrown: string;
+  menstruationColorPink: string;
+  menstruationConsistencyLabel: string;
+  menstruationConsistencyWatery: string;
+  menstruationConsistencyThick: string;
+  menstruationConsistencyClotty: string;
+  menstruationClots: string;
+  menstruationProductsLabel: string;
+  menstruationProductPad: string;
+  menstruationProductTampon: string;
+  menstruationProductCup: string;
+  menstruationProductDisc: string;
+  menstruationProductSize: string;
+  menstruationProductQuantity: string;
+  menstruationLeaks: string;
+  menstruationStartedToday: string;
+
+  ovulationTestLabel: string;
+  ovulationTestPositive: string;
+  ovulationTestNegative: string;
+  ovulationTestIndeterminate: string;
+  cervicalFlowLabel: string;
+  cervicalFlowDry: string;
+  cervicalFlowSticky: string;
+  cervicalFlowCreamy: string;
+  cervicalFlowWatery: string;
+  cervicalFlowEggWhite: string;
+  cervixPositionLabel: string;
+  cervixPositionHigh: string;
+  cervixPositionMedium: string;
+  cervixPositionLow: string;
+  cervixFirmnessLabel: string;
+  cervixFirmnessFirm: string;
+  cervixFirmnessSoft: string;
+  cervixOpeningLabel: string;
+  cervixOpeningOpen: string;
+  cervixOpeningClosed: string;
+  sexualActivityLabel: string;
+  protectionLabel: string;
+
+  painLevelLabel: string;
+  painLocationLabel: string;
+  painLocationCramps: string;
+  painLocationHeadache: string;
+  painLocationBack: string;
+  painLocationBreasts: string;
+  painDurationLabel: string;
+  painDurationPlaceholder: string;
+
+  mentalAnxiety: string;
+  mentalSadness: string;
+  mentalIrritability: string;
+  mentalCalmness: string;
+  mentalMotivationLabel: string;
+  mentalMotivationLow: string;
+  mentalMotivationMedium: string;
+  mentalMotivationHigh: string;
+  mentalLibidoLabel: string;
+  mentalLibidoLow: string;
+  mentalLibidoNormal: string;
+  mentalLibidoHigh: string;
+  mentalStressLabel: string;
+  mentalStressTriggersLabel: string;
+  mentalStressTriggerWork: string;
+  mentalStressTriggerStudy: string;
+  mentalStressTriggerRelationship: string;
+  mentalStressTriggerFamily: string;
+  mentalStressTriggerHealth: string;
+  mentalStressTriggerMoney: string;
+  mentalStressTriggerPlaceholder: string;
+  energyLabel: string;
+
+  sleepHoursLabel: string;
+  sleepQualityLabel: string;
+  sleepBedTimeLabel: string;
+  sleepWakeTimeLabel: string;
+  sleepNapLabel: string;
+  sleepWaterLabel: string;
+  sleepCaffeineLabel: string;
+  sleepAlcoholLabel: string;
+  cravingsLabel: string;
+  cravingsSweet: string;
+  cravingsSalty: string;
+  cravingsChocolate: string;
+  cravingsSpicy: string;
+  cravingsCarbs: string;
+  cravingsPlaceholder: string;
+
+  activityIntensityLabel: string;
+  activityIntensityNone: string;
+  activityIntensityLight: string;
+  activityIntensityModerate: string;
+  activityIntensityIntense: string;
+  activityTypeLabel: string;
+  activityTypeWalking: string;
+  activityTypeRunning: string;
+  activityTypeStrength: string;
+  activityTypeYoga: string;
+  activityTypeCycling: string;
+  activityTypeSwimming: string;
+  activityTypePlaceholder: string;
+  activityDurationLabel: string;
+  activityRpeLabel: string;
+  activityStepsLabel: string;
+  activityRestingHrLabel: string;
+  activityCaloriesLabel: string;
+
+  medicationsLabel: string;
+  addMedication: string;
+  medicationNamePlaceholder: string;
+  medicationDosePlaceholder: string;
+  supplementsLabel: string;
+  supplementIron: string;
+  supplementMagnesium: string;
+  supplementOmega3: string;
+  supplementVitaminD: string;
+  supplementCalcium: string;
+  supplementZinc: string;
+  supplementsPlaceholder: string;
+  contraceptionLabel: string;
+  contraceptionPlaceholder: string;
+  contraceptionDayLabel: string;
+  iudLabel: string;
+  homeRemediesLabel: string;
+  homeRemedyHeatingPad: string;
+  homeRemedyColdCompress: string;
+  homeRemedyTea: string;
+  homeRemedyHotBath: string;
+  homeRemedyMassage: string;
+  homeRemedyMeditation: string;
+  homeRemediesPlaceholder: string;
+
+  basalTemperatureLabel: string;
+  weightLabel: string;
+  pregnancyTestLabel: string;
+  notTaken: string;
+  coldSymptomsLabel: string;
+  covidSymptomsLabel: string;
+  bloodPressureLabel: string;
+
+  positive: string;
+  negative: string;
+  indeterminate: string;
+  open: string;
+  closed: string;
+  high: string;
+  medium: string;
+  low: string;
+  firm: string;
+  soft: string;
   // Insights
   notEnoughData: string;
   keepTracking: string;
@@ -239,6 +393,152 @@ const translations: Record<Language, Translations> = {
     logSaved: '¡Registro guardado!',
     loading: 'Cargando...',
 
+    // Advanced logging modules
+    menstruationColorLabel: 'Color',
+    menstruationColorBrightRed: 'Rojo vivo',
+    menstruationColorDarkRed: 'Rojo oscuro',
+    menstruationColorBrown: 'Marrón',
+    menstruationColorPink: 'Rosa',
+    menstruationConsistencyLabel: 'Consistencia',
+    menstruationConsistencyWatery: 'Acuoso',
+    menstruationConsistencyThick: 'Espeso',
+    menstruationConsistencyClotty: 'Con coágulos',
+    menstruationClots: 'Coágulos',
+    menstruationProductsLabel: 'Productos usados',
+    menstruationProductPad: 'Toalla',
+    menstruationProductTampon: 'Tampón',
+    menstruationProductCup: 'Copa',
+    menstruationProductDisc: 'Disco',
+    menstruationProductSize: 'Talla',
+    menstruationProductQuantity: 'Cantidad',
+    menstruationLeaks: 'Fugas',
+    menstruationStartedToday: 'Inicio hoy',
+    ovulationTestLabel: 'Test de ovulación (LH)',
+    ovulationTestPositive: 'Positivo',
+    ovulationTestNegative: 'Negativo',
+    ovulationTestIndeterminate: 'Indeterminado',
+    cervicalFlowLabel: 'Flujo cervical',
+    cervicalFlowDry: 'Seco',
+    cervicalFlowSticky: 'Pegajoso',
+    cervicalFlowCreamy: 'Cremoso',
+    cervicalFlowWatery: 'Acuoso',
+    cervicalFlowEggWhite: 'Clara de huevo',
+    cervixPositionLabel: 'Posición',
+    cervixPositionHigh: 'Alta',
+    cervixPositionMedium: 'Media',
+    cervixPositionLow: 'Baja',
+    cervixFirmnessLabel: 'Firmeza',
+    cervixFirmnessFirm: 'Firme',
+    cervixFirmnessSoft: 'Suave',
+    cervixOpeningLabel: 'Apertura',
+    cervixOpeningOpen: 'Abierto',
+    cervixOpeningClosed: 'Cerrado',
+    sexualActivityLabel: 'Actividad sexual',
+    protectionLabel: 'Protección',
+    painLevelLabel: 'Nivel de dolor (0-10)',
+    painLocationLabel: 'Ubicación',
+    painLocationCramps: 'Cólicos',
+    painLocationHeadache: 'Cabeza',
+    painLocationBack: 'Espalda',
+    painLocationBreasts: 'Senos',
+    painDurationLabel: 'Duración aproximada',
+    painDurationPlaceholder: 'ej: 2 horas, todo el día',
+    mentalAnxiety: 'Ansiedad',
+    mentalSadness: 'Tristeza',
+    mentalIrritability: 'Irritabilidad',
+    mentalCalmness: 'Calma',
+    mentalMotivationLabel: 'Motivación',
+    mentalMotivationLow: 'Baja',
+    mentalMotivationMedium: 'Media',
+    mentalMotivationHigh: 'Alta',
+    mentalLibidoLabel: 'Libido',
+    mentalLibidoLow: 'Baja',
+    mentalLibidoNormal: 'Normal',
+    mentalLibidoHigh: 'Alta',
+    mentalStressLabel: 'Estrés (0-10)',
+    mentalStressTriggersLabel: 'Detonantes',
+    mentalStressTriggerWork: 'Trabajo',
+    mentalStressTriggerStudy: 'Estudio',
+    mentalStressTriggerRelationship: 'Relación',
+    mentalStressTriggerFamily: 'Familia',
+    mentalStressTriggerHealth: 'Salud',
+    mentalStressTriggerMoney: 'Dinero',
+    mentalStressTriggerPlaceholder: 'Ej: Tráfico, Examen...',
+    energyLabel: 'Energía',
+    sleepHoursLabel: 'Horas de sueño',
+    sleepQualityLabel: 'Calidad (1-5)',
+    sleepBedTimeLabel: 'Hora de dormir',
+    sleepWakeTimeLabel: 'Hora de despertar',
+    sleepNapLabel: 'Siesta (minutos)',
+    sleepWaterLabel: 'Agua (L)',
+    sleepCaffeineLabel: 'Cafeína',
+    sleepAlcoholLabel: 'Alcohol',
+    cravingsLabel: 'Antojos',
+    cravingsSweet: 'Dulce',
+    cravingsSalty: 'Salado',
+    cravingsChocolate: 'Chocolate',
+    cravingsSpicy: 'Picante',
+    cravingsCarbs: 'Carbohidratos',
+    cravingsPlaceholder: 'Ej: Pizza, Helado...',
+    activityIntensityLabel: 'Intensidad',
+    activityIntensityNone: 'Ninguna',
+    activityIntensityLight: 'Suave',
+    activityIntensityModerate: 'Moderada',
+    activityIntensityIntense: 'Intensa',
+    activityTypeLabel: 'Tipo de actividad',
+    activityTypeWalking: 'Caminar',
+    activityTypeRunning: 'Correr',
+    activityTypeStrength: 'Fuerza',
+    activityTypeYoga: 'Yoga',
+    activityTypeCycling: 'Ciclismo',
+    activityTypeSwimming: 'Natación',
+    activityTypePlaceholder: 'Ej: Pilates, Baile...',
+    activityDurationLabel: 'Duración (min)',
+    activityRpeLabel: 'RPE (1-10)',
+    activityStepsLabel: 'Pasos',
+    activityRestingHrLabel: 'FC reposo',
+    activityCaloriesLabel: 'Calorías',
+    medicationsLabel: 'Medicamentos',
+    addMedication: 'Agregar',
+    medicationNamePlaceholder: 'Nombre',
+    medicationDosePlaceholder: 'Dosis',
+    supplementsLabel: 'Suplementos',
+    supplementIron: 'Hierro',
+    supplementMagnesium: 'Magnesio',
+    supplementOmega3: 'Omega-3',
+    supplementVitaminD: 'Vitamina D',
+    supplementCalcium: 'Calcio',
+    supplementZinc: 'Zinc',
+    supplementsPlaceholder: 'Ej: Vitamina B12, Colágeno...',
+    contraceptionLabel: 'Anticonceptivo',
+    contraceptionPlaceholder: 'ej: Píldora, DIU',
+    contraceptionDayLabel: 'Día del blíster',
+    iudLabel: 'Tengo DIU',
+    homeRemediesLabel: 'Remedios caseros',
+    homeRemedyHeatingPad: 'Bolsa de calor',
+    homeRemedyColdCompress: 'Compresa fría',
+    homeRemedyTea: 'Té',
+    homeRemedyHotBath: 'Baño caliente',
+    homeRemedyMassage: 'Masaje',
+    homeRemedyMeditation: 'Meditación',
+    homeRemediesPlaceholder: 'Ej: Aromaterapia, Yoga...',
+    basalTemperatureLabel: 'Temperatura basal (°C)',
+    weightLabel: 'Peso (kg)',
+    pregnancyTestLabel: 'Test de embarazo',
+    notTaken: 'No realizado',
+    coldSymptomsLabel: 'Síntomas resfriado',
+    covidSymptomsLabel: 'Síntomas COVID',
+    bloodPressureLabel: 'Presión arterial',
+    positive: 'Positivo',
+    negative: 'Negativo',
+    indeterminate: 'Indeterminado',
+    open: 'Abierto',
+    closed: 'Cerrado',
+    high: 'Alta',
+    medium: 'Media',
+    low: 'Baja',
+    firm: 'Firme',
+    soft: 'Suave',
     // Insights
     notEnoughData: 'No hay suficientes datos para mostrar un análisis detallado.',
     keepTracking: 'Sigue registrando tus ciclos y síntomas para descubrir patrones.',
@@ -421,6 +721,152 @@ const translations: Record<Language, Translations> = {
     logSaved: 'Log saved!',
     loading: 'Loading...',
 
+    // Advanced logging modules
+    menstruationColorLabel: 'Color',
+    menstruationColorBrightRed: 'Bright red',
+    menstruationColorDarkRed: 'Dark red',
+    menstruationColorBrown: 'Brown',
+    menstruationColorPink: 'Pink',
+    menstruationConsistencyLabel: 'Consistency',
+    menstruationConsistencyWatery: 'Watery',
+    menstruationConsistencyThick: 'Thick',
+    menstruationConsistencyClotty: 'Clotty',
+    menstruationClots: 'Clots',
+    menstruationProductsLabel: 'Products used',
+    menstruationProductPad: 'Pad',
+    menstruationProductTampon: 'Tampon',
+    menstruationProductCup: 'Cup',
+    menstruationProductDisc: 'Disc',
+    menstruationProductSize: 'Size',
+    menstruationProductQuantity: 'Quantity',
+    menstruationLeaks: 'Leaks',
+    menstruationStartedToday: 'Started today',
+    ovulationTestLabel: 'Ovulation test (LH)',
+    ovulationTestPositive: 'Positive',
+    ovulationTestNegative: 'Negative',
+    ovulationTestIndeterminate: 'Indeterminate',
+    cervicalFlowLabel: 'Cervical flow',
+    cervicalFlowDry: 'Dry',
+    cervicalFlowSticky: 'Sticky',
+    cervicalFlowCreamy: 'Creamy',
+    cervicalFlowWatery: 'Watery',
+    cervicalFlowEggWhite: 'Egg-white',
+    cervixPositionLabel: 'Position',
+    cervixPositionHigh: 'High',
+    cervixPositionMedium: 'Medium',
+    cervixPositionLow: 'Low',
+    cervixFirmnessLabel: 'Firmness',
+    cervixFirmnessFirm: 'Firm',
+    cervixFirmnessSoft: 'Soft',
+    cervixOpeningLabel: 'Opening',
+    cervixOpeningOpen: 'Open',
+    cervixOpeningClosed: 'Closed',
+    sexualActivityLabel: 'Sexual activity',
+    protectionLabel: 'Protection',
+    painLevelLabel: 'Pain level (0-10)',
+    painLocationLabel: 'Location',
+    painLocationCramps: 'Cramps',
+    painLocationHeadache: 'Headache',
+    painLocationBack: 'Back',
+    painLocationBreasts: 'Breasts',
+    painDurationLabel: 'Approximate duration',
+    painDurationPlaceholder: 'e.g.: 2 hours, all day',
+    mentalAnxiety: 'Anxiety',
+    mentalSadness: 'Sadness',
+    mentalIrritability: 'Irritability',
+    mentalCalmness: 'Calmness',
+    mentalMotivationLabel: 'Motivation',
+    mentalMotivationLow: 'Low',
+    mentalMotivationMedium: 'Medium',
+    mentalMotivationHigh: 'High',
+    mentalLibidoLabel: 'Libido',
+    mentalLibidoLow: 'Low',
+    mentalLibidoNormal: 'Normal',
+    mentalLibidoHigh: 'High',
+    mentalStressLabel: 'Stress (0-10)',
+    mentalStressTriggersLabel: 'Triggers',
+    mentalStressTriggerWork: 'Work',
+    mentalStressTriggerStudy: 'Study',
+    mentalStressTriggerRelationship: 'Relationship',
+    mentalStressTriggerFamily: 'Family',
+    mentalStressTriggerHealth: 'Health',
+    mentalStressTriggerMoney: 'Money',
+    mentalStressTriggerPlaceholder: 'e.g.: Traffic, Exam...',
+    energyLabel: 'Energy',
+    sleepHoursLabel: 'Sleep hours',
+    sleepQualityLabel: 'Quality (1-5)',
+    sleepBedTimeLabel: 'Bedtime',
+    sleepWakeTimeLabel: 'Wake-up time',
+    sleepNapLabel: 'Nap (minutes)',
+    sleepWaterLabel: 'Water (L)',
+    sleepCaffeineLabel: 'Caffeine',
+    sleepAlcoholLabel: 'Alcohol',
+    cravingsLabel: 'Cravings',
+    cravingsSweet: 'Sweet',
+    cravingsSalty: 'Salty',
+    cravingsChocolate: 'Chocolate',
+    cravingsSpicy: 'Spicy',
+    cravingsCarbs: 'Carbs',
+    cravingsPlaceholder: 'e.g.: Pizza, Ice cream...',
+    activityIntensityLabel: 'Intensity',
+    activityIntensityNone: 'None',
+    activityIntensityLight: 'Light',
+    activityIntensityModerate: 'Moderate',
+    activityIntensityIntense: 'Intense',
+    activityTypeLabel: 'Activity type',
+    activityTypeWalking: 'Walking',
+    activityTypeRunning: 'Running',
+    activityTypeStrength: 'Strength',
+    activityTypeYoga: 'Yoga',
+    activityTypeCycling: 'Cycling',
+    activityTypeSwimming: 'Swimming',
+    activityTypePlaceholder: 'e.g.: Pilates, Dance...',
+    activityDurationLabel: 'Duration (min)',
+    activityRpeLabel: 'RPE (1-10)',
+    activityStepsLabel: 'Steps',
+    activityRestingHrLabel: 'Resting HR',
+    activityCaloriesLabel: 'Calories',
+    medicationsLabel: 'Medications',
+    addMedication: 'Add',
+    medicationNamePlaceholder: 'Name',
+    medicationDosePlaceholder: 'Dose',
+    supplementsLabel: 'Supplements',
+    supplementIron: 'Iron',
+    supplementMagnesium: 'Magnesium',
+    supplementOmega3: 'Omega-3',
+    supplementVitaminD: 'Vitamin D',
+    supplementCalcium: 'Calcium',
+    supplementZinc: 'Zinc',
+    supplementsPlaceholder: 'e.g.: Vitamin B12, Collagen...',
+    contraceptionLabel: 'Contraceptive',
+    contraceptionPlaceholder: 'e.g.: Pill, IUD',
+    contraceptionDayLabel: 'Blister day',
+    iudLabel: 'I have an IUD',
+    homeRemediesLabel: 'Home remedies',
+    homeRemedyHeatingPad: 'Heating pad',
+    homeRemedyColdCompress: 'Cold compress',
+    homeRemedyTea: 'Tea',
+    homeRemedyHotBath: 'Hot bath',
+    homeRemedyMassage: 'Massage',
+    homeRemedyMeditation: 'Meditation',
+    homeRemediesPlaceholder: 'e.g.: Aromatherapy, Yoga...',
+    basalTemperatureLabel: 'Basal temperature (°C)',
+    weightLabel: 'Weight (kg)',
+    pregnancyTestLabel: 'Pregnancy test',
+    notTaken: 'Not taken',
+    coldSymptomsLabel: 'Cold symptoms',
+    covidSymptomsLabel: 'COVID symptoms',
+    bloodPressureLabel: 'Blood pressure',
+    positive: 'Positive',
+    negative: 'Negative',
+    indeterminate: 'Indeterminate',
+    open: 'Open',
+    closed: 'Closed',
+    high: 'High',
+    medium: 'Medium',
+    low: 'Low',
+    firm: 'Firm',
+    soft: 'Soft',
     // Insights
     notEnoughData: 'Not enough data to show detailed insights yet.',
     keepTracking: 'Keep tracking your cycles and symptoms to discover patterns.',
@@ -603,6 +1049,152 @@ const translations: Record<Language, Translations> = {
     logSaved: 'Kayıt kaydedildi!',
     loading: 'Yükleniyor...',
 
+    // Advanced logging modules
+    menstruationColorLabel: 'Renk',
+    menstruationColorBrightRed: 'Parlak kırmızı',
+    menstruationColorDarkRed: 'Koyu kırmızı',
+    menstruationColorBrown: 'Kahverengi',
+    menstruationColorPink: 'Pembe',
+    menstruationConsistencyLabel: 'Kıvam',
+    menstruationConsistencyWatery: 'Sulu',
+    menstruationConsistencyThick: 'Kıvamlı',
+    menstruationConsistencyClotty: 'Pıhtılı',
+    menstruationClots: 'Pıhtılar',
+    menstruationProductsLabel: 'Kullanılan ürünler',
+    menstruationProductPad: 'Ped',
+    menstruationProductTampon: 'Tampon',
+    menstruationProductCup: 'Kupa',
+    menstruationProductDisc: 'Disk',
+    menstruationProductSize: 'Beden',
+    menstruationProductQuantity: 'Miktar',
+    menstruationLeaks: 'Sızıntılar',
+    menstruationStartedToday: 'Bugün başladı',
+    ovulationTestLabel: 'Ovulasyon testi (LH)',
+    ovulationTestPositive: 'Pozitif',
+    ovulationTestNegative: 'Negatif',
+    ovulationTestIndeterminate: 'Belirsiz',
+    cervicalFlowLabel: 'Servikal akıntı',
+    cervicalFlowDry: 'Kuru',
+    cervicalFlowSticky: 'Yapışkan',
+    cervicalFlowCreamy: 'Kremamsı',
+    cervicalFlowWatery: 'Sulu',
+    cervicalFlowEggWhite: 'Yumurta akı',
+    cervixPositionLabel: 'Pozisyon',
+    cervixPositionHigh: 'Yüksek',
+    cervixPositionMedium: 'Orta',
+    cervixPositionLow: 'Düşük',
+    cervixFirmnessLabel: 'Sertlik',
+    cervixFirmnessFirm: 'Sert',
+    cervixFirmnessSoft: 'Yumuşak',
+    cervixOpeningLabel: 'Açıklık',
+    cervixOpeningOpen: 'Açık',
+    cervixOpeningClosed: 'Kapalı',
+    sexualActivityLabel: 'Cinsel aktivite',
+    protectionLabel: 'Koruma',
+    painLevelLabel: 'Ağrı seviyesi (0-10)',
+    painLocationLabel: 'Konum',
+    painLocationCramps: 'Kramp',
+    painLocationHeadache: 'Baş ağrısı',
+    painLocationBack: 'Sırt',
+    painLocationBreasts: 'Göğüsler',
+    painDurationLabel: 'Yaklaşık süre',
+    painDurationPlaceholder: 'örn: 2 saat, tüm gün',
+    mentalAnxiety: 'Kaygı',
+    mentalSadness: 'Üzüntü',
+    mentalIrritability: 'Sinirlilik',
+    mentalCalmness: 'Sakinlik',
+    mentalMotivationLabel: 'Motivasyon',
+    mentalMotivationLow: 'Düşük',
+    mentalMotivationMedium: 'Orta',
+    mentalMotivationHigh: 'Yüksek',
+    mentalLibidoLabel: 'Libido',
+    mentalLibidoLow: 'Düşük',
+    mentalLibidoNormal: 'Normal',
+    mentalLibidoHigh: 'Yüksek',
+    mentalStressLabel: 'Stres (0-10)',
+    mentalStressTriggersLabel: 'Tetikleyiciler',
+    mentalStressTriggerWork: 'İş',
+    mentalStressTriggerStudy: 'Çalışma',
+    mentalStressTriggerRelationship: 'İlişki',
+    mentalStressTriggerFamily: 'Aile',
+    mentalStressTriggerHealth: 'Sağlık',
+    mentalStressTriggerMoney: 'Para',
+    mentalStressTriggerPlaceholder: 'örn: Trafik, Sınav...',
+    energyLabel: 'Enerji',
+    sleepHoursLabel: 'Uyku süresi',
+    sleepQualityLabel: 'Kalite (1-5)',
+    sleepBedTimeLabel: 'Uyku saati',
+    sleepWakeTimeLabel: 'Uyanma saati',
+    sleepNapLabel: 'Şekerleme (dakika)',
+    sleepWaterLabel: 'Su (L)',
+    sleepCaffeineLabel: 'Kafein',
+    sleepAlcoholLabel: 'Alkol',
+    cravingsLabel: 'İstekler',
+    cravingsSweet: 'Tatlı',
+    cravingsSalty: 'Tuzlu',
+    cravingsChocolate: 'Çikolata',
+    cravingsSpicy: 'Baharatlı',
+    cravingsCarbs: 'Karbonhidrat',
+    cravingsPlaceholder: 'örn: Pizza, Dondurma...',
+    activityIntensityLabel: 'Yoğunluk',
+    activityIntensityNone: 'Yok',
+    activityIntensityLight: 'Hafif',
+    activityIntensityModerate: 'Orta',
+    activityIntensityIntense: 'Şiddetli',
+    activityTypeLabel: 'Aktivite türü',
+    activityTypeWalking: 'Yürüyüş',
+    activityTypeRunning: 'Koşu',
+    activityTypeStrength: 'Kuvvet',
+    activityTypeYoga: 'Yoga',
+    activityTypeCycling: 'Bisiklet',
+    activityTypeSwimming: 'Yüzme',
+    activityTypePlaceholder: 'örn: Pilates, Dans...',
+    activityDurationLabel: 'Süre (dk)',
+    activityRpeLabel: 'RPE (1-10)',
+    activityStepsLabel: 'Adım',
+    activityRestingHrLabel: 'Dinlenme HR',
+    activityCaloriesLabel: 'Kalori',
+    medicationsLabel: 'İlaçlar',
+    addMedication: 'Ekle',
+    medicationNamePlaceholder: 'İsim',
+    medicationDosePlaceholder: 'Doz',
+    supplementsLabel: 'Takviyeler',
+    supplementIron: 'Demir',
+    supplementMagnesium: 'Magnezyum',
+    supplementOmega3: 'Omega-3',
+    supplementVitaminD: 'D Vitamini',
+    supplementCalcium: 'Kalsiyum',
+    supplementZinc: 'Çinko',
+    supplementsPlaceholder: 'örn: B12 vitamini, Kolajen...',
+    contraceptionLabel: 'Doğum kontrolü',
+    contraceptionPlaceholder: 'örn: Hap, RİA',
+    contraceptionDayLabel: 'Kutu günü',
+    iudLabel: 'RİA kullanıyorum',
+    homeRemediesLabel: 'Ev çözümleri',
+    homeRemedyHeatingPad: 'Sıcak su torbası',
+    homeRemedyColdCompress: 'Soğuk kompres',
+    homeRemedyTea: 'Çay',
+    homeRemedyHotBath: 'Sıcak banyo',
+    homeRemedyMassage: 'Masaj',
+    homeRemedyMeditation: 'Meditasyon',
+    homeRemediesPlaceholder: 'örn: Aromaterapi, Yoga...',
+    basalTemperatureLabel: 'Bazal sıcaklık (°C)',
+    weightLabel: 'Kilo (kg)',
+    pregnancyTestLabel: 'Gebelik testi',
+    notTaken: 'Yapılmadı',
+    coldSymptomsLabel: 'Soğuk algınlığı belirtileri',
+    covidSymptomsLabel: 'COVID belirtileri',
+    bloodPressureLabel: 'Kan basıncı',
+    positive: 'Pozitif',
+    negative: 'Negatif',
+    indeterminate: 'Belirsiz',
+    open: 'Açık',
+    closed: 'Kapalı',
+    high: 'Yüksek',
+    medium: 'Orta',
+    low: 'Düşük',
+    firm: 'Sert',
+    soft: 'Yumuşak',
     // Insights
     notEnoughData: 'Detaylı analiz göstermek için yeterli veri yok.',
     keepTracking: 'Paternleri keşfetmek için döngülerinizi ve belirtilerinizi takip etmeye devam edin.',

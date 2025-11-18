@@ -454,7 +454,7 @@ export const LogPage: React.FC = () => {
                                 }`}
                                 style={{ fontWeight: 500, lineHeight: 1.45 }}
                             >
-                                {symptom.name}
+                                {translateSymptomId(symptom.id)}
                             </button>
                         ))}
                     </div>
