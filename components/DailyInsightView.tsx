@@ -30,7 +30,7 @@ export const DailyInsightView: React.FC<DailyInsightViewProps> = ({
   cyclePhase,
   cycleDay
 }) => {
-  const { translateEnergyLevel, translateSymptomId } = useTranslation();
+  const { t, translateEnergyLevel, translateSymptomId } = useTranslation();
 
   if (!log) {
     return (
@@ -42,10 +42,10 @@ export const DailyInsightView: React.FC<DailyInsightViewProps> = ({
             </svg>
           </div>
           <h2 className="text-xl font-bold text-[var(--text)] mb-2" style={{ fontWeight: 700 }}>
-            Sin Registro Hoy
+            {t('noLogTodayTitle')}
           </h2>
           <p className="text-sm text-[var(--text-2)]" style={{ lineHeight: 1.5 }}>
-            No hay datos registrados para el día de hoy. Registra tu información para ver el análisis.
+            {t('noLogTodayDescription')}
           </p>
         </div>
       </div>

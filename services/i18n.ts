@@ -56,6 +56,20 @@ export interface Translations {
   logSaved: string;
   loading: string;
 
+  // Insights controls
+  analysisModeSimple: string;
+  analysisModeAI: string;
+  analysisModeLabel: string;
+  viewModeLabel: string;
+  viewDay: string;
+  viewWeek: string;
+  viewMonth: string;
+  viewCycle: string;
+  viewYear: string;
+  exportData: string;
+  noLogTodayTitle: string;
+  noLogTodayDescription: string;
+
   // Advanced logging modules
   menstruationColorLabel: string;
   menstruationColorBrightRed: string;
@@ -206,7 +220,6 @@ export interface Translations {
   open: string;
   closed: string;
   high: string;
-  medium: string;
   low: string;
   firm: string;
   soft: string;
@@ -393,6 +406,20 @@ const translations: Record<Language, Translations> = {
     logSaved: '¡Registro guardado!',
     loading: 'Cargando...',
 
+    // Insights controls
+    analysisModeSimple: 'Simple',
+    analysisModeAI: 'IA',
+    analysisModeLabel: 'Modo {mode}',
+    viewModeLabel: 'Vista {view}',
+    viewDay: 'Día',
+    viewWeek: 'Semana',
+    viewMonth: 'Mes',
+    viewCycle: 'Ciclo',
+    viewYear: 'Año',
+    exportData: 'Exportar',
+    noLogTodayTitle: 'Sin registro hoy',
+    noLogTodayDescription: 'No hay datos registrados para el día de hoy. Registra tu información para ver el análisis.',
+
     // Advanced logging modules
     menstruationColorLabel: 'Color',
     menstruationColorBrightRed: 'Rojo vivo',
@@ -535,7 +562,6 @@ const translations: Record<Language, Translations> = {
     open: 'Abierto',
     closed: 'Cerrado',
     high: 'Alta',
-    medium: 'Media',
     low: 'Baja',
     firm: 'Firme',
     soft: 'Suave',
@@ -721,6 +747,20 @@ const translations: Record<Language, Translations> = {
     logSaved: 'Log saved!',
     loading: 'Loading...',
 
+    // Insights controls
+    analysisModeSimple: 'Simple',
+    analysisModeAI: 'AI',
+    analysisModeLabel: 'Mode {mode}',
+    viewModeLabel: 'View {view}',
+    viewDay: 'Day',
+    viewWeek: 'Week',
+    viewMonth: 'Month',
+    viewCycle: 'Cycle',
+    viewYear: 'Year',
+    exportData: 'Export',
+    noLogTodayTitle: 'No log today',
+    noLogTodayDescription: 'No data recorded for today. Log your information to see the analysis.',
+
     // Advanced logging modules
     menstruationColorLabel: 'Color',
     menstruationColorBrightRed: 'Bright red',
@@ -863,7 +903,6 @@ const translations: Record<Language, Translations> = {
     open: 'Open',
     closed: 'Closed',
     high: 'High',
-    medium: 'Medium',
     low: 'Low',
     firm: 'Firm',
     soft: 'Soft',
@@ -1049,6 +1088,19 @@ const translations: Record<Language, Translations> = {
     logSaved: 'Kayıt kaydedildi!',
     loading: 'Yükleniyor...',
 
+    // Insights controls
+    analysisModeSimple: 'Basit',
+    analysisModeAI: 'AI',
+    analysisModeLabel: 'Mod {mode}',
+    viewModeLabel: 'Görünüm {view}',
+    viewDay: 'Gün',
+    viewWeek: 'Hafta',
+    viewMonth: 'Ay',
+    viewCycle: 'Döngü',
+    viewYear: 'Yıl',
+    exportData: 'Dışa aktar',
+    noLogTodayTitle: 'Bugün kayıt yok',
+    noLogTodayDescription: 'Bugün için veri kaydedilmedi. Analizi görmek için bilgilerini kaydet.',
     // Advanced logging modules
     menstruationColorLabel: 'Renk',
     menstruationColorBrightRed: 'Parlak kırmızı',
@@ -1191,7 +1243,6 @@ const translations: Record<Language, Translations> = {
     open: 'Açık',
     closed: 'Kapalı',
     high: 'Yüksek',
-    medium: 'Orta',
     low: 'Düşük',
     firm: 'Sert',
     soft: 'Yumuşak',

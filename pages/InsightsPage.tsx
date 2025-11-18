@@ -406,6 +406,23 @@ export const InsightsPage: React.FC = () => {
     const [chatSession, setChatSession] = useState<ChatSession | null>(null);
     const [isSendingMessage, setIsSendingMessage] = useState(false);
 
+    const viewLabels = useMemo<Record<string, string>>(
+        () => ({
+            day: t('viewDay'),
+            week: t('viewWeek'),
+            month: t('viewMonth'),
+            'current-cycle': t('viewCycle'),
+            year: t('viewYear'),
+        }),
+        [t]
+    );
+    const analysisModeLabels = useMemo<Record<'simple' | 'ai', string>>(
+        () => ({
+            simple: t('analysisModeSimple'),
+            ai: t('analysisModeAI'),
+        }),
+        [t]
+    );
     const intlLocale = intlLocales[language] ?? 'es-ES';
 
     // Current cycle info for mobile CTA
@@ -590,14 +607,7 @@ export const InsightsPage: React.FC = () => {
 
     // Función helper para las etiquetas de vista
     const getViewLabel = (view: string): string => {
-        const labels: Record<string, string> = {
-            'day': 'Día',
-            'week': 'Semana',
-            'month': 'Mes',
-            'current-cycle': 'Ciclo',
-            'year': 'Año'
-        };
-        return labels[view] || view;
+        return viewLabels[view] || view;
     };
 
     const createChatContext = (): ChatContext => {
@@ -745,10 +755,11 @@ export const InsightsPage: React.FC = () => {
                                                 <button
                                                     key={modeOption}
                                                     onClick={() => setAnalysisMode(modeOption)}
-                                                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${analysisMode === modeOption
-                                                        ? 'bg-[var(--brand)] text-white shadow-sm'
-                                                        : 'bg-[var(--surface)] text-[var(--text-2)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]'
-                                                        }`}
+                                                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
+                                                        analysisMode === modeOption
+                                                            ? 'bg-[var(--brand)] text-white shadow-sm'
+                                                            : 'bg-[var(--surface)] text-[var(--text-2)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]'
+                                                    }`}
                                                     style={{
                                                         fontWeight: 500,
                                                         padding: '6px 10px',
@@ -756,9 +767,11 @@ export const InsightsPage: React.FC = () => {
                                                     }}
                                                     role="tab"
                                                     aria-selected={analysisMode === modeOption}
-                                                    aria-label={`Modo ${modeOption === 'simple' ? 'Simple' : 'IA'}`}
+                                                    aria-label={t('analysisModeLabel', {
+                                                        mode: analysisModeLabels[modeOption],
+                                                    })}
                                                 >
-                                                    {modeOption === 'simple' ? 'Simple' : 'IA'}
+                                                    {analysisModeLabels[modeOption]}
                                                 </button>
                                             ))}
                                         </div>
@@ -783,7 +796,9 @@ export const InsightsPage: React.FC = () => {
                                                     }}
                                                     role="tab"
                                                     aria-selected={aiTimeMode === viewOption}
-                                                    aria-label={`Vista ${getViewLabel(viewOption)}`}
+                                                    aria-label={t('viewModeLabel', {
+                                                        view: getViewLabel(viewOption),
+                                                    })}
                                                 >
                                                     {getViewLabel(viewOption)}
                                                 </button>
@@ -796,12 +811,12 @@ export const InsightsPage: React.FC = () => {
                                         onClick={exportToCSV}
                                         className="px-2 py-1.5 md:px-3 bg-[var(--surface)] text-[var(--text-2)] hover:bg-[var(--surface-2)] hover:text-[var(--text)] rounded-full text-sm font-medium transition-all duration-200 flex items-center gap-1 shrink-0"
                                         style={{ fontWeight: 500 }}
-                                        aria-label="Exportar datos"
+                                        aria-label={t('exportData')}
                                     >
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                         </svg>
-                                        <span className="hidden sm:inline">Exportar</span>
+                                        <span className="hidden sm:inline">{t('exportData')}</span>
                                     </button>
                                 </div>
 

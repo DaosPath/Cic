@@ -11,7 +11,7 @@ interface DailyInsightModalProps {
 }
 
 export const DailyInsightModal: React.FC<DailyInsightModalProps> = ({ log, onClose }) => {
-  const { translateSymptomId } = useTranslation();
+  const { t, translateSymptomId } = useTranslation();
   if (!log) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
@@ -22,17 +22,17 @@ export const DailyInsightModal: React.FC<DailyInsightModalProps> = ({ log, onClo
             </svg>
           </div>
           <h2 className="text-xl font-bold text-brand-text mb-2" style={{ fontWeight: 700 }}>
-            Sin Registro Hoy
+            {t('noLogTodayTitle')}
           </h2>
           <p className="text-sm text-brand-text-dim mb-6">
-            No hay datos registrados para el día de hoy. Registra tu información para ver el análisis.
+            {t('noLogTodayDescription')}
           </p>
           <button
             onClick={onClose}
             className="bg-brand-primary text-white px-6 py-2.5 rounded-xl hover:bg-brand-primary/90 transition-colors font-semibold"
             style={{ fontWeight: 600 }}
           >
-            Cerrar
+            {t('close')}
           </button>
         </div>
       </div>
