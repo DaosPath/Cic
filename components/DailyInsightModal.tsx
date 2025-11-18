@@ -4,6 +4,7 @@ import { format } from 'date-fns/format';
 import { parseISO } from 'date-fns/parseISO';
 import { es } from 'date-fns/locale/es';
 import { useTranslation } from '../hooks/useTranslation.ts';
+import type { Translations } from '../services/i18n.ts';
 
 interface DailyInsightModalProps {
   log: DailyLog | null;
@@ -11,7 +12,7 @@ interface DailyInsightModalProps {
 }
 
 export const DailyInsightModal: React.FC<DailyInsightModalProps> = ({ log, onClose }) => {
-  const { t, translateSymptomId } = useTranslation();
+  const { t, translateSymptomId, translateEnergyLevel } = useTranslation();
   if (!log) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
@@ -57,11 +58,11 @@ export const DailyInsightModal: React.FC<DailyInsightModalProps> = ({ log, onClo
   };
 
   const getFlowIntensity = (intensity?: number) => {
-    if (!intensity) return { text: 'Sin flujo', color: 'text-brand-text-dim' };
-    if (intensity === 1) return { text: 'Ligero', color: 'text-pink-300' };
-    if (intensity === 2) return { text: 'Moderado', color: 'text-pink-400' };
-    if (intensity === 3) return { text: 'Abundante', color: 'text-pink-500' };
-    return { text: 'Muy abundante', color: 'text-pink-600' };
+    if (!intensity) return { text: t('noFlow'), color: 'text-brand-text-dim' };
+    if (intensity === 1) return { text: t('light'), color: 'text-pink-300' };
+    if (intensity === 2) return { text: t('medium'), color: 'text-pink-400' };
+    if (intensity === 3) return { text: t('heavy'), color: 'text-pink-500' };
+    return { text: t('dailyInsightFlowVeryHeavy'), color: 'text-pink-600' };
   };
 
   const flow = getFlowIntensity(log.periodIntensity);
@@ -80,7 +81,7 @@ export const DailyInsightModal: React.FC<DailyInsightModalProps> = ({ log, onClo
                 </h2>
               </div>
               <p className="text-sm text-brand-text-dim">
-                Resumen completo de tu día
+                {t('dailyInsightModalTitle')}
               </p>
             </div>
             <button
@@ -103,7 +104,7 @@ export const DailyInsightModal: React.FC<DailyInsightModalProps> = ({ log, onClo
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-lg">🩸</span>
                   <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
-                    Menstruación
+                    {t('menstruation')}
                   </h3>
                 </div>
                 <p className={`text-lg font-bold ${flow.color}`} style={{ fontWeight: 700 }}>
@@ -118,7 +119,7 @@ export const DailyInsightModal: React.FC<DailyInsightModalProps> = ({ log, onClo
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-lg">{getMoodEmoji(log.mood)}</span>
                   <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
-                    Estado de Ánimo
+                    {t('mood')}
                   </h3>
                 </div>
                 <div className="flex items-center gap-2">
@@ -141,11 +142,11 @@ export const DailyInsightModal: React.FC<DailyInsightModalProps> = ({ log, onClo
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-lg">⚡</span>
                   <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
-                    Energía
+                    {t('energyLabel')}
                   </h3>
                 </div>
                 <p className={`text-base font-bold capitalize ${getEnergyColor(log.energyLevel)}`} style={{ fontWeight: 700 }}>
-                  {log.energyLevel === 'low' ? 'Baja' : log.energyLevel === 'medium' ? 'Media' : 'Alta'}
+                  {translateEnergyLevel(log.energyLevel)}
                 </p>
               </div>
             )}
@@ -156,7 +157,7 @@ export const DailyInsightModal: React.FC<DailyInsightModalProps> = ({ log, onClo
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-lg">🩹</span>
                   <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
-                    Dolor
+                    {t('pain')}
                   </h3>
                 </div>
                 <div className="flex items-center gap-2">
@@ -179,7 +180,7 @@ export const DailyInsightModal: React.FC<DailyInsightModalProps> = ({ log, onClo
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-lg">🧘</span>
                   <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
-                    Estrés
+                    {t('dailyInsightStressTitle')}
                   </h3>
                 </div>
                 <div className="flex items-center gap-2">
@@ -202,14 +203,14 @@ export const DailyInsightModal: React.FC<DailyInsightModalProps> = ({ log, onClo
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-lg">😴</span>
                   <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
-                    Sueño
+                    {t('dailyInsightModalSleepTitle')}
                   </h3>
                 </div>
                 <p className="text-lg font-bold text-brand-text" style={{ fontWeight: 700 }}>
                   {log.sleepHours}h
                   {log.sleepQuality && (
                     <span className="text-sm text-brand-text-dim ml-2">
-                      ({log.sleepQuality}/5 ⭐)
+                      ({log.sleepQuality}/5)
                     </span>
                   )}
                 </p>
@@ -222,7 +223,7 @@ export const DailyInsightModal: React.FC<DailyInsightModalProps> = ({ log, onClo
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-lg">💧</span>
                   <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
-                    Hidratación
+                    {t('dailyInsightModalHydrationTitle')}
                   </h3>
                 </div>
                 <p className="text-lg font-bold text-blue-400" style={{ fontWeight: 700 }}>
@@ -237,12 +238,16 @@ export const DailyInsightModal: React.FC<DailyInsightModalProps> = ({ log, onClo
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-lg">🏃</span>
                   <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
-                    Actividad Física
+                    {t('dailyInsightModalActivityTitle')}
                   </h3>
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-base font-semibold text-brand-text capitalize" style={{ fontWeight: 600 }}>
-                    {log.physicalActivity === 'light' ? 'Ligera' : log.physicalActivity === 'moderate' ? 'Moderada' : 'Intensa'}
+                    {log.physicalActivity === 'light'
+                      ? t('activityIntensityLight')
+                      : log.physicalActivity === 'moderate'
+                        ? t('activityIntensityModerate')
+                        : t('activityIntensityIntense')}
                   </span>
                   {log.activityDuration && (
                     <span className="text-sm text-brand-text-dim">
@@ -259,7 +264,7 @@ export const DailyInsightModal: React.FC<DailyInsightModalProps> = ({ log, onClo
                 <div className="flex items-center gap-2 mb-3">
                   <span className="text-lg">🔍</span>
                   <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
-                    Síntomas ({log.symptoms.length})
+                    {t('symptoms')} ({log.symptoms.length})
                   </h3>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -281,7 +286,7 @@ export const DailyInsightModal: React.FC<DailyInsightModalProps> = ({ log, onClo
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-lg">📝</span>
                   <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
-                    Notas
+                    {t('notes')}
                   </h3>
                 </div>
                 <p className="text-sm text-brand-text leading-relaxed">
@@ -295,12 +300,12 @@ export const DailyInsightModal: React.FC<DailyInsightModalProps> = ({ log, onClo
           <div className="mt-6 bg-gradient-to-br from-brand-primary/10 to-brand-accent/10 border border-brand-primary/20 rounded-xl p-4">
             <div className="flex items-center gap-2 mb-3">
               <span className="text-lg">💡</span>
-              <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
-                Insight del Día
-              </h3>
+            <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
+              {t('dailyInsightModalInsightTitle')}
+            </h3>
             </div>
             <p className="text-sm text-brand-text leading-relaxed">
-              {generateDailyInsight(log)}
+              {generateDailyInsight(log, t)}
             </p>
           </div>
         </div>
@@ -312,7 +317,7 @@ export const DailyInsightModal: React.FC<DailyInsightModalProps> = ({ log, onClo
             className="w-full bg-brand-primary text-white font-semibold py-3 px-4 rounded-xl hover:bg-brand-primary/90 transition-all duration-150"
             style={{ fontWeight: 600 }}
           >
-            Cerrar
+            {t('close')}
           </button>
         </div>
       </div>
@@ -320,50 +325,47 @@ export const DailyInsightModal: React.FC<DailyInsightModalProps> = ({ log, onClo
   );
 };
 
-function generateDailyInsight(log: DailyLog): string {
+function generateDailyInsight(
+  log: DailyLog,
+  t: (key: keyof Translations, replacements?: Record<string, string | number>) => string
+): string {
   const insights: string[] = [];
 
-  // Sleep insight
   if (log.sleepHours !== undefined) {
     if (log.sleepHours < 6) {
-      insights.push('Tu sueño fue insuficiente hoy. Intenta dormir 7-9 horas para mejor recuperación.');
+      insights.push(t('dailyInsightInsufficientSleep'));
     } else if (log.sleepHours >= 7 && log.sleepHours <= 9) {
-      insights.push('¡Excelente! Dormiste las horas recomendadas.');
+      insights.push(t('dailyInsightIdealSleep'));
     }
   }
 
-  // Mood + Energy correlation
   if (log.mood !== undefined && log.energyLevel) {
     if (log.mood <= 4 && log.energyLevel === 'low') {
-      insights.push('Tu ánimo bajo y poca energía pueden estar relacionados. Considera una caminata corta o actividad que disfrutes.');
+      insights.push(t('dailyInsightLowMoodEnergy'));
     }
   }
 
-  // Pain insight
   if (log.painLevel !== undefined && log.painLevel >= 7) {
-    insights.push('Tu nivel de dolor es alto. Considera aplicar calor local y descansar. Si persiste, consulta con tu médico.');
+    insights.push(t('dailyInsightHighPain'));
   }
 
-  // Stress insight
   if (log.stressScore !== undefined && log.stressScore >= 7) {
-    insights.push('Tu nivel de estrés es elevado. Prueba técnicas de respiración o meditación para relajarte.');
+    insights.push(t('dailyInsightHighStress'));
   }
 
-  // Hydration insight
   if (log.waterIntake !== undefined) {
     if (log.waterIntake < 1.5) {
-      insights.push('Tu hidratación está baja. Intenta beber al menos 2L de agua al día.');
+      insights.push(t('dailyInsightLowHydration'));
     } else if (log.waterIntake >= 2) {
-      insights.push('¡Bien hecho! Estás bien hidratada.');
+      insights.push(t('dailyInsightHydrationOk'));
     }
   }
 
-  // Activity insight
   if (log.physicalActivity && log.physicalActivity !== 'none') {
-    insights.push('¡Genial! La actividad física ayuda a regular tu ciclo y mejorar tu ánimo.');
+    insights.push(t('dailyInsightActivityPraise'));
   }
 
   return insights.length > 0
     ? insights.join(' ')
-    : 'Sigue registrando tus datos para obtener insights personalizados.';
+    : t('dailyInsightFallback');
 }

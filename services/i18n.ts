@@ -70,6 +70,40 @@ export interface Translations {
   noLogTodayTitle: string;
   noLogTodayDescription: string;
 
+  // Weekly insights view
+  weeklySummaryWeekRange: string;
+  weeklySummaryRecords: string;
+  weeklySummaryTitle: string;
+  weeklySummaryDays: string;
+  metricSleep: string;
+  metricPain: string;
+  metricStress: string;
+  metricHydration: string;
+  metricMood: string;
+  metricEnergy: string;
+  dailyBreakdownTitle: string;
+  weeklyNoRecord: string;
+  physicalActivityTitle: string;
+  activityDaysLabel: string;
+  activityGoalLabel: string;
+  totalMinutesLabel: string;
+  sleepQualityTitle: string;
+  sleepAvgHours: string;
+  sleepAvgQuality: string;
+  sleepGoodDays: string;
+  mentalWellnessTitle: string;
+  avgMoodLabel: string;
+  highStressDaysLabel: string;
+  highEnergyDaysLabel: string;
+  commonSymptomsTitle: string;
+  consumptionTrendsTitle: string;
+  caffeineLabel: string;
+  alcoholLabel: string;
+  frequentCravings: string;
+  weeklyPatternsTitle: string;
+  highConfidenceLabel: string;
+  weeklyChatSubtitle: string;
+
   // Advanced logging modules
   menstruationColorLabel: string;
   menstruationColorBrightRed: string;
@@ -364,6 +398,24 @@ export interface Translations {
   medicationCare: string;
   healthAndTests: string;
 
+  // Daily insight modal
+  dailyInsightModalTitle: string;
+  dailyInsightModalSleepTitle: string;
+  dailyInsightModalHydrationTitle: string;
+  dailyInsightModalActivityTitle: string;
+  dailyInsightModalInsightTitle: string;
+  dailyInsightStressTitle: string;
+  dailyInsightFlowVeryHeavy: string;
+  dailyInsightInsufficientSleep: string;
+  dailyInsightIdealSleep: string;
+  dailyInsightLowMoodEnergy: string;
+  dailyInsightHighPain: string;
+  dailyInsightHighStress: string;
+  dailyInsightLowHydration: string;
+  dailyInsightHydrationOk: string;
+  dailyInsightActivityPraise: string;
+  dailyInsightFallback: string;
+
   // Common
   save: string;
   cancel: string;
@@ -471,6 +523,40 @@ const translations: Record<Language, Translations> = {
     correlationNoData: 'No hay suficientes datos para correlaciones',
     correlationMatchSingular: '{count} coincidencia',
     correlationMatchPlural: '{count} coincidencias',
+
+    // Weekly insights view
+    weeklySummaryWeekRange: 'Semana del {start} al {end}',
+    weeklySummaryRecords: 'Has registrado {logs} días entre el {start} y el {end}.',
+    weeklySummaryTitle: 'Resumen semanal',
+    weeklySummaryDays: '{count} días',
+    metricSleep: 'Sueño',
+    metricPain: 'Dolor',
+    metricStress: 'Estrés',
+    metricHydration: 'Hidratación',
+    metricMood: 'Ánimo',
+    metricEnergy: 'Energía',
+    dailyBreakdownTitle: 'Desglose diario',
+    weeklyNoRecord: 'No hay registros para esta semana',
+    physicalActivityTitle: 'Actividad física',
+    activityDaysLabel: 'Días activos',
+    activityGoalLabel: 'Meta semanal',
+    totalMinutesLabel: 'Minutos totales',
+    sleepQualityTitle: 'Calidad del sueño',
+    sleepAvgHours: 'Horas promedio',
+    sleepAvgQuality: 'Calidad promedio',
+    sleepGoodDays: 'Días con buen descanso',
+    mentalWellnessTitle: 'Bienestar mental',
+    avgMoodLabel: 'Ánimo promedio',
+    highStressDaysLabel: 'Días de estrés alto',
+    highEnergyDaysLabel: 'Días energéticos',
+    commonSymptomsTitle: 'Síntomas comunes',
+    consumptionTrendsTitle: 'Tendencias de consumo',
+    caffeineLabel: 'Cafeína',
+    alcoholLabel: 'Alcohol',
+    frequentCravings: 'Antojos frecuentes',
+    weeklyPatternsTitle: 'Patrones semanales',
+    highConfidenceLabel: 'Alta confianza',
+    weeklyChatSubtitle: 'Comparte tu semana con la IA y resuelve dudas',
 
     // Advanced logging modules
     menstruationColorLabel: 'Color',
@@ -732,6 +818,24 @@ const translations: Record<Language, Translations> = {
     activity: 'Actividad física',
     medicationCare: 'Medicación & Cuidado',
     healthAndTests: 'Salud & Tests',
+
+    // Daily insight modal
+    dailyInsightModalTitle: 'Resumen completo de tu día',
+    dailyInsightModalSleepTitle: 'Sueño',
+    dailyInsightModalHydrationTitle: 'Hidratación',
+    dailyInsightModalActivityTitle: 'Actividad física',
+    dailyInsightModalInsightTitle: 'Insight del día',
+    dailyInsightStressTitle: 'Estrés',
+    dailyInsightFlowVeryHeavy: 'Muy abundante',
+    dailyInsightInsufficientSleep: 'Tu sueño fue insuficiente hoy. Intenta dormir 7-9 horas para mejor recuperación.',
+    dailyInsightIdealSleep: '¡Excelente! Dormiste las horas recomendadas.',
+    dailyInsightLowMoodEnergy: 'Tu ánimo bajo y poca energía pueden estar relacionados. Considera una caminata corta o actividad que disfrutes.',
+    dailyInsightHighPain: 'Tu nivel de dolor es alto. Considera aplicar calor local y descansar. Si persiste, consulta con tu médico.',
+    dailyInsightHighStress: 'Tu nivel de estrés es elevado. Prueba técnicas de respiración o meditación para relajarte.',
+    dailyInsightLowHydration: 'Tu hidratación está baja. Intenta beber al menos 2L de agua al día.',
+    dailyInsightHydrationOk: '¡Bien hecho! Estás bien hidratada.',
+    dailyInsightActivityPraise: '¡Genial! La actividad física ayuda a regular tu ciclo y mejorar tu ánimo.',
+    dailyInsightFallback: 'Sigue registrando tus datos para obtener insights personalizados.',
 
     // Common
     save: 'Guardar',
@@ -1058,9 +1162,43 @@ const translations: Record<Language, Translations> = {
     phaseShortOvulation: 'Ovu',
     phaseShortLuteal: 'Lut',
     correlationsTitle: 'Correlations',
-    correlationNoData: 'Not enough data for correlations',
-    correlationMatchSingular: '{count} coincidence',
-    correlationMatchPlural: '{count} coincidences',
+    correlationNoData: 'Not enough data to show correlations',
+    correlationMatchSingular: '{count} match',
+    correlationMatchPlural: '{count} matches',
+
+    // Weekly insights view
+    weeklySummaryWeekRange: 'Week of {start} to {end}',
+    weeklySummaryRecords: 'You logged {logs} days between {start} and {end}.',
+    weeklySummaryTitle: 'Weekly recap',
+    weeklySummaryDays: '{count} days',
+    metricSleep: 'Sleep',
+    metricPain: 'Pain',
+    metricStress: 'Stress',
+    metricHydration: 'Hydration',
+    metricMood: 'Mood',
+    metricEnergy: 'Energy',
+    dailyBreakdownTitle: 'Daily breakdown',
+    weeklyNoRecord: 'No records yet for this week',
+    physicalActivityTitle: 'Physical activity',
+    activityDaysLabel: 'Active days',
+    activityGoalLabel: 'Weekly goal',
+    totalMinutesLabel: 'Total minutes',
+    sleepQualityTitle: 'Sleep quality',
+    sleepAvgHours: 'Avg hours',
+    sleepAvgQuality: 'Avg quality',
+    sleepGoodDays: 'Good sleep days',
+    mentalWellnessTitle: 'Mental wellness',
+    avgMoodLabel: 'Avg mood',
+    highStressDaysLabel: 'High stress days',
+    highEnergyDaysLabel: 'High energy days',
+    commonSymptomsTitle: 'Common symptoms',
+    consumptionTrendsTitle: 'Consumption trends',
+    caffeineLabel: 'Caffeine',
+    alcoholLabel: 'Alcohol',
+    frequentCravings: 'Frequent cravings',
+    weeklyPatternsTitle: 'Weekly patterns',
+    highConfidenceLabel: 'High confidence',
+    weeklyChatSubtitle: 'Share your week with AI and get clarity',
     devToolsHeading: '🛠️ Data generation',
     devFillLast7: 'Fill last 7 days',
     devFillLast30: 'Fill last 30 days',
@@ -1099,6 +1237,24 @@ const translations: Record<Language, Translations> = {
     activity: 'Physical activity',
     medicationCare: 'Medication & Care',
     healthAndTests: 'Health & Tests',
+
+    // Daily insight modal
+    dailyInsightModalTitle: 'Full-day recap',
+    dailyInsightModalSleepTitle: 'Sleep',
+    dailyInsightModalHydrationTitle: 'Hydration',
+    dailyInsightModalActivityTitle: 'Activity',
+    dailyInsightModalInsightTitle: 'Daily insight',
+    dailyInsightStressTitle: 'Stress',
+    dailyInsightFlowVeryHeavy: 'Very heavy',
+    dailyInsightInsufficientSleep: 'You didn’t get enough sleep today. Aim for 7-9 hours for better recovery.',
+    dailyInsightIdealSleep: 'Great job! You hit the recommended sleep window.',
+    dailyInsightLowMoodEnergy: 'Low mood and energy may be related. Try a short walk or something that lifts your spirits.',
+    dailyInsightHighPain: 'Pain is high today. Apply heat and rest; talk to a doctor if it persists.',
+    dailyInsightHighStress: 'Stress levels are elevated. Practice breathing or mindfulness to calm down.',
+    dailyInsightLowHydration: 'Hydration is low. Aim for at least 2L of water today.',
+    dailyInsightHydrationOk: 'Nice! Your hydration habits look solid.',
+    dailyInsightActivityPraise: 'Nice move! Physical activity supports your cycle and mood.',
+    dailyInsightFallback: 'Keep logging—more data unlocks smarter insights.',
 
     // Common
     save: 'Save',
@@ -1427,6 +1583,89 @@ const translations: Record<Language, Translations> = {
     correlationNoData: 'Korelasyonlar için yeterli veri yok',
     correlationMatchSingular: '{count} eşleşme',
     correlationMatchPlural: '{count} eşleşme',
+    // Weekly insights view
+
+    weeklySummaryWeekRange: '{start} - {end} haftası',
+
+    weeklySummaryRecords: '{start} ile {end} arasında {logs} gün kaydettin.',
+
+    weeklySummaryTitle: 'Haftalık özet',
+
+    weeklySummaryDays: '{count} gün',
+
+    metricSleep: 'Uyku',
+
+    metricPain: 'Ağrı',
+
+    metricStress: 'Stres',
+
+    metricHydration: 'Hidratasyon',
+
+    metricMood: 'Ruh hali',
+
+    metricEnergy: 'Enerji',
+
+    dailyBreakdownTitle: 'Günlük döküm',
+
+    weeklyNoRecord: 'Bu hafta kayıt yok',
+
+    physicalActivityTitle: 'Fiziksel aktivite',
+
+    activityDaysLabel: 'Aktif günler',
+
+    activityGoalLabel: 'Haftalık hedef',
+
+    totalMinutesLabel: 'Toplam dakika',
+
+    sleepQualityTitle: 'Uyku kalitesi',
+
+    sleepAvgHours: 'Ortalama saat',
+
+    sleepAvgQuality: 'Ortalama kalite',
+
+    sleepGoodDays: 'İyi uyku günleri',
+
+    mentalWellnessTitle: 'Zihinsel iyilik hali',
+
+    avgMoodLabel: 'Ortalama ruh hali',
+
+    highStressDaysLabel: 'Yüksek stresli günler',
+
+    highEnergyDaysLabel: 'Enerji dolu günler',
+
+    commonSymptomsTitle: 'Yaygın semptomlar',
+
+    consumptionTrendsTitle: 'Tüketim trendleri',
+
+    caffeineLabel: 'Kafein',
+
+    alcoholLabel: 'Alkol',
+
+    frequentCravings: 'Sık görülen istekler',
+
+    weeklyPatternsTitle: 'Haftalık desenler',
+
+    highConfidenceLabel: 'Yüksek güven',
+
+    weeklyChatSubtitle: 'Haftanı yapay zekâyla paylaş ve sorularını sor',
+
+    // Daily insight modal
+    dailyInsightModalTitle: 'Günün tam özeti',
+    dailyInsightModalSleepTitle: 'Uyku',
+    dailyInsightModalHydrationTitle: 'Hidrasyon',
+    dailyInsightModalActivityTitle: 'Aktivite',
+    dailyInsightModalInsightTitle: 'Günlük içgörü',
+    dailyInsightStressTitle: 'Stres',
+    dailyInsightFlowVeryHeavy: 'Çok yoğun',
+    dailyInsightInsufficientSleep: 'Bugün yeterince uyuyamadın. Daha iyi toparlanma için 7-9 saat hedefleyebilirsin.',
+    dailyInsightIdealSleep: 'Harika! Tavsiye edilen uyku süresini yakaladın.',
+    dailyInsightLowMoodEnergy: 'Düşük ruh hali ve enerji ilişkili olabilir. Kısa bir yürüyüş veya sevdiğin bir aktivite yardımcı olabilir.',
+    dailyInsightHighPain: 'Ağrı seviyesi yüksek. Isı uygulayıp dinlen ve devam ederse doktora danış.',
+    dailyInsightHighStress: 'Stres seviyesi yüksek. Nefes egzersizleri veya meditasyon rahatlatabilir.',
+    dailyInsightLowHydration: 'Hidrasyon düşük. Günlük en az 2L su içmeye çalış.',
+    dailyInsightHydrationOk: 'Harika! Hidrasyonun iyi durumda.',
+    dailyInsightActivityPraise: 'Harika! Fiziksel aktivite döngünü ve ruh halini destekler.',
+    dailyInsightFallback: 'Daha fazla kayıt gir, böylece sana özel içgörüler güçlenir.',
     devToolsHeading: '🛠️ Veri oluşturma',
     devFillLast7: 'Son 7 günü doldur',
     devFillLast30: 'Son 30 günü doldur',

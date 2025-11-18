@@ -93,6 +93,7 @@ export const getSettings = async (): Promise<AppSettings> => {
         { id: 'fatigue', name: 'Fatiga', category: 'energy' },
     ],
     favoriteSymptomIds: [],
+    language: 'es',
   };
 };
 
