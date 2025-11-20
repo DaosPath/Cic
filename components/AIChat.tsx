@@ -1,5 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import type { ChatMessage } from '../services/ai-chat-formatter.ts';
+import { useTranslation } from '../hooks/useTranslation.ts';
 
 interface AIChatProps {
   messages: ChatMessage[];
@@ -20,6 +21,7 @@ export const AIChat: React.FC<AIChatProps> = ({
   isLoading = false,
   contextInfo
 }) => {
+  const { t } = useTranslation();
   const [input, setInput] = useState('');
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [isHeaderCompact, setIsHeaderCompact] = useState(false);
@@ -64,12 +66,15 @@ export const AIChat: React.FC<AIChatProps> = ({
     setInput(question);
   };
 
-  const quickQuestions = [
-    '¿Cómo está mi ciclo?',
-    'Analiza mi sueño',
-    '¿Qué síntomas tengo?',
-    'Recomendaciones'
-  ];
+  const quickQuestions = useMemo(
+    () => [
+      t('chatQuickCycle'),
+      t('chatQuickSleep'),
+      t('chatQuickSymptoms'),
+      t('chatQuickRecommendations')
+    ],
+    [t]
+  );
 
   // Group consecutive messages from same sender
   const groupedMessages = messages.reduce((groups: Array<{ role: string; messages: ChatMessage[]; timestamp: Date }>, msg, index) => {
@@ -176,7 +181,7 @@ export const AIChat: React.FC<AIChatProps> = ({
               }`} 
               style={{ fontWeight: 600 }}
             >
-              Chat de Análisis
+              {t('chatWithAI')}
             </h2>
             <button
               onClick={onBack}
@@ -186,7 +191,7 @@ export const AIChat: React.FC<AIChatProps> = ({
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
-              <span className="hidden xs:inline">Volver</span>
+              <span className="hidden xs:inline">{t('back')}</span>
             </button>
           </div>
         </div>

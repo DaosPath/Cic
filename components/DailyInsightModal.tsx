@@ -2,7 +2,9 @@ import React from 'react';
 import type { DailyLog } from '../types.ts';
 import { format } from 'date-fns/format';
 import { parseISO } from 'date-fns/parseISO';
+import { enUS } from 'date-fns/locale/en-US';
 import { es } from 'date-fns/locale/es';
+import { tr } from 'date-fns/locale/tr';
 import { useTranslation } from '../hooks/useTranslation.ts';
 import type { Translations } from '../services/i18n.ts';
 
@@ -12,7 +14,7 @@ interface DailyInsightModalProps {
 }
 
 export const DailyInsightModal: React.FC<DailyInsightModalProps> = ({ log, onClose }) => {
-  const { t, translateSymptomId, translateEnergyLevel } = useTranslation();
+  const { t, translateSymptomId, translateEnergyLevel, language } = useTranslation();
   if (!log) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
@@ -40,7 +42,14 @@ export const DailyInsightModal: React.FC<DailyInsightModalProps> = ({ log, onClo
     );
   }
 
-  const dateStr = format(parseISO(log.date), "EEEE, d 'de' MMMM", { locale: es });
+  const locale = language === 'tr' ? tr : language === 'en' ? enUS : es;
+  const dateFormat =
+    language === 'es'
+      ? "EEEE, d 'de' MMMM"
+      : language === 'tr'
+        ? "d MMMM EEEE"
+        : 'EEEE, MMMM d';
+  const dateStr = format(parseISO(log.date), dateFormat, { locale });
 
   const getMoodEmoji = (mood?: number) => {
     if (!mood) return '😐';

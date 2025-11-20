@@ -19,7 +19,7 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
   const [isProcessing, setIsProcessing] = useState(false);
   const [aiSuggestion, setAiSuggestion] = useState<AILogSuggestion | null>(null);
   const [stopRecording, setStopRecording] = useState<(() => void) | null>(null);
-  const { translateSymptomId, language } = useTranslation();
+  const { translateSymptomId, language, t } = useTranslation();
   const cardClasses = 'bg-brand-surface-2 rounded-xl p-4';
   const highlightCard = 'bg-brand-surface-3 rounded-xl p-4';
 
@@ -112,10 +112,10 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
             </div>
             <div>
               <h2 className="text-xl font-bold text-brand-text" style={{ fontWeight: 700, lineHeight: 1.3 }}>
-                Registro con IA
+                {t('aiLogTitle')}
               </h2>
               <p className="text-sm text-brand-text-dim">
-                {step === 'input' ? 'Describe tu día' : 'Revisa y confirma'}
+                {step === 'input' ? t('aiLogSubtitleInput') : t('aiLogSubtitleReview')}
               </p>
             </div>
           </div>
@@ -136,39 +136,39 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
                 {/* Instructions */}
                 <div className={highlightCard}>
                   <p className="text-sm text-brand-text leading-relaxed mb-2">
-                    <strong className="font-semibold">Ejemplos de lo que puedes decir:</strong>
+                    <strong className="font-semibold">{t('aiLogExamplesLabel')}</strong>
                   </p>
                 <ul className="text-xs text-brand-text-dim space-y-1 leading-relaxed">
-                  <li>• "Menstruación abundante rojo oscuro con coágulos, usé 4 toallas, dolor 7/10 con cólicos"</li>
-                  <li>• "Migraña con aura nivel 8, tomé ibuprofeno 400mg, dormí mal 5 horas"</li>
-                  <li>• "Test ovulación positivo, flujo clara de huevo, cérvix alto y suave"</li>
-                  <li>• "Ejercicio moderado 45 minutos corriendo, quemé 350 calorías, bebí 2 litros de agua"</li>
-                  <li>• "Ansiedad alta por trabajo, estrés 8/10, antojo de chocolate, sin energía"</li>
+                  <li>- {t('aiLogExample1')}</li>
+                  <li>- {t('aiLogExample2')}</li>
+                  <li>- {t('aiLogExample3')}</li>
+                  <li>- {t('aiLogExample4')}</li>
+                  <li>- {t('aiLogExample5')}</li>
                 </ul>
               </div>
 
               {/* Text Input */}
               <div>
                 <label className="block text-sm font-semibold text-brand-text mb-2" style={{ fontWeight: 600 }}>
-                  Describe tu día
+                  {t('aiLogDescribeLabel')}
                 </label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Escribe o dicta cómo te sientes hoy, qué síntomas tienes, tu nivel de energía..."
+                  placeholder={t('aiLogPlaceholder')}
                   className="w-full bg-brand-surface-2 text-brand-text placeholder:text-brand-text-dim/70 p-4 rounded-[18px] focus:ring-2 focus:ring-brand-primary/50 outline-none transition-all duration-150 min-h-[150px] resize-none"
                   disabled={isRecording || isProcessing}
                 />
                 <div className="flex items-center justify-between mt-2">
                   <span className="text-xs text-brand-text-dim">
-                    {description.length} caracteres
+                    {t('aiLogCharacters', { count: description.length })}
                   </span>
                   {description.length > 0 && (
                     <button
                       onClick={() => setDescription('')}
                       className="text-xs text-brand-text-dim hover:text-brand-text transition-colors"
                     >
-                      Limpiar
+                      {t('aiLogClear')}
                     </button>
                   )}
                 </div>
@@ -186,7 +186,7 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                 </svg>
-                {isRecording ? 'Grabando... (toca para detener)' : 'Usar micrófono'}
+                {isRecording ? t('aiLogVoiceRecording') : t('aiLogVoiceIdle')}
               </button>
             </div>
           ) : (

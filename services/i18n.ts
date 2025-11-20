@@ -2,6 +2,7 @@ import type { Language } from '../types.ts';
 
 export interface Translations {
   // Navigation
+  appName: string;
   home: string;
   calendar: string;
   log: string;
@@ -69,6 +70,19 @@ export interface Translations {
   exportData: string;
   noLogTodayTitle: string;
   noLogTodayDescription: string;
+  insightsEmptyTitle: string;
+  insightsEmptyDescriptionLine1: string;
+  insightsEmptyDescriptionLine2: string;
+  insightsDaySubtitle: string;
+  insightsWeekSubtitle: string;
+  insightsMonthSubtitle: string;
+  insightsCurrentCycleSubtitle: string;
+  insightsQuarterlySubtitle: string;
+  insightsSemiAnnualSubtitle: string;
+  insightsAnnualSubtitle: string;
+  insightsGeneralTitle: string;
+  insightsGeneralSubtitle: string;
+  insightsRangeTitle: string;
 
   // Weekly insights view
   weeklySummaryWeekRange: string;
@@ -359,6 +373,26 @@ export interface Translations {
   startChat: string;
   chatContextLabel: string;
   chatContextLog: string;
+  aiLogTitle: string;
+  aiLogSubtitleInput: string;
+  aiLogSubtitleReview: string;
+  aiLogExamplesLabel: string;
+  aiLogExample1: string;
+  aiLogExample2: string;
+  aiLogExample3: string;
+  aiLogExample4: string;
+  aiLogExample5: string;
+  aiLogDescribeLabel: string;
+  aiLogPlaceholder: string;
+  aiLogCharacters: string;
+  aiLogClear: string;
+  aiLogVoiceIdle: string;
+  aiLogVoiceRecording: string;
+  aiLogConfidence: string;
+  chatQuickCycle: string;
+  chatQuickSleep: string;
+  chatQuickSymptoms: string;
+  chatQuickRecommendations: string;
   devToolsHeading: string;
   devFillLast7: string;
   devFillLast30: string;
@@ -423,12 +457,14 @@ export interface Translations {
   delete: string;
   edit: string;
   close: string;
+  back: string;
   noMedicationsAdded: string;
 }
 
 const translations: Record<Language, Translations> = {
   es: {
     // Navigation
+    appName: 'Aura Ciclo',
     home: 'Inicio',
     calendar: 'Calendario',
     log: 'Registro',
@@ -496,6 +532,19 @@ const translations: Record<Language, Translations> = {
     exportData: 'Exportar',
     noLogTodayTitle: 'Sin registro hoy',
     noLogTodayDescription: 'No hay datos registrados para el día de hoy. Registra tu información para ver el análisis.',
+    insightsEmptyTitle: 'Análisis de Ciclos',
+    insightsEmptyDescriptionLine1: 'Necesitas al menos 2 ciclos registrados para ver análisis.',
+    insightsEmptyDescriptionLine2: 'Sigue registrando tus datos para obtener insights personalizados.',
+    insightsDaySubtitle: 'Análisis completo de tu día',
+    insightsWeekSubtitle: 'Análisis de tendencias semanales',
+    insightsMonthSubtitle: 'Análisis completo del mes',
+    insightsCurrentCycleSubtitle: 'Análisis de tu ciclo en curso',
+    insightsQuarterlySubtitle: 'Análisis trimestral',
+    insightsSemiAnnualSubtitle: 'Análisis semestral',
+    insightsAnnualSubtitle: 'Análisis anual',
+    insightsGeneralTitle: 'Análisis General',
+    insightsGeneralSubtitle: 'Vista general de tus datos',
+    insightsRangeTitle: 'Últimos {months} meses',
 
     // Insights dashboard
     kpiCycleAverage: 'Promedio del ciclo (días)',
@@ -780,6 +829,26 @@ const translations: Record<Language, Translations> = {
     startChat: 'Iniciar Chat',
     chatContextLabel: 'Contexto:',
     chatContextLog: 'Registro de {date}',
+    aiLogTitle: 'Registro con IA',
+    aiLogSubtitleInput: 'Describe tu día',
+    aiLogSubtitleReview: 'Revisa y confirma',
+    aiLogExamplesLabel: 'Ejemplos de lo que puedes decir:',
+    aiLogExample1: 'Menstruación abundante rojo oscuro con coágulos, usé 4 toallas, dolor 7/10 con cólicos',
+    aiLogExample2: 'Migraña con aura nivel 8, tomé ibuprofeno 400mg, dormí mal 5 horas',
+    aiLogExample3: 'Test ovulación positivo, flujo clara de huevo, cérvix alto y suave',
+    aiLogExample4: 'Ejercicio moderado 45 minutos corriendo, quemé 350 calorías, bebí 2 litros de agua',
+    aiLogExample5: 'Ansiedad alta por trabajo, estrés 8/10, antojo de chocolate, sin energía',
+    aiLogDescribeLabel: 'Describe tu día',
+    aiLogPlaceholder: 'Escribe o dicta cómo te sientes hoy, qué síntomas tienes, tu nivel de energía...',
+    aiLogCharacters: '{count} caracteres',
+    aiLogClear: 'Limpiar',
+    aiLogVoiceIdle: 'Usar micrófono',
+    aiLogVoiceRecording: 'Grabando... (toca para detener)',
+    aiLogConfidence: 'Confianza del análisis',
+    chatQuickCycle: '¿Cómo está mi ciclo?',
+    chatQuickSleep: 'Analiza mi sueño',
+    chatQuickSymptoms: '¿Qué síntomas tengo?',
+    chatQuickRecommendations: 'Recomendaciones',
     devToolsHeading: '🛠️ Generación de Datos',
     devFillLast7: 'Rellenar Últimos 7 Días',
     devFillLast30: 'Rellenar Últimos 30 Días',
@@ -844,11 +913,13 @@ const translations: Record<Language, Translations> = {
     delete: 'Eliminar',
     edit: 'Editar',
     close: 'Cerrar',
+    back: 'Volver',
     noMedicationsAdded: 'No hay medicamentos agregados',
   },
 
   en: {
     // Navigation
+    appName: 'Aura Cycle',
     home: 'Home',
     calendar: 'Calendar',
     log: 'Log',
@@ -916,6 +987,19 @@ const translations: Record<Language, Translations> = {
     exportData: 'Export',
     noLogTodayTitle: 'No log today',
     noLogTodayDescription: 'No data recorded for today. Log your information to see the analysis.',
+    insightsEmptyTitle: 'Cycle Analysis',
+    insightsEmptyDescriptionLine1: 'You need at least 2 logged cycles to view analysis.',
+    insightsEmptyDescriptionLine2: 'Keep logging your data to get personalized insights.',
+    insightsDaySubtitle: 'Full analysis of your day',
+    insightsWeekSubtitle: 'Weekly trends analysis',
+    insightsMonthSubtitle: 'Full monthly analysis',
+    insightsCurrentCycleSubtitle: 'Current cycle insights',
+    insightsQuarterlySubtitle: 'Quarterly analysis',
+    insightsSemiAnnualSubtitle: 'Semiannual analysis',
+    insightsAnnualSubtitle: 'Annual analysis',
+    insightsGeneralTitle: 'General Analysis',
+    insightsGeneralSubtitle: 'Overview of your data',
+    insightsRangeTitle: 'Last {months} months',
 
     // Advanced logging modules
     menstruationColorLabel: 'Color',
@@ -1139,6 +1223,26 @@ const translations: Record<Language, Translations> = {
     startChat: 'Start chat',
     chatContextLabel: 'Context:',
     chatContextLog: 'Log from {date}',
+    aiLogTitle: 'AI Log',
+    aiLogSubtitleInput: 'Describe your day',
+    aiLogSubtitleReview: 'Review and confirm',
+    aiLogExamplesLabel: 'Examples of what you can say:',
+    aiLogExample1: 'Heavy dark-red period with clots, used 4 pads, pain 7/10 with cramps',
+    aiLogExample2: 'Migraine with aura level 8, took 400mg ibuprofen, slept poorly 5 hours',
+    aiLogExample3: 'Positive ovulation test, egg-white discharge, cervix high and soft',
+    aiLogExample4: 'Moderate exercise 45 minutes running, burned 350 calories, drank 2 liters of water',
+    aiLogExample5: 'High work anxiety, stress 8/10, craving chocolate, low energy',
+    aiLogDescribeLabel: 'Describe your day',
+    aiLogPlaceholder: 'Type or dictate how you feel today, symptoms, your energy level...',
+    aiLogCharacters: '{count} characters',
+    aiLogClear: 'Clear',
+    aiLogVoiceIdle: 'Use microphone',
+    aiLogVoiceRecording: 'Recording... (tap to stop)',
+    aiLogConfidence: 'Analysis confidence',
+    chatQuickCycle: 'How is my cycle looking?',
+    chatQuickSleep: 'Analyze my sleep',
+    chatQuickSymptoms: 'What symptoms do I have?',
+    chatQuickRecommendations: 'Recommendations',
     // Insights dashboard
     kpiCycleAverage: 'Average cycle length (days)',
     kpiVariability: 'Variability (days)',
@@ -1263,11 +1367,13 @@ const translations: Record<Language, Translations> = {
     delete: 'Delete',
     edit: 'Edit',
     close: 'Close',
+    back: 'Back',
     noMedicationsAdded: 'No medications added',
   },
 
   tr: {
     // Navigation
+    appName: 'Aura Döngü',
     home: 'Ana Sayfa',
     calendar: 'Takvim',
     log: 'Kayıt',
@@ -1335,6 +1441,19 @@ const translations: Record<Language, Translations> = {
     exportData: 'Dışa aktar',
     noLogTodayTitle: 'Bugün kayıt yok',
     noLogTodayDescription: 'Bugün için veri kaydedilmedi. Analizi görmek için bilgilerini kaydet.',
+    insightsEmptyTitle: 'Döngü Analizi',
+    insightsEmptyDescriptionLine1: 'Analizleri görebilmek için en az 2 kayıtlı döngüye ihtiyacın var.',
+    insightsEmptyDescriptionLine2: 'Kişiselleştirilmiş içgörüler için verilerini kaydetmeye devam et.',
+    insightsDaySubtitle: 'Günün kapsamlı analizi',
+    insightsWeekSubtitle: 'Haftalık trend analizi',
+    insightsMonthSubtitle: 'Aylık kapsamlı analiz',
+    insightsCurrentCycleSubtitle: 'Devam eden döngü analizi',
+    insightsQuarterlySubtitle: 'Üç aylık analiz',
+    insightsSemiAnnualSubtitle: 'Altı aylık analiz',
+    insightsAnnualSubtitle: 'Yıllık analiz',
+    insightsGeneralTitle: 'Genel Analiz',
+    insightsGeneralSubtitle: 'Verilerinin genel görünümü',
+    insightsRangeTitle: 'Son {months} ay',
     // Advanced logging modules
     menstruationColorLabel: 'Renk',
     menstruationColorBrightRed: 'Parlak kırmızı',
@@ -1557,6 +1676,26 @@ const translations: Record<Language, Translations> = {
     startChat: 'Sohbeti başlat',
     chatContextLabel: 'Bağlam:',
     chatContextLog: '{date} kaydı',
+    aiLogTitle: 'Yapay Zekâ ile Kayıt',
+    aiLogSubtitleInput: 'Gününü tarif et',
+    aiLogSubtitleReview: 'Gözden geçir ve onayla',
+    aiLogExamplesLabel: 'Şu örnekleri söyleyebilirsin:',
+    aiLogExample1: 'Koyu kırmızı yoğun adet, pıhtılar var, 4 ped kullandım, ağrı 7/10, kramp',
+    aiLogExample2: 'Aura ile migren seviye 8, 400mg ibuprofen aldım, kötü uyudum 5 saat',
+    aiLogExample3: 'Ovulasyon testi pozitif, yumurta akı kıvamında akıntı, serviks yüksek ve yumuşak',
+    aiLogExample4: 'Orta tempo 45 dk koşu, 350 kalori yaktım, 2 litre su içtim',
+    aiLogExample5: 'İş kaynaklı yüksek kaygı, stres 8/10, çikolata isteği, enerjim düşük',
+    aiLogDescribeLabel: 'Gününü anlat',
+    aiLogPlaceholder: 'Bugün nasıl hissettiğini, belirtilerini, enerji seviyeni yaz veya dikte et...',
+    aiLogCharacters: '{count} karakter',
+    aiLogClear: 'Temizle',
+    aiLogVoiceIdle: 'Mikrofonu kullan',
+    aiLogVoiceRecording: 'Kaydediliyor... (durdurmak için dokun)',
+    aiLogConfidence: 'Analiz güveni',
+    chatQuickCycle: 'Döngüm nasıl gidiyor?',
+    chatQuickSleep: 'Uykumu analiz et',
+    chatQuickSymptoms: 'Hangi belirtilerim var?',
+    chatQuickRecommendations: 'Öneriler',
     // Insights dashboard
     kpiCycleAverage: 'Döngü ortalaması (gün)',
     kpiVariability: 'Değişkenlik (gün)',
@@ -1712,6 +1851,7 @@ const translations: Record<Language, Translations> = {
     delete: 'Sil',
     edit: 'Düzenle',
     close: 'Kapat',
+    back: 'Geri',
     noMedicationsAdded: 'İlaç eklenmedi',
   },
 

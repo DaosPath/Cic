@@ -18,6 +18,8 @@ import { format } from 'date-fns/format';
 import { subDays } from 'date-fns/subDays';
 import { startOfMonth, endOfMonth } from 'date-fns';
 import { es } from 'date-fns/locale/es';
+import { enUS } from 'date-fns/locale/en-US';
+import { tr } from 'date-fns/locale/tr';
 
 const intlLocales = {
     es: 'es-ES',
@@ -64,13 +66,14 @@ const calculateMovingAverage = (data: number[], window: number): number[] => {
 
 // Cycle Length Chart Component
 const CycleLengthChart: React.FC<{ cycles: Cycle[]; avgCycleLength: number }> = ({ cycles, avgCycleLength }) => {
-    const { t } = useTranslation();
+    const { t, language } = useTranslation();
+    const intlLocale = intlLocales[language] ?? 'es-ES';
     const validCycles = cycles.filter(c => c.length && c.length >= 21 && c.length <= 45).reverse();
 
     if (validCycles.length === 0) {
         return (
             <div className="flex items-center justify-center h-full text-brand-text-dim">
-                No hay datos suficientes
+                {t('notEnoughData')}
             </div>
         );
     }
@@ -119,9 +122,9 @@ const CycleLengthChart: React.FC<{ cycles: Cycle[]; avgCycleLength: number }> = 
                             {/* Tooltip */}
                             <div className="absolute bottom-full mb-2 hidden group-hover:block z-10">
                                 <div className="bg-brand-surface-2 border border-brand-border rounded-lg px-3 py-2 shadow-xl whitespace-nowrap">
-                                    <div className="text-xs font-semibold text-brand-text">{cycle.length} días</div>
+                                    <div className="text-xs font-semibold text-brand-text">{cycle.length} {t('days')}</div>
                                     <div className="text-xs text-brand-text-dim">
-                                        {new Date(cycle.startDate).toLocaleDateString('es-ES', { month: 'short', year: 'numeric' })}
+                                        {new Date(cycle.startDate).toLocaleDateString(intlLocale, { month: 'short', year: 'numeric' })}
                                     </div>
                                 </div>
                             </div>
@@ -434,6 +437,7 @@ export const InsightsPage: React.FC = () => {
         [t]
     );
     const intlLocale = intlLocales[language] ?? 'es-ES';
+    const dateLocale = language === 'tr' ? tr : language === 'en' ? enUS : es;
 
     // Current cycle info for mobile CTA
     const today = new Date();
@@ -539,11 +543,11 @@ export const InsightsPage: React.FC = () => {
         return Object.entries(counts)
             .map(([id, count]) => ({
                 id,
-                name: settings.customSymptoms.find(s => s.id === id)?.name || 'Unknown',
+                name: settings.customSymptoms.find(s => s.id === id)?.name || t('unknownSymptom'),
                 count,
             }))
             .sort((a, b) => b.count - a.count);
-    }, [logs, settings.customSymptoms]);
+    }, [logs, settings.customSymptoms, t]);
 
     if (cycles.length < 2) {
         return (
@@ -556,11 +560,11 @@ export const InsightsPage: React.FC = () => {
                             </svg>
                         </div>
                         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-brand-text" style={{ fontWeight: 700, lineHeight: 1.3 }}>
-                            Análisis de Ciclos
+                            {t('insightsEmptyTitle')}
                         </h1>
                         <p className="text-base text-brand-text-dim leading-relaxed" style={{ lineHeight: 1.6 }}>
-                            Necesitas al menos 2 ciclos registrados para ver análisis.<br />
-                            Sigue registrando tus datos para obtener insights personalizados.
+                            {t('insightsEmptyDescriptionLine1')}<br />
+                            {t('insightsEmptyDescriptionLine2')}
                         </p>
                     </div>
                 </div>
@@ -570,7 +574,7 @@ export const InsightsPage: React.FC = () => {
 
     const exportToCSV = () => {
         const csv = [
-            ['Ciclo', 'Inicio', 'Duración', 'Días de sangrado'].join(','),
+            [t('cycle'), t('date'), t('cycleDuration'), t('menstruation')].join(','),
             ...filteredCycles.map((c, i) => [
                 filteredCycles.length - i,
                 c.startDate,
@@ -583,16 +587,17 @@ export const InsightsPage: React.FC = () => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `analisis-ciclos-${new Date().toISOString().split('T')[0]}.csv`;
+        a.download = `cycle-analysis-${new Date().toISOString().split('T')[0]}.csv`;
         a.click();
         URL.revokeObjectURL(url);
     };
 
     // Chat Handlers
     const handleStartChat = (insights: AIInsight[]) => {
+        const rangeLabel = t('insightsRangeTitle', { months: timeRange });
         const initialMessage = formatInsightsForChat(
             insights,
-            `Últimos ${timeRange} meses`,
+            rangeLabel,
             { showPredictions }
         );
 
@@ -623,13 +628,20 @@ export const InsightsPage: React.FC = () => {
     const createChatContext = (): ChatContext => {
         const today = new Date();
         const todayStr = format(today, 'yyyy-MM-dd');
+        const longDateFormat =
+            language === 'es'
+                ? "EEEE, d 'de' MMMM"
+                : language === 'tr'
+                    ? 'd MMMM EEEE'
+                    : 'EEEE, MMMM d';
+        const shortMonthFormat = language === 'es' ? "d 'de' MMM" : 'd MMM';
 
         switch (aiTimeMode) {
             case 'day':
                 return {
                     type: 'day',
-                    title: format(today, "EEEE, d 'de' MMMM", { locale: es }),
-                    subtitle: 'Análisis completo de tu día',
+                    title: format(today, longDateFormat, { locale: dateLocale }),
+                    subtitle: t('insightsDaySubtitle'),
                     data: {
                         log: logs.find(l => l.date === todayStr),
                     }
@@ -639,8 +651,11 @@ export const InsightsPage: React.FC = () => {
                 const weekAgo = subDays(today, 6);
                 return {
                     type: 'week',
-                    title: `Semana del ${format(weekAgo, "d 'de' MMM")} al ${format(today, "d 'de' MMM")}`,
-                    subtitle: 'Análisis de tendencias semanales',
+                    title: t('weeklySummaryWeekRange', {
+                        start: format(weekAgo, shortMonthFormat, { locale: dateLocale }),
+                        end: format(today, shortMonthFormat, { locale: dateLocale }),
+                    }),
+                    subtitle: t('insightsWeekSubtitle'),
                     data: {
                         logs: logs.filter(l => {
                             const logDate = parseISO(l.date);
@@ -654,8 +669,8 @@ export const InsightsPage: React.FC = () => {
                 const monthEnd = endOfMonth(today);
                 return {
                     type: 'month',
-                    title: format(today, 'MMMM yyyy', { locale: es }),
-                    subtitle: 'Análisis completo del mes',
+                    title: format(today, 'MMMM yyyy', { locale: dateLocale }),
+                    subtitle: t('insightsMonthSubtitle'),
                     data: {
                         logs: logs.filter(l => {
                             const logDate = parseISO(l.date);
@@ -671,8 +686,8 @@ export const InsightsPage: React.FC = () => {
             case 'current-cycle':
                 return {
                     type: 'cycle',
-                    title: 'Ciclo Actual',
-                    subtitle: 'Análisis de tu ciclo en curso',
+                    title: t('currentCycle'),
+                    subtitle: t('insightsCurrentCycleSubtitle'),
                     data: {
                         cycles: [cycles[0]],
                         logs: logs.filter(l => {
@@ -689,8 +704,8 @@ export const InsightsPage: React.FC = () => {
                 monthsAgo.setMonth(monthsAgo.getMonth() - timeRange);
                 return {
                     type: 'year',
-                    title: `Últimos ${timeRange} Meses`,
-                    subtitle: timeRange === 3 ? 'Análisis trimestral' : timeRange === 6 ? 'Análisis semestral' : 'Análisis anual',
+                    title: t('insightsRangeTitle', { months: timeRange }),
+                    subtitle: timeRange === 3 ? t('insightsQuarterlySubtitle') : timeRange === 6 ? t('insightsSemiAnnualSubtitle') : t('insightsAnnualSubtitle'),
                     data: {
                         logs: logs.filter(l => parseISO(l.date) >= monthsAgo),
                         cycles: cycles.filter(c => parseISO(c.startDate) >= monthsAgo)
@@ -700,8 +715,8 @@ export const InsightsPage: React.FC = () => {
             default:
                 return {
                     type: 'year',
-                    title: 'Análisis General',
-                    subtitle: 'Vista general de tus datos'
+                    title: t('insightsGeneralTitle'),
+                    subtitle: t('insightsGeneralSubtitle')
                 };
         }
     };
@@ -976,7 +991,7 @@ export const InsightsPage: React.FC = () => {
                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                                         </svg>
-                                        <span>Chatear sobre mi Ciclo Actual</span>
+                                        <span>{t('startChat')}</span>
                                     </button>
                                 </div>
                             </div>
@@ -1000,10 +1015,10 @@ export const InsightsPage: React.FC = () => {
                                 {/* Chat CTA Unificado para vista anual */}
                                 <UnifiedChatCTA
                                     onStartChat={() => handleStartChatWithContext(createChatContext())}
-                                    contextTitle={`Análisis Anual (${timeRange} meses)`}
-                                    contextSubtitle="Explora patrones a largo plazo, tendencias y correlaciones anuales"
+                                    contextTitle={t('insightsRangeTitle', { months: timeRange })}
+                                    contextSubtitle={t('insightsAnnualSubtitle')}
                                     contextInfo={{
-                                        date: `Análisis Anual (${timeRange} meses)`,
+                                        date: t('insightsRangeTitle', { months: timeRange }),
                                         cyclePhase: undefined,
                                         cycleDay: undefined
                                     }}
