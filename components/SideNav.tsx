@@ -3,7 +3,17 @@ import { NavLink } from 'react-router-dom';
 import { useTranslation } from '../hooks/useTranslation.ts';
 
 export const SideNav: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const cycleColors = ['text-phase-follicular', 'text-phase-ovulation', 'text-phase-luteal'] as const;
+  const loveWordMap: Record<string, string> = {
+    es: 'amor',
+    en: 'love',
+    tr: 'sevgiyle',
+  };
+  const loveWord = loveWordMap[language] || loveWordMap.es;
+  const loveMessage = t('madeWithLoveForAzra');
+  const messageParts = loveMessage.split(' ');
+  let cycleColorIndex = 0;
   
   const navItems = [
     { path: '/', labelKey: 'home' as const, icon: (p: {isActive: boolean}) => <HomeIcon active={p.isActive} /> },
@@ -44,8 +54,26 @@ export const SideNav: React.FC = () => {
       </div>
       <div className="text-xs text-brand-text-dim/50 p-4 flex items-center gap-1">
         <span>v1.0.0</span>
-        <span>•</span>
-        <span>❤️</span>
+        <span className="text-brand-text-dim">|</span>
+        <span className="inline-flex flex-wrap items-center gap-1">
+          {messageParts.map((part, index) => {
+            const isLove = part.toLowerCase().includes(loveWord.toLowerCase());
+            const colorClass = isLove
+              ? 'text-phase-menstruation'
+              : cycleColors[cycleColorIndex % cycleColors.length];
+            if (!isLove) {
+              cycleColorIndex += 1;
+            }
+            return (
+              <span key={index} className={`${colorClass} font-semibold`}>
+                {part}
+              </span>
+            );
+          })}
+          <span aria-hidden="true" className="text-phase-menstruation">
+            ❤️
+          </span>
+        </span>
       </div>
     </aside>
   );

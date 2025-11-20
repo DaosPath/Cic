@@ -126,6 +126,24 @@ export interface Translations {
   weeklyInsightTopSymptom: string;
   weeklyInsightCaffeine: string;
 
+  // Monthly insights view
+  loggedDaysLabel: string;
+  cyclesThisMonthTitle: string;
+  startLabel: string;
+  energyDistributionTitle: string;
+  monthlyInsightsTitle: string;
+  monthlyInsightConsistency: string;
+  monthlyInsightCycles: string;
+  monthlyInsightSleepLow: string;
+  monthlyInsightSleepGood: string;
+  monthlyInsightPain: string;
+  monthlyInsightStress: string;
+  monthlyInsightActivityHigh: string;
+  monthlyInsightActivityLow: string;
+  monthlyInsightEnergyLow: string;
+  monthlyInsightHydration: string;
+  monthlyInsightTopSymptom: string;
+
   // Advanced logging modules
   menstruationColorLabel: string;
   menstruationColorBrightRed: string;
@@ -346,6 +364,7 @@ export interface Translations {
 
   // Additional UI copy
   appTagline: string;
+  madeWithLoveForAzra: string;
   logSymptoms: string;
   savedInsightsTabPinned: string;
   savedInsightsTabSaved: string;
@@ -630,6 +649,24 @@ const translations: Record<Language, Translations> = {
     weeklyInsightTopSymptom: 'Síntoma más frecuente: {symptom} ({count} días).',
     weeklyInsightCaffeine: 'Cafeína promedio: {cups} tazas/día.',
 
+    // Monthly insights view
+    loggedDaysLabel: 'Días registrados',
+    cyclesThisMonthTitle: 'Ciclos del mes',
+    startLabel: 'Inicio',
+    energyDistributionTitle: 'Distribución de energía',
+    monthlyInsightsTitle: 'Insights del mes',
+    monthlyInsightConsistency: '{days}/{total} días registrados este mes.',
+    monthlyInsightCycles: '{count} ciclo(s) registrados este mes.',
+    monthlyInsightSleepLow: 'Sueño bajo: {hours}h en promedio. Prioriza 7-9h.',
+    monthlyInsightSleepGood: 'Sueño saludable: {hours}h en promedio. ¡Bien hecho!',
+    monthlyInsightPain: 'Dolor en {days} días. Promedio {pain}/10.',
+    monthlyInsightStress: '{days} días con estrés alto. Promedio {stress}/10.',
+    monthlyInsightActivityHigh: 'Actividad: {active} días ({percent}% del mes).',
+    monthlyInsightActivityLow: 'Actividad baja: {active} días ({percent}% del mes). Súbela gradualmente.',
+    monthlyInsightEnergyLow: 'La energía estuvo mayormente baja este mes.',
+    monthlyInsightHydration: 'Hidratación promedio: {liters}L.',
+    monthlyInsightTopSymptom: 'Síntoma más frecuente: {symptom} ({count} días).',
+
     // Advanced logging modules
     menstruationColorLabel: 'Color',
     menstruationColorBrightRed: 'Rojo vivo',
@@ -842,6 +879,7 @@ const translations: Record<Language, Translations> = {
 
     // Additional UI copy
     appTagline: 'Salud menstrual inteligente',
+    madeWithLoveForAzra: 'Con amor para Azra',
     logSymptoms: 'Registrar síntomas',
     savedInsightsTabPinned: 'Fijados',
     savedInsightsTabSaved: 'Guardados',
@@ -1243,6 +1281,7 @@ const translations: Record<Language, Translations> = {
 
     // Additional UI copy
     appTagline: 'Smart menstrual health',
+    madeWithLoveForAzra: 'With love for Azra',
     logSymptoms: 'Log symptoms',
     savedInsightsTabPinned: 'Pinned',
     savedInsightsTabSaved: 'Saved',
@@ -1348,6 +1387,24 @@ const translations: Record<Language, Translations> = {
     weeklyInsightHydration: 'Hydration average: {liters}L.',
     weeklyInsightTopSymptom: 'Most frequent symptom: {symptom} ({count} days).',
     weeklyInsightCaffeine: 'Caffeine average: {cups} cups/day.',
+
+    // Monthly insights view
+    loggedDaysLabel: 'Logged days',
+    cyclesThisMonthTitle: 'Cycles this month',
+    startLabel: 'Start',
+    energyDistributionTitle: 'Energy distribution',
+    monthlyInsightsTitle: 'Monthly insights',
+    monthlyInsightConsistency: '{days}/{total} days logged this month.',
+    monthlyInsightCycles: '{count} cycle(s) logged this month.',
+    monthlyInsightSleepLow: 'Low sleep: {hours}h average. Aim for 7-9h.',
+    monthlyInsightSleepGood: 'Healthy sleep: {hours}h average. Nice job!',
+    monthlyInsightPain: 'Pain on {days} days. Average {pain}/10.',
+    monthlyInsightStress: '{days} high-stress days. Average {stress}/10.',
+    monthlyInsightActivityHigh: 'Activity: {active} days ({percent}% of the month).',
+    monthlyInsightActivityLow: 'Low activity: {active} days ({percent}% of the month). Increase gradually.',
+    monthlyInsightEnergyLow: 'Energy was mostly low this month.',
+    monthlyInsightHydration: 'Hydration average: {liters}L.',
+    monthlyInsightTopSymptom: 'Most frequent symptom: {symptom} ({count} days).',
     devToolsHeading: '🛠️ Data generation',
     devFillLast7: 'Fill last 7 days',
     devFillLast30: 'Fill last 30 days',
@@ -1711,6 +1768,7 @@ const translations: Record<Language, Translations> = {
 
     // Additional UI copy
     appTagline: 'Akıllı adet sağlığı',
+    madeWithLoveForAzra: 'Azra için sevgiyle',
     logSymptoms: 'Semptomları kaydet',
     savedInsightsTabPinned: 'Sabitlenenler',
     savedInsightsTabSaved: 'Kaydedilenler',
@@ -1848,7 +1906,25 @@ const translations: Record<Language, Translations> = {
     weeklyInsightTopSymptom: 'En sık belirti: {symptom} ({count} gün).',
     weeklyInsightCaffeine: 'Kafein ortalaması: {cups} fincan/gün.',
 
-    // Daily insight modal
+    // Monthly insights view
+    loggedDaysLabel: 'Kaydedilen günler',
+    cyclesThisMonthTitle: 'Bu ayki döngüler',
+    startLabel: 'Başlangıç',
+    energyDistributionTitle: 'Enerji dağılımı',
+    monthlyInsightsTitle: 'Aylık içgörüler',
+    monthlyInsightConsistency: 'Bu ay {total} günden {days} gün kayıt yaptın.',
+    monthlyInsightCycles: 'Bu ay {count} döngü kaydedildi.',
+    monthlyInsightSleepLow: 'Düşük uyku: ortalama {hours}s. Hedef 7-9s.',
+    monthlyInsightSleepGood: 'Sağlıklı uyku: ortalama {hours}s. Harika!',
+    monthlyInsightPain: '{days} günde ağrı. Ortalama {pain}/10.',
+    monthlyInsightStress: '{days} günde yüksek stres. Ortalama {stress}/10.',
+    monthlyInsightActivityHigh: 'Aktivite: {active} gün (%{percent}).',
+    monthlyInsightActivityLow: 'Düşük aktivite: {active} gün (%{percent}). Kademeli artır.',
+    monthlyInsightEnergyLow: 'Bu ay enerji çoğunlukla düşüktü.',
+    monthlyInsightHydration: 'Hidrasyon ortalaması: {liters}L.',
+    monthlyInsightTopSymptom: 'En sık belirti: {symptom} ({count} gün).',
+
+    // Daily insight modal
     dailyInsightModalTitle: 'Günün tam özeti',
     dailyInsightModalSleepTitle: 'Uyku',
     dailyInsightModalHydrationTitle: 'Hidrasyon',

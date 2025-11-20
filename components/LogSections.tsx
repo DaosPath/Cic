@@ -212,20 +212,6 @@ export const FertilitySection: React.FC<LogSectionsProps> = ({ log, setLog, open
                     </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
-                    <ToggleSwitch
-                        checked={log.sexualActivity || false}
-                        onChange={(v) => setLog({ ...log, sexualActivity: v })}
-                        label={t('sexualActivityLabel')}
-                    />
-                    {log.sexualActivity && (
-                        <ToggleSwitch
-                            checked={log.protection || false}
-                            onChange={(v) => setLog({ ...log, protection: v })}
-                            label={t('protectionLabel')}
-                        />
-                    )}
-                </div>
             </div>
         </CollapsibleSection>
     );

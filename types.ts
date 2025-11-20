@@ -28,9 +28,6 @@ export interface DailyLog {
   cervixFirmness?: 'firm' | 'soft';
   cervixOpening?: 'open' | 'closed';
   cervicalFluid?: 'dry' | 'sticky' | 'creamy' | 'watery' | 'egg-white';
-  sexualActivity?: boolean;
-  sexualActivityTiming?: 'before-ovulation' | 'during-ovulation' | 'after-ovulation';
-  protection?: boolean;
   
   // Pain - Extended
   painLevel?: number; // 0-10 scale

@@ -839,19 +839,6 @@ export async function parseLogDescription(description: string, language: Languag
     confidence += 5;
   }
 
-  // Sexual activity
-  if (lowerDesc.match(/relaciones|sexo|intimidad|actividad\s+sexual/)) {
-    suggestions.sexualActivity = true;
-    if (lowerDesc.match(/protección|condón|preservativo/)) {
-      suggestions.protection = true;
-      confidence += 4;
-    } else if (lowerDesc.match(/sin\s+protección/)) {
-      suggestions.protection = false;
-      confidence += 4;
-    }
-    confidence += 3;
-  }
-
   // ===== CONTEXT =====
   if (lowerDesc.match(/frío|hace\s+frío/)) {
     suggestions.weather = 'cold';
@@ -1053,15 +1040,6 @@ function generateFormattedNotes(suggestions: Partial<DailyLog>, originalText: st
   }
   if (healthParts.length > 0) {
     sections.push(`📊 ${healthParts.join(', ')}.`);
-  }
-
-  // Sexual activity
-  if (suggestions.sexualActivity) {
-    let sexText = '💕 Actividad sexual';
-    if (suggestions.protection !== undefined) {
-      sexText += suggestions.protection ? ' con protección' : ' sin protección';
-    }
-    sections.push(sexText + '.');
   }
 
   // Add original text context if sections are empty

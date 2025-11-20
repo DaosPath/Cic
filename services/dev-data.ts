@@ -148,11 +148,6 @@ export const generateDevData = (): { logs: DailyLog[], cycles: Cycle[] } => {
                 newLog.basalTemp = parseFloat(randomFloat(36.5, 37.2).toFixed(1));
             }
 
-            // Sexual activity
-            if (randomBool(0.3)) {
-                newLog.sexualActivity = randomBool(0.7);
-            }
-
             // Medications (if pain is high)
             if (newLog.painLevel && newLog.painLevel > 5 && randomBool(0.6)) {
                 newLog.medications = [{ name: 'Ibuprofeno', dose: '400mg' }];
