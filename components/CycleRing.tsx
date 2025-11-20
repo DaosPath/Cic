@@ -60,17 +60,16 @@ export const CycleRing: React.FC<CycleRingProps> = ({ phase, cycleDay }) => {
             if (!entries || entries.length === 0) return;
             const entry = entries[0];
             const dpr = window.devicePixelRatio || 1;
-            // Make canvas larger than container to avoid visible boundaries
             const baseWidth = entry.contentRect.width;
             const baseHeight = entry.contentRect.height;
-            width = baseWidth * 2;  // 2x larger
-            height = baseHeight * 2;
+            width = baseWidth;
+            height = baseHeight;
             if (width === 0 || height === 0) return;
             canvas.width = width * dpr;
             canvas.height = height * dpr;
             canvas.style.width = `${width}px`;
             canvas.style.height = `${height}px`;
-            ctx.scale(dpr, dpr);
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         };
         
         const observer = new ResizeObserver(resizeHandler);
@@ -174,6 +173,13 @@ export const CycleRing: React.FC<CycleRingProps> = ({ phase, cycleDay }) => {
             
             time += 0.01;
             ctx.clearRect(0, 0, width, height);
+
+            // Clip drawing to a circle to avoid square/cube artifacts on mobile
+            const clipRadius = Math.min(width, height) / 2;
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(width / 2, height / 2, clipRadius, 0, Math.PI * 2);
+            ctx.clip();
             
             const target = phaseTargets(phase);
 
@@ -248,6 +254,8 @@ export const CycleRing: React.FC<CycleRingProps> = ({ phase, cycleDay }) => {
                 ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
                 ctx.fill();
             });
+
+            ctx.restore();
         };
 
         animate();
@@ -272,12 +280,16 @@ export const CycleRing: React.FC<CycleRingProps> = ({ phase, cycleDay }) => {
         : `Visualización del ciclo: ${phaseLabels[phase]}`;
 
     return (
-        <div ref={containerRef} className="absolute inset-0 w-full h-full overflow-visible">
+        <div ref={containerRef} className="absolute inset-0 w-full h-full overflow-hidden rounded-full">
              <canvas 
                 ref={canvasRef} 
                 aria-label={ariaLabel} 
                 role="img" 
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
+                style={{
+                    WebkitMaskImage: 'radial-gradient(circle, black 70%, transparent 100%)',
+                    maskImage: 'radial-gradient(circle, black 70%, transparent 100%)',
+                }}
              />
         </div>
     );

@@ -58,15 +58,15 @@ export const HomePage: React.FC = () => {
     }
 
     return (
-        <div className="w-full min-h-screen flex flex-col items-center justify-start text-center px-4 md:px-8 pt-8 md:pt-12">
+        <div className="w-full min-h-screen flex flex-col items-center justify-start text-center px-4 md:px-8 pt-8 md:pt-12 overflow-x-hidden">
             <div className="w-full max-w-[1140px] flex flex-col items-center gap-6 md:gap-8">
                 {/* Hero Section - Cycle Ring */}
                 <div className="flex flex-col items-center justify-center animate-fade-in">
-                    <div className="relative w-80 h-80 md:w-96 md:h-96 flex items-center justify-center mb-3 group">
+                    <div className="relative w-64 h-64 sm:w-72 sm:h-72 md:w-96 md:h-96 flex items-center justify-center mb-3 group overflow-hidden">
                         <CycleRing phase={currentPhase} />
                         <div className="absolute z-10 text-center pointer-events-none">
                             <span 
-                                className="text-8xl md:text-9xl font-extrabold text-brand-text tracking-tight relative" 
+                                className="text-6xl sm:text-7xl md:text-9xl font-extrabold text-brand-text tracking-tight relative" 
                                 style={{ 
                                     textShadow: '0 0 40px var(--particle), 0 4px 12px rgba(0, 0, 0, 0.6), 0 0 2px var(--brand)',
                                     filter: 'drop-shadow(0 0 8px var(--particle))'
