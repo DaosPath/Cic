@@ -117,6 +117,14 @@ export interface Translations {
   weeklyPatternsTitle: string;
   highConfidenceLabel: string;
   weeklyChatSubtitle: string;
+  weeklyInsightConsistency: string;
+  weeklyInsightSleep: string;
+  weeklyInsightMood: string;
+  weeklyInsightActivity: string;
+  weeklyInsightPain: string;
+  weeklyInsightHydration: string;
+  weeklyInsightTopSymptom: string;
+  weeklyInsightCaffeine: string;
 
   // Advanced logging modules
   menstruationColorLabel: string;
@@ -613,6 +621,14 @@ const translations: Record<Language, Translations> = {
     weeklyPatternsTitle: 'Patrones semanales',
     highConfidenceLabel: 'Alta confianza',
     weeklyChatSubtitle: 'Comparte tu semana con la IA y resuelve dudas',
+    weeklyInsightConsistency: '{logs}/7 días registrados esta semana.',
+    weeklyInsightSleep: 'Sueño promedio: {hours}h. Objetivo: 7-9h diarias.',
+    weeklyInsightMood: 'Ánimo promedio: {mood}/5. Sigue cuidando tu bienestar.',
+    weeklyInsightActivity: '{days} días activos, {minutes} min totales.',
+    weeklyInsightPain: 'Dolor promedio: {pain}/10.',
+    weeklyInsightHydration: 'Hidratación promedio: {liters}L.',
+    weeklyInsightTopSymptom: 'Síntoma más frecuente: {symptom} ({count} días).',
+    weeklyInsightCaffeine: 'Cafeína promedio: {cups} tazas/día.',
 
     // Advanced logging modules
     menstruationColorLabel: 'Color',
@@ -1324,6 +1340,14 @@ const translations: Record<Language, Translations> = {
     weeklyPatternsTitle: 'Weekly patterns',
     highConfidenceLabel: 'High confidence',
     weeklyChatSubtitle: 'Share your week with AI and get clarity',
+    weeklyInsightConsistency: '{logs}/7 days logged this week.',
+    weeklyInsightSleep: 'Sleep average: {hours}h. Aim for 7-9h daily.',
+    weeklyInsightMood: 'Mood average: {mood}/5. Keep taking care of yourself.',
+    weeklyInsightActivity: '{days} active days, {minutes} total minutes.',
+    weeklyInsightPain: 'Pain average: {pain}/10.',
+    weeklyInsightHydration: 'Hydration average: {liters}L.',
+    weeklyInsightTopSymptom: 'Most frequent symptom: {symptom} ({count} days).',
+    weeklyInsightCaffeine: 'Caffeine average: {cups} cups/day.',
     devToolsHeading: '🛠️ Data generation',
     devFillLast7: 'Fill last 7 days',
     devFillLast30: 'Fill last 30 days',
@@ -1815,6 +1839,14 @@ const translations: Record<Language, Translations> = {
     highConfidenceLabel: 'Yüksek güven',
 
     weeklyChatSubtitle: 'Haftanı yapay zekâyla paylaş ve sorularını sor',
+    weeklyInsightConsistency: 'Bu hafta {logs}/7 gün kayıt.',
+    weeklyInsightSleep: 'Uyku ortalaması: {hours}s. Hedef: günde 7-9s.',
+    weeklyInsightMood: 'Ortalama ruh hali: {mood}/5. Kendine iyi bakmaya devam et.',
+    weeklyInsightActivity: '{days} aktif gün, toplam {minutes} dk.',
+    weeklyInsightPain: 'Ağrı ortalaması: {pain}/10.',
+    weeklyInsightHydration: 'Hidrasyon ortalaması: {liters}L.',
+    weeklyInsightTopSymptom: 'En sık belirti: {symptom} ({count} gün).',
+    weeklyInsightCaffeine: 'Kafein ortalaması: {cups} fincan/gün.',
 
     // Daily insight modal
     dailyInsightModalTitle: 'Günün tam özeti',
