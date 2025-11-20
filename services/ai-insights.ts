@@ -1,14 +1,27 @@
 import type { Cycle, DailyLog } from '../types.ts';
 import { differenceInDays } from 'date-fns/differenceInDays';
 import { parseISO } from 'date-fns/parseISO';
+import type { Translations } from './i18n.ts';
 
 export interface AIInsight {
   id: string;
-  type: 'cycle-regularity' | 'flow-changes' | 'pain-spike' | 'stress-spike' | 'sleep-quality' | 
-        'energy-pattern' | 'contraception-adherence' | 'emerging-symptom' | 'correlation' | 
-        'basal-temp' | 'ovulation' | 'physical-activity' | 'hydration' | 'weight-trend';
-  priority: number; // 1-10, higher = more important
-  confidence: number; // 0-100
+  type:
+    | 'cycle-regularity'
+    | 'flow-changes'
+    | 'pain-spike'
+    | 'stress-spike'
+    | 'sleep-quality'
+    | 'energy-pattern'
+    | 'contraception-adherence'
+    | 'emerging-symptom'
+    | 'correlation'
+    | 'basal-temp'
+    | 'ovulation'
+    | 'physical-activity'
+    | 'hydration'
+    | 'weight-trend';
+  priority: number;
+  confidence: number;
   title: string;
   whyItMatters: string;
   insight: string;
@@ -22,13 +35,14 @@ export interface AIInsight {
     text: string;
     category: 'habit' | 'medical' | 'lifestyle';
   }>;
-  dataSource: string; // For chat reference
+  dataSource: string;
 }
 
 export function generateAIInsights(
   logs: DailyLog[],
   cycles: Cycle[],
-  timeRange: number = 6
+  timeRange: number = 6,
+  t: (key: keyof Translations, reps?: Record<string, string | number>) => string
 ): AIInsight[] {
   const insights: AIInsight[] = [];
   const cutoffDate = new Date();
@@ -37,84 +51,81 @@ export function generateAIInsights(
   const recentLogs = logs.filter(log => parseISO(log.date) >= cutoffDate);
   const recentCycles = cycles.filter(c => parseISO(c.startDate) >= cutoffDate);
 
-  // 1. Cycle Regularity
-  const regularityInsight = analyzeCycleRegularity(recentCycles);
-  if (regularityInsight) insights.push(regularityInsight);
+  const regularity = analyzeCycleRegularity(recentCycles, t);
+  if (regularity) insights.push(regularity);
 
-  // 2. Pain Patterns
-  const painInsight = analyzePainPatterns(recentLogs);
-  if (painInsight) insights.push(painInsight);
+  const pain = analyzePainPatterns(recentLogs, t);
+  if (pain) insights.push(pain);
 
-  // 3. Stress Patterns
-  const stressInsight = analyzeStressPatterns(recentLogs);
-  if (stressInsight) insights.push(stressInsight);
+  const stress = analyzeStressPatterns(recentLogs, t);
+  if (stress) insights.push(stress);
 
-  // 4. Sleep Quality
-  const sleepInsight = analyzeSleepQuality(recentLogs);
-  if (sleepInsight) insights.push(sleepInsight);
+  const sleep = analyzeSleepQuality(recentLogs, t);
+  if (sleep) insights.push(sleep);
 
-  // 5. Energy Patterns
-  const energyInsight = analyzeEnergyPatterns(recentLogs);
-  if (energyInsight) insights.push(energyInsight);
+  const energy = analyzeEnergyPatterns(recentLogs, t);
+  if (energy) insights.push(energy);
 
-  // 6. Symptom Correlations
-  const correlationInsights = analyzeSymptomCorrelations(recentLogs, recentCycles);
-  insights.push(...correlationInsights);
+  insights.push(...analyzeSymptomCorrelations(recentLogs, t));
 
-  // 7. Hydration
-  const hydrationInsight = analyzeHydration(recentLogs);
-  if (hydrationInsight) insights.push(hydrationInsight);
+  const hydration = analyzeHydration(recentLogs, t);
+  if (hydration) insights.push(hydration);
 
-  // 8. Physical Activity
-  const activityInsight = analyzePhysicalActivity(recentLogs);
-  if (activityInsight) insights.push(activityInsight);
+  const activity = analyzePhysicalActivity(recentLogs, t);
+  if (activity) insights.push(activity);
 
-  // Sort by priority (descending)
   return insights.sort((a, b) => b.priority - a.priority);
 }
 
-function analyzeCycleRegularity(cycles: Cycle[]): AIInsight | null {
+function analyzeCycleRegularity(
+  cycles: Cycle[],
+  t: (key: keyof Translations, reps?: Record<string, string | number>) => string
+): AIInsight | null {
   if (cycles.length < 3) return null;
 
-  const lengths = cycles.filter(c => c.length).map(c => c.length!);
+  const lengths = cycles.filter(c => c.length).map(c => c.length!) ;
   if (lengths.length < 3) return null;
 
   const avg = lengths.reduce((a, b) => a + b, 0) / lengths.length;
   const variance = lengths.reduce((sum, len) => sum + Math.pow(len - avg, 2), 0) / lengths.length;
   const stdDev = Math.sqrt(variance);
-
   const isRegular = stdDev < 3;
-  const confidence = Math.min(95, 60 + (lengths.length * 5));
+  const confidence = Math.min(95, 60 + lengths.length * 5);
 
   return {
     id: 'cycle-regularity',
     type: 'cycle-regularity',
     priority: 9,
     confidence,
-    title: isRegular ? 'Ciclo Regular Detectado' : 'Variabilidad en el Ciclo',
-    whyItMatters: 'La regularidad del ciclo es un indicador clave de salud hormonal y puede ayudar a predecir tu próximo periodo.',
-    insight: isRegular 
-      ? `Tu ciclo es muy regular con una variación de solo ±${Math.round(stdDev)} días. Esto facilita la predicción.`
-      : `Tu ciclo varía ±${Math.round(stdDev)} días. Esto es normal, pero monitorear puede ayudar a identificar patrones.`,
+    title: isRegular ? t('aiCycleRegularTitle') : t('aiCycleIrregularTitle'),
+    whyItMatters: t('aiCycleWhy'),
+    insight: isRegular
+      ? t('aiCycleInsightRegular', { stdDev: Math.round(stdDev) })
+      : t('aiCycleInsightIrregular', { stdDev: Math.round(stdDev) }),
     evidence: {
       values: lengths,
-      labels: lengths.map((_, i) => `Ciclo ${lengths.length - i}`),
-      summary: `Promedio: ${Math.round(avg)} días, Desviación: ${Math.round(stdDev)} días`
+      labels: lengths.map((_, i) => t('cycleLabel', { number: lengths.length - i })),
+      summary: t('aiCycleEvidenceSummary', { avg: Math.round(avg), stdDev: Math.round(stdDev) })
     },
-    timeRange: `Últimos ${lengths.length} ciclos`,
-    recommendations: isRegular ? [
-      { text: 'Mantén tu rutina actual de sueño y ejercicio', category: 'lifestyle' },
-      { text: 'Continúa registrando para mantener predicciones precisas', category: 'habit' }
-    ] : [
-      { text: 'Registra factores de estrés y cambios en rutina', category: 'habit' },
-      { text: 'Considera consultar si la variación supera 7 días', category: 'medical' },
-      { text: 'Mantén horarios regulares de sueño', category: 'lifestyle' }
-    ],
+    timeRange: t('aiTimeRangeCycles', { count: lengths.length }),
+    recommendations: isRegular
+      ? [
+          { text: t('aiRecMaintainRoutine'), category: 'habit' },
+          { text: t('aiRecKeepLogging'), category: 'habit' }
+        ]
+      : [
+          { text: t('aiRecTrackFactors'), category: 'habit' },
+          { text: t('aiRecConsultDoctor'), category: 'medical' },
+          { text: t('aiRecSleepRoutine'), category: 'lifestyle' }
+        ],
     dataSource: 'cycle-length-analysis'
   };
 }
 
-function analyzePainPatterns(logs: DailyLog[]): AIInsight | null {
+function analyzePainPatterns(
+  logs: DailyLog[],
+  t: (key: keyof Translations, reps?: Record<string, string | number>) => string
+): AIInsight | null {
   const painLogs = logs.filter(log => log.painLevel && log.painLevel > 0);
   if (painLogs.length < 5) return null;
 
@@ -130,28 +141,36 @@ function analyzePainPatterns(logs: DailyLog[]): AIInsight | null {
     type: 'pain-spike',
     priority,
     confidence,
-    title: avgPain > 6 ? 'Niveles de Dolor Elevados' : 'Patrón de Dolor Moderado',
-    whyItMatters: 'El dolor crónico puede afectar tu calidad de vida y puede indicar condiciones que requieren atención.',
-    insight: `Registraste dolor en ${Math.round(painPercentage)}% de los días, con un promedio de ${avgPain.toFixed(1)}/10. ${highPainDays} días con dolor severo (≥7).`,
+    title: avgPain > 6 ? t('aiPainHighTitle') : t('aiPainModerateTitle'),
+    whyItMatters: t('aiPainWhy'),
+    insight: t('aiPainInsight', {
+      percent: Math.round(painPercentage),
+      avgPain: avgPain.toFixed(1),
+      highPainDays
+    }),
     evidence: {
       values: painLogs.map(log => log.painLevel || 0),
       labels: painLogs.map(log => log.date.slice(5)),
-      summary: `${painLogs.length} días con dolor, promedio ${avgPain.toFixed(1)}/10`
+      summary: t('aiPainSummary', { days: painLogs.length, avgPain: avgPain.toFixed(1) })
     },
-    timeRange: `Últimos ${logs.length} días`,
-    recommendations: avgPain > 6 ? [
-      { text: 'Consulta con un ginecólogo sobre el dolor persistente', category: 'medical' },
-      { text: 'Prueba técnicas de manejo del dolor (calor, TENS)', category: 'lifestyle' },
-      { text: 'Registra qué alivia tu dolor para identificar patrones', category: 'habit' }
-    ] : [
-      { text: 'Mantén registro de ubicación y duración del dolor', category: 'habit' },
-      { text: 'Considera antiinflamatorios naturales (jengibre, cúrcuma)', category: 'lifestyle' }
-    ],
+    timeRange: t('aiTimeRangeDays', { days: logs.length }),
+    recommendations: avgPain > 6
+      ? [
+          { text: t('aiRecConsultDoctor'), category: 'medical' },
+          { text: t('aiRecPainRelief'), category: 'lifestyle' }
+        ]
+      : [
+          { text: t('aiRecTrackFactors'), category: 'habit' },
+          { text: t('aiRecPainRelief'), category: 'lifestyle' }
+        ],
     dataSource: 'pain-level-tracking'
   };
 }
 
-function analyzeStressPatterns(logs: DailyLog[]): AIInsight | null {
+function analyzeStressPatterns(
+  logs: DailyLog[],
+  t: (key: keyof Translations, reps?: Record<string, string | number>) => string
+): AIInsight | null {
   const stressLogs = logs.filter(log => log.stressScore !== undefined);
   if (stressLogs.length < 7) return null;
 
@@ -167,28 +186,32 @@ function analyzeStressPatterns(logs: DailyLog[]): AIInsight | null {
     type: 'stress-spike',
     priority,
     confidence,
-    title: avgStress > 7 ? 'Estrés Elevado Detectado' : 'Niveles de Estrés Moderados',
-    whyItMatters: 'El estrés crónico puede afectar tu ciclo menstrual, sueño y salud general.',
-    insight: `Tu nivel promedio de estrés es ${avgStress.toFixed(1)}/10. ${Math.round(stressPercentage)}% de los días registraste estrés alto (≥7).`,
+    title: avgStress > 7 ? t('aiStressHighTitle') : t('aiStressModerateTitle'),
+    whyItMatters: t('aiStressWhy'),
+    insight: t('aiStressInsight', { avgStress: avgStress.toFixed(1), percent: Math.round(stressPercentage) }),
     evidence: {
       values: stressLogs.map(log => log.stressScore || 0),
       labels: stressLogs.map(log => log.date.slice(5)),
-      summary: `${stressLogs.length} días registrados, ${highStressDays} con estrés alto`
+      summary: t('aiStressSummary', { total: stressLogs.length, high: highStressDays })
     },
-    timeRange: `Últimos ${stressLogs.length} días`,
-    recommendations: avgStress > 7 ? [
-      { text: 'Practica técnicas de relajación diarias (meditación, respiración)', category: 'lifestyle' },
-      { text: 'Considera terapia o counseling profesional', category: 'medical' },
-      { text: 'Identifica y aborda los detonantes principales', category: 'habit' }
-    ] : [
-      { text: 'Mantén rutinas de autocuidado regulares', category: 'lifestyle' },
-      { text: 'Registra qué actividades reducen tu estrés', category: 'habit' }
-    ],
+    timeRange: t('aiTimeRangeDays', { days: stressLogs.length }),
+    recommendations: avgStress > 7
+      ? [
+          { text: t('aiRecStressTechniques'), category: 'lifestyle' },
+          { text: t('aiRecConsultDoctor'), category: 'medical' }
+        ]
+      : [
+          { text: t('aiRecMaintainRoutine'), category: 'habit' },
+          { text: t('aiRecStressTechniques'), category: 'lifestyle' }
+        ],
     dataSource: 'stress-tracking'
   };
 }
 
-function analyzeSleepQuality(logs: DailyLog[]): AIInsight | null {
+function analyzeSleepQuality(
+  logs: DailyLog[],
+  t: (key: keyof Translations, reps?: Record<string, string | number>) => string
+): AIInsight | null {
   const sleepLogs = logs.filter(log => log.sleepHours !== undefined);
   if (sleepLogs.length < 7) return null;
 
@@ -207,29 +230,35 @@ function analyzeSleepQuality(logs: DailyLog[]): AIInsight | null {
     type: 'sleep-quality',
     priority,
     confidence,
-    title: avgSleep < 6 ? 'Sueño Insuficiente' : avgSleep < 7 ? 'Sueño Subóptimo' : 'Buen Patrón de Sueño',
-    whyItMatters: 'El sueño afecta directamente tus hormonas, energía, estado de ánimo y salud del ciclo.',
-    insight: `Duermes un promedio de ${avgSleep.toFixed(1)} horas por noche. ${poorSleepDays} días con menos de 6 horas.${avgQuality > 0 ? ` Calidad promedio: ${avgQuality.toFixed(1)}/5.` : ''}`,
+    title: avgSleep < 6 ? t('aiSleepLowTitle') : avgSleep < 7 ? t('aiSleepSuboptimalTitle') : t('aiSleepGoodTitle'),
+    whyItMatters: t('aiSleepWhy'),
+    insight: t('aiSleepInsight', {
+      avgSleep: avgSleep.toFixed(1),
+      poorSleepDays,
+      avgQuality: avgQuality > 0 ? avgQuality.toFixed(1) : undefined
+    }),
     evidence: {
       values: sleepLogs.map(log => log.sleepHours || 0),
       labels: sleepLogs.map(log => log.date.slice(5)),
-      summary: `${sleepLogs.length} noches registradas, promedio ${avgSleep.toFixed(1)}h`
+      summary: t('aiSleepSummary', { nights: sleepLogs.length, avgSleep: avgSleep.toFixed(1) })
     },
-    timeRange: `Últimos ${sleepLogs.length} días`,
-    recommendations: avgSleep < 7 ? [
-      { text: 'Establece una hora fija para dormir (7-9 horas)', category: 'lifestyle' },
-      { text: 'Crea una rutina de relajación antes de dormir', category: 'habit' },
-      { text: 'Evita cafeína después de las 14:00', category: 'lifestyle' },
-      { text: 'Consulta si el insomnio persiste', category: 'medical' }
-    ] : [
-      { text: 'Mantén tu rutina de sueño consistente', category: 'habit' },
-      { text: 'Registra qué factores mejoran tu calidad de sueño', category: 'habit' }
-    ],
+    timeRange: t('aiTimeRangeDays', { days: sleepLogs.length }),
+    recommendations: avgSleep < 7
+      ? [
+          { text: t('aiRecSleepRoutine'), category: 'habit' },
+          { text: t('aiRecKeepLogging'), category: 'habit' }
+        ]
+      : [
+          { text: t('aiRecMaintainRoutine'), category: 'habit' }
+        ],
     dataSource: 'sleep-tracking'
   };
 }
 
-function analyzeEnergyPatterns(logs: DailyLog[]): AIInsight | null {
+function analyzeEnergyPatterns(
+  logs: DailyLog[],
+  t: (key: keyof Translations, reps?: Record<string, string | number>) => string
+): AIInsight | null {
   const energyLogs = logs.filter(log => log.energyLevel !== undefined);
   if (energyLogs.length < 7) return null;
 
@@ -245,32 +274,33 @@ function analyzeEnergyPatterns(logs: DailyLog[]): AIInsight | null {
     type: 'energy-pattern',
     priority,
     confidence,
-    title: lowEnergyPercentage > 60 ? 'Energía Baja Frecuente' : 'Patrón de Energía Variable',
-    whyItMatters: 'Los niveles de energía reflejan tu salud general, sueño, nutrición y equilibrio hormonal.',
-    insight: `${Math.round(lowEnergyPercentage)}% de los días reportaste energía baja. ${highEnergyDays} días con energía alta.`,
+    title: lowEnergyPercentage > 60 ? t('aiEnergyLowTitle') : t('aiEnergyMixedTitle'),
+    whyItMatters: t('aiEnergyWhy'),
+    insight: t('aiEnergyInsight', { lowPercent: Math.round(lowEnergyPercentage), highDays: highEnergyDays }),
     evidence: {
       values: energyLogs.map(log => log.energyLevel === 'low' ? 1 : log.energyLevel === 'medium' ? 2 : 3),
       labels: energyLogs.map(log => log.date.slice(5)),
-      summary: `${lowEnergyDays} días baja, ${highEnergyDays} días alta`
+      summary: t('aiEnergySummary', { low: lowEnergyDays, high: highEnergyDays })
     },
-    timeRange: `Últimos ${energyLogs.length} días`,
-    recommendations: lowEnergyPercentage > 60 ? [
-      { text: 'Revisa niveles de hierro y vitamina D con análisis', category: 'medical' },
-      { text: 'Asegura 7-9 horas de sueño de calidad', category: 'lifestyle' },
-      { text: 'Aumenta actividad física moderada (30 min/día)', category: 'lifestyle' },
-      { text: 'Registra alimentación para identificar deficiencias', category: 'habit' }
-    ] : [
-      { text: 'Identifica qué días tienes más energía y por qué', category: 'habit' },
-      { text: 'Mantén horarios regulares de comida y sueño', category: 'lifestyle' }
-    ],
+    timeRange: t('aiTimeRangeDays', { days: energyLogs.length }),
+    recommendations: lowEnergyPercentage > 60
+      ? [
+          { text: t('aiRecEnergyCheck'), category: 'medical' },
+          { text: t('aiRecSleepRoutine'), category: 'habit' }
+        ]
+      : [
+          { text: t('aiRecMaintainRoutine'), category: 'habit' }
+        ],
     dataSource: 'energy-tracking'
   };
 }
 
-function analyzeSymptomCorrelations(logs: DailyLog[], cycles: Cycle[]): AIInsight[] {
+function analyzeSymptomCorrelations(
+  logs: DailyLog[],
+  t: (key: keyof Translations, reps?: Record<string, string | number>) => string
+): AIInsight[] {
   const insights: AIInsight[] = [];
   
-  // Mood vs Sleep correlation
   const moodSleepLogs = logs.filter(log => log.mood !== undefined && log.sleepHours !== undefined);
   if (moodSleepLogs.length >= 10) {
     const poorSleepBadMood = moodSleepLogs.filter(log => (log.sleepHours || 0) < 6 && (log.mood || 0) <= 2).length;
@@ -282,18 +312,18 @@ function analyzeSymptomCorrelations(logs: DailyLog[], cycles: Cycle[]): AIInsigh
         type: 'correlation',
         priority: 6,
         confidence: Math.min(80, 50 + moodSleepLogs.length),
-        title: 'Correlación: Sueño y Estado de Ánimo',
-        whyItMatters: 'Entender esta conexión te ayuda a priorizar el sueño para mejorar tu bienestar emocional.',
-        insight: `En ${Math.round(correlation)}% de los casos, dormir menos de 6 horas se asoció con mal estado de ánimo.`,
+        title: t('aiCorrelationMoodSleepTitle'),
+        whyItMatters: t('aiCorrelationMoodSleepWhy'),
+        insight: t('aiCorrelationMoodSleepInsight', { percent: Math.round(correlation) }),
         evidence: {
           values: [poorSleepBadMood, moodSleepLogs.length - poorSleepBadMood],
-          labels: ['Sueño pobre + Ánimo bajo', 'Otros'],
-          summary: `${poorSleepBadMood} de ${moodSleepLogs.length} días`
+          labels: [t('aiCorrelationMoodSleepLabelPoor'), t('aiCorrelationMoodSleepLabelOther')],
+          summary: t('aiCorrelationMoodSleepSummary', { poor: poorSleepBadMood, total: moodSleepLogs.length })
         },
-        timeRange: `Últimos ${moodSleepLogs.length} días`,
+        timeRange: t('aiTimeRangeDays', { days: moodSleepLogs.length }),
         recommendations: [
-          { text: 'Prioriza 7-8 horas de sueño para mejorar tu ánimo', category: 'lifestyle' },
-          { text: 'Crea una rutina de sueño relajante', category: 'habit' }
+          { text: t('aiRecSleepRoutine'), category: 'habit' },
+          { text: t('aiRecStressTechniques'), category: 'lifestyle' }
         ],
         dataSource: 'mood-sleep-correlation'
       });
@@ -303,7 +333,10 @@ function analyzeSymptomCorrelations(logs: DailyLog[], cycles: Cycle[]): AIInsigh
   return insights;
 }
 
-function analyzeHydration(logs: DailyLog[]): AIInsight | null {
+function analyzeHydration(
+  logs: DailyLog[],
+  t: (key: keyof Translations, reps?: Record<string, string | number>) => string
+): AIInsight | null {
   const hydrationLogs = logs.filter(log => log.waterIntake !== undefined);
   if (hydrationLogs.length < 7) return null;
 
@@ -318,34 +351,37 @@ function analyzeHydration(logs: DailyLog[]): AIInsight | null {
     type: 'hydration',
     priority,
     confidence,
-    title: avgWater < 1.5 ? 'Hidratación Insuficiente' : 'Buena Hidratación',
-    whyItMatters: 'La hidratación adecuada reduce dolores de cabeza, mejora energía y ayuda con la hinchazón.',
-    insight: `Bebes un promedio de ${avgWater.toFixed(1)}L de agua al día. ${lowHydrationDays} días con menos de 1.5L.`,
+    title: avgWater < 1.5 ? t('aiHydrationLowTitle') : t('aiHydrationGoodTitle'),
+    whyItMatters: t('aiHydrationWhy'),
+    insight: t('aiHydrationInsight', { avgWater: avgWater.toFixed(1), lowDays: lowHydrationDays }),
     evidence: {
       values: hydrationLogs.map(log => log.waterIntake || 0),
       labels: hydrationLogs.map(log => log.date.slice(5)),
-      summary: `${hydrationLogs.length} días registrados, promedio ${avgWater.toFixed(1)}L`
+      summary: t('aiHydrationSummary', { days: hydrationLogs.length, avgWater: avgWater.toFixed(1) })
     },
-    timeRange: `Últimos ${hydrationLogs.length} días`,
-    recommendations: avgWater < 1.5 ? [
-      { text: 'Objetivo: 2-2.5L de agua al día', category: 'lifestyle' },
-      { text: 'Lleva una botella de agua contigo', category: 'habit' },
-      { text: 'Establece recordatorios para beber agua', category: 'habit' }
-    ] : [
-      { text: 'Mantén tu buena hidratación', category: 'habit' }
-    ],
+    timeRange: t('aiTimeRangeDays', { days: hydrationLogs.length }),
+    recommendations: avgWater < 1.5
+      ? [
+          { text: t('aiRecStayHydrated'), category: 'habit' },
+          { text: t('aiRecKeepLogging'), category: 'habit' }
+        ]
+      : [
+          { text: t('aiRecMaintainRoutine'), category: 'habit' }
+        ],
     dataSource: 'hydration-tracking'
   };
 }
 
-function analyzePhysicalActivity(logs: DailyLog[]): AIInsight | null {
+function analyzePhysicalActivity(
+  logs: DailyLog[],
+  t: (key: keyof Translations, reps?: Record<string, string | number>) => string
+): AIInsight | null {
   const activityLogs = logs.filter(log => log.physicalActivity && log.physicalActivity !== 'none');
   if (logs.length < 14) return null;
 
   const activityPercentage = (activityLogs.length / logs.length) * 100;
-  const avgDuration = activityLogs.filter(log => log.activityDuration).length > 0
-    ? activityLogs.filter(log => log.activityDuration).reduce((sum, log) => sum + (log.activityDuration || 0), 0) / activityLogs.filter(log => log.activityDuration).length
-    : 0;
+  const durations = activityLogs.filter(log => log.activityDuration).map(log => log.activityDuration || 0);
+  const avgDuration = durations.length > 0 ? durations.reduce((a, b) => a + b, 0) / durations.length : 0;
 
   const priority = activityPercentage < 30 ? 6 : 4;
   const confidence = Math.min(85, 40 + logs.length * 2);
@@ -355,23 +391,26 @@ function analyzePhysicalActivity(logs: DailyLog[]): AIInsight | null {
     type: 'physical-activity',
     priority,
     confidence,
-    title: activityPercentage < 30 ? 'Actividad Física Baja' : 'Buen Nivel de Actividad',
-    whyItMatters: 'El ejercicio regular mejora el estado de ánimo, reduce dolor menstrual y regula el ciclo.',
-    insight: `Hiciste ejercicio en ${Math.round(activityPercentage)}% de los días.${avgDuration > 0 ? ` Duración promedio: ${Math.round(avgDuration)} minutos.` : ''}`,
+    title: activityPercentage < 30 ? t('aiActivityLowTitle') : t('aiActivityGoodTitle'),
+    whyItMatters: t('aiActivityWhy'),
+    insight: t('aiActivityInsight', {
+      percent: Math.round(activityPercentage),
+      avgDuration: avgDuration > 0 ? Math.round(avgDuration) : undefined
+    }),
     evidence: {
       values: logs.map(log => log.physicalActivity && log.physicalActivity !== 'none' ? 1 : 0),
       labels: logs.map(log => log.date.slice(5)),
-      summary: `${activityLogs.length} de ${logs.length} días con actividad`
+      summary: t('aiActivitySummary', { active: activityLogs.length, total: logs.length })
     },
-    timeRange: `Últimos ${logs.length} días`,
-    recommendations: activityPercentage < 30 ? [
-      { text: 'Objetivo: 30 minutos de actividad moderada, 5 días/semana', category: 'lifestyle' },
-      { text: 'Empieza con caminatas cortas diarias', category: 'habit' },
-      { text: 'Encuentra una actividad que disfrutes', category: 'lifestyle' }
-    ] : [
-      { text: 'Mantén tu rutina de ejercicio', category: 'habit' },
-      { text: 'Varía los tipos de actividad para evitar lesiones', category: 'lifestyle' }
-    ],
+    timeRange: t('aiTimeRangeDays', { days: logs.length }),
+    recommendations: activityPercentage < 30
+      ? [
+          { text: t('aiRecMoveMore'), category: 'lifestyle' },
+          { text: t('aiRecMaintainRoutine'), category: 'habit' }
+        ]
+      : [
+          { text: t('aiRecMaintainRoutine'), category: 'habit' }
+        ],
     dataSource: 'activity-tracking'
   };
 }

@@ -144,6 +144,69 @@ export interface Translations {
   monthlyInsightHydration: string;
   monthlyInsightTopSymptom: string;
 
+  // AI insights (long range)
+  aiTimeRangeDays: string;
+  aiTimeRangeCycles: string;
+  aiCycleRegularTitle: string;
+  aiCycleIrregularTitle: string;
+  aiCycleWhy: string;
+  aiCycleInsightRegular: string;
+  aiCycleInsightIrregular: string;
+  aiCycleEvidenceSummary: string;
+  aiPainHighTitle: string;
+  aiPainModerateTitle: string;
+  aiPainWhy: string;
+  aiPainInsight: string;
+  aiPainSummary: string;
+  aiStressHighTitle: string;
+  aiStressModerateTitle: string;
+  aiStressWhy: string;
+  aiStressInsight: string;
+  aiStressSummary: string;
+  aiSleepLowTitle: string;
+  aiSleepSuboptimalTitle: string;
+  aiSleepGoodTitle: string;
+  aiSleepWhy: string;
+  aiSleepInsight: string;
+  aiSleepSummary: string;
+  aiEnergyLowTitle: string;
+  aiEnergyMixedTitle: string;
+  aiEnergyWhy: string;
+  aiEnergyInsight: string;
+  aiEnergySummary: string;
+  aiCorrelationMoodSleepTitle: string;
+  aiCorrelationMoodSleepWhy: string;
+  aiCorrelationMoodSleepInsight: string;
+  aiCorrelationMoodSleepLabelPoor: string;
+  aiCorrelationMoodSleepLabelOther: string;
+  aiCorrelationMoodSleepSummary: string;
+  aiHydrationLowTitle: string;
+  aiHydrationGoodTitle: string;
+  aiHydrationWhy: string;
+  aiHydrationInsight: string;
+  aiHydrationSummary: string;
+  aiActivityLowTitle: string;
+  aiActivityGoodTitle: string;
+  aiActivityWhy: string;
+  aiActivityInsight: string;
+  aiActivitySummary: string;
+  aiRecMaintainRoutine: string;
+  aiRecKeepLogging: string;
+  aiRecTrackFactors: string;
+  aiRecConsultDoctor: string;
+  aiRecSleepRoutine: string;
+  aiRecPainRelief: string;
+  aiRecStressTechniques: string;
+  aiRecEnergyCheck: string;
+  aiRecStayHydrated: string;
+  aiRecMoveMore: string;
+  aiNoInsightsTitle: string;
+  aiNoInsightsDescription: string;
+  aiChatAboutInsights: string;
+  aiMainInsightTitle: string;
+  aiEvidenceTitle: string;
+  aiRecommendationsTitle: string;
+
   // Advanced logging modules
   menstruationColorLabel: string;
   menstruationColorBrightRed: string;
@@ -666,6 +729,69 @@ const translations: Record<Language, Translations> = {
     monthlyInsightEnergyLow: 'La energía estuvo mayormente baja este mes.',
     monthlyInsightHydration: 'Hidratación promedio: {liters}L.',
     monthlyInsightTopSymptom: 'Síntoma más frecuente: {symptom} ({count} días).',
+
+    // AI insights (long range)
+    aiTimeRangeDays: 'Últimos {days} días',
+    aiTimeRangeCycles: 'Últimos {count} ciclos',
+    aiCycleRegularTitle: 'Ciclo regular detectado',
+    aiCycleIrregularTitle: 'Variabilidad en el ciclo',
+    aiCycleWhy: 'La regularidad del ciclo ayuda a predecir y vigilar tu salud hormonal.',
+    aiCycleInsightRegular: 'Variación de solo ±{stdDev} días. Predicciones más precisas.',
+    aiCycleInsightIrregular: 'Variación de ±{stdDev} días. Seguir registrando ayuda a detectar patrones.',
+    aiCycleEvidenceSummary: 'Promedio: {avg} días, desviación: {stdDev} días',
+    aiPainHighTitle: 'Niveles de dolor elevados',
+    aiPainModerateTitle: 'Patrón de dolor moderado',
+    aiPainWhy: 'El dolor frecuente impacta tu bienestar y puede requerir atención.',
+    aiPainInsight: 'Dolor en {percent}% de los días. Promedio {avgPain}/10. {highPainDays} días con dolor severo.',
+    aiPainSummary: '{days} días con dolor, promedio {avgPain}/10',
+    aiStressHighTitle: 'Estrés elevado',
+    aiStressModerateTitle: 'Estrés moderado',
+    aiStressWhy: 'El estrés crónico afecta sueño, energía y ciclo.',
+    aiStressInsight: 'Promedio de estrés {avgStress}/10. Estrés alto en {percent}% de los días.',
+    aiStressSummary: '{total} días registrados, {high} con estrés alto',
+    aiSleepLowTitle: 'Sueño insuficiente',
+    aiSleepSuboptimalTitle: 'Sueño subóptimo',
+    aiSleepGoodTitle: 'Buen patrón de sueño',
+    aiSleepWhy: 'Dormir bien regula hormonas, ánimo y energía.',
+    aiSleepInsight: 'Promedio {avgSleep}h. {poorSleepDays} días con menos de 6h.{avgQuality, select, undefined {} other { Calidad: {avgQuality}/5.}}',
+    aiSleepSummary: '{nights} noches registradas, promedio {avgSleep}h',
+    aiEnergyLowTitle: 'Energía baja frecuente',
+    aiEnergyMixedTitle: 'Patrón de energía variable',
+    aiEnergyWhy: 'Los niveles de energía reflejan descanso, nutrición y equilibrio.',
+    aiEnergyInsight: '{lowPercent}% de los días con energía baja. {highDays} días con energía alta.',
+    aiEnergySummary: '{low} días baja, {high} días alta',
+    aiCorrelationMoodSleepTitle: 'Correlación: sueño y ánimo',
+    aiCorrelationMoodSleepWhy: 'Dormir bien ayuda a estabilizar el estado de ánimo.',
+    aiCorrelationMoodSleepInsight: 'En {percent}% de los casos, <6h se asoció a ánimo bajo.',
+    aiCorrelationMoodSleepLabelPoor: 'Sueño pobre + ánimo bajo',
+    aiCorrelationMoodSleepLabelOther: 'Otros',
+    aiCorrelationMoodSleepSummary: '{poor} de {total} días',
+    aiHydrationLowTitle: 'Hidratación insuficiente',
+    aiHydrationGoodTitle: 'Buena hidratación',
+    aiHydrationWhy: 'Buena hidratación mejora energía y reduce molestias.',
+    aiHydrationInsight: 'Promedio {avgWater}L/día. {lowDays} días con menos de 1.5L.',
+    aiHydrationSummary: '{days} días registrados, promedio {avgWater}L',
+    aiActivityLowTitle: 'Actividad física baja',
+    aiActivityGoodTitle: 'Buen nivel de actividad',
+    aiActivityWhy: 'El ejercicio regula el ciclo y mejora el ánimo.',
+    aiActivityInsight: 'Actividad en {percent}% de los días.{avgDuration, select, undefined {} other { Duración promedio: {avgDuration} min.}}',
+    aiActivitySummary: '{active} de {total} días con actividad',
+    aiRecMaintainRoutine: 'Mantén tu rutina actual',
+    aiRecKeepLogging: 'Sigue registrando tus datos',
+    aiRecTrackFactors: 'Registra factores de estrés y cambios',
+    aiRecConsultDoctor: 'Consulta con un profesional si persiste',
+    aiRecSleepRoutine: 'Crea una rutina de sueño (7-9h)',
+    aiRecPainRelief: 'Prueba estrategias seguras para el dolor',
+    aiRecStressTechniques: 'Usa técnicas de relajación diarias',
+    aiRecEnergyCheck: 'Revisa energía con chequeo básico',
+    aiRecStayHydrated: 'Apunta a 2-2.5L de agua al día',
+    aiRecMoveMore: 'Muévete al menos 30min/día',
+    aiNoInsightsTitle: 'No hay insights disponibles',
+    aiNoInsightsDescription: 'Sigue registrando tus datos para obtener análisis personalizados.',
+    aiChatAboutInsights: 'Chatear sobre estos insights',
+    aiMainInsightTitle: 'Insight principal',
+    aiEvidenceTitle: 'Evidencia',
+    aiRecommendationsTitle: 'Recomendaciones',
 
     // Advanced logging modules
     menstruationColorLabel: 'Color',
@@ -1405,6 +1531,69 @@ const translations: Record<Language, Translations> = {
     monthlyInsightEnergyLow: 'Energy was mostly low this month.',
     monthlyInsightHydration: 'Hydration average: {liters}L.',
     monthlyInsightTopSymptom: 'Most frequent symptom: {symptom} ({count} days).',
+
+    // AI insights (long range)
+    aiTimeRangeDays: 'Last {days} days',
+    aiTimeRangeCycles: 'Last {count} cycles',
+    aiCycleRegularTitle: 'Regular cycle detected',
+    aiCycleIrregularTitle: 'Cycle variability',
+    aiCycleWhy: 'Cycle regularity helps predict and track hormonal health.',
+    aiCycleInsightRegular: 'Only ±{stdDev} day variation. Easier predictions.',
+    aiCycleInsightIrregular: 'Variation of ±{stdDev} days. Keep logging to see patterns.',
+    aiCycleEvidenceSummary: 'Avg: {avg} days, deviation: {stdDev} days',
+    aiPainHighTitle: 'High pain levels',
+    aiPainModerateTitle: 'Moderate pain pattern',
+    aiPainWhy: 'Frequent pain affects wellbeing and may need attention.',
+    aiPainInsight: 'Pain on {percent}% of days. Avg {avgPain}/10. {highPainDays} severe days.',
+    aiPainSummary: '{days} pain days, avg {avgPain}/10',
+    aiStressHighTitle: 'High stress detected',
+    aiStressModerateTitle: 'Moderate stress levels',
+    aiStressWhy: 'Chronic stress impacts sleep, energy, and cycle.',
+    aiStressInsight: 'Avg stress {avgStress}/10. High stress on {percent}% of days.',
+    aiStressSummary: '{total} days logged, {high} with high stress',
+    aiSleepLowTitle: 'Insufficient sleep',
+    aiSleepSuboptimalTitle: 'Suboptimal sleep',
+    aiSleepGoodTitle: 'Good sleep pattern',
+    aiSleepWhy: 'Good sleep supports hormones, mood, and energy.',
+    aiSleepInsight: 'Avg {avgSleep}h. {poorSleepDays} days under 6h.{avgQuality, select, undefined {} other { Quality: {avgQuality}/5.}}',
+    aiSleepSummary: '{nights} nights logged, avg {avgSleep}h',
+    aiEnergyLowTitle: 'Frequent low energy',
+    aiEnergyMixedTitle: 'Variable energy pattern',
+    aiEnergyWhy: 'Energy levels reflect rest, nutrition, and balance.',
+    aiEnergyInsight: '{lowPercent}% of days with low energy. {highDays} high-energy days.',
+    aiEnergySummary: '{low} low days, {high} high days',
+    aiCorrelationMoodSleepTitle: 'Correlation: sleep & mood',
+    aiCorrelationMoodSleepWhy: 'Better sleep helps stabilize mood.',
+    aiCorrelationMoodSleepInsight: 'In {percent}% of cases, <6h linked to low mood.',
+    aiCorrelationMoodSleepLabelPoor: 'Poor sleep + low mood',
+    aiCorrelationMoodSleepLabelOther: 'Other',
+    aiCorrelationMoodSleepSummary: '{poor} of {total} days',
+    aiHydrationLowTitle: 'Low hydration',
+    aiHydrationGoodTitle: 'Good hydration',
+    aiHydrationWhy: 'Hydration boosts energy and reduces discomfort.',
+    aiHydrationInsight: 'Avg {avgWater}L/day. {lowDays} days under 1.5L.',
+    aiHydrationSummary: '{days} days logged, avg {avgWater}L',
+    aiActivityLowTitle: 'Low physical activity',
+    aiActivityGoodTitle: 'Good activity level',
+    aiActivityWhy: 'Exercise supports cycle health and mood.',
+    aiActivityInsight: 'Activity on {percent}% of days.{avgDuration, select, undefined {} other { Avg duration: {avgDuration} min.}}',
+    aiActivitySummary: '{active} of {total} days with activity',
+    aiRecMaintainRoutine: 'Keep your routine',
+    aiRecKeepLogging: 'Keep logging your data',
+    aiRecTrackFactors: 'Track stressors and changes',
+    aiRecConsultDoctor: 'Consult a professional if it persists',
+    aiRecSleepRoutine: 'Set a 7-9h sleep routine',
+    aiRecPainRelief: 'Use safe pain relief strategies',
+    aiRecStressTechniques: 'Use daily relaxation techniques',
+    aiRecEnergyCheck: 'Check energy with a basic screening',
+    aiRecStayHydrated: 'Aim for 2-2.5L water/day',
+    aiRecMoveMore: 'Move at least 30min/day',
+    aiNoInsightsTitle: 'No insights yet',
+    aiNoInsightsDescription: 'Keep logging to unlock personalized analysis.',
+    aiChatAboutInsights: 'Chat about these insights',
+    aiMainInsightTitle: 'Main insight',
+    aiEvidenceTitle: 'Evidence',
+    aiRecommendationsTitle: 'Recommendations',
     devToolsHeading: '🛠️ Data generation',
     devFillLast7: 'Fill last 7 days',
     devFillLast30: 'Fill last 30 days',
@@ -1923,6 +2112,69 @@ const translations: Record<Language, Translations> = {
     monthlyInsightEnergyLow: 'Bu ay enerji çoğunlukla düşüktü.',
     monthlyInsightHydration: 'Hidrasyon ortalaması: {liters}L.',
     monthlyInsightTopSymptom: 'En sık belirti: {symptom} ({count} gün).',
+
+    // AI insights (long range)
+    aiTimeRangeDays: 'Son {days} gün',
+    aiTimeRangeCycles: 'Son {count} döngü',
+    aiCycleRegularTitle: 'Düzenli döngü tespit edildi',
+    aiCycleIrregularTitle: 'Döngü değişkenliği',
+    aiCycleWhy: 'Döngü düzeni, tahmin ve hormonal sağlığı izlemek için önemlidir.',
+    aiCycleInsightRegular: 'Sadece ±{stdDev} günlük değişkenlik. Tahminler daha net.',
+    aiCycleInsightIrregular: '±{stdDev} günlük değişkenlik. Kayıt tutmak desenleri görmeye yardımcı olur.',
+    aiCycleEvidenceSummary: 'Ortalama: {avg} gün, sapma: {stdDev} gün',
+    aiPainHighTitle: 'Yüksek ağrı düzeyleri',
+    aiPainModerateTitle: 'Orta düzeyde ağrı deseni',
+    aiPainWhy: 'Sık ağrı yaşam kalitesini etkiler ve takip gerektirir.',
+    aiPainInsight: 'Günlerin %{percent}’inde ağrı var. Ortalama {avgPain}/10. {highPainDays} günde şiddetli ağrı.',
+    aiPainSummary: '{days} ağrı günü, ortalama {avgPain}/10',
+    aiStressHighTitle: 'Yüksek stres',
+    aiStressModerateTitle: 'Orta stres',
+    aiStressWhy: 'Kronik stres uyku, enerji ve döngüyü etkiler.',
+    aiStressInsight: 'Stres ortalaması {avgStress}/10. Günlerin %{percent}’inde yüksek stres.',
+    aiStressSummary: '{total} gün kaydedildi, {high} günde yüksek stres',
+    aiSleepLowTitle: 'Yetersiz uyku',
+    aiSleepSuboptimalTitle: 'Optimal olmayan uyku',
+    aiSleepGoodTitle: 'İyi uyku deseni',
+    aiSleepWhy: 'İyi uyku hormon, enerji ve ruh halini destekler.',
+    aiSleepInsight: 'Ortalama {avgSleep}s. {poorSleepDays} gün 6s’den az.{avgQuality, select, undefined {} other { Kalite: {avgQuality}/5.}}',
+    aiSleepSummary: '{nights} gece kaydedildi, ortalama {avgSleep}s',
+    aiEnergyLowTitle: 'Sık düşük enerji',
+    aiEnergyMixedTitle: 'Değişken enerji deseni',
+    aiEnergyWhy: 'Enerji düzeyleri dinlenme ve beslenmeyi yansıtır.',
+    aiEnergyInsight: 'Günlerin %{lowPercent}’inde enerji düşük. {highDays} günde enerji yüksek.',
+    aiEnergySummary: '{low} gün düşük, {high} gün yüksek',
+    aiCorrelationMoodSleepTitle: 'İlişki: uyku ve ruh hali',
+    aiCorrelationMoodSleepWhy: 'Kaliteli uyku ruh halini dengeler.',
+    aiCorrelationMoodSleepInsight: 'Vakaların %{percent}’inde <6s uyku düşük ruh haliyle ilişkili.',
+    aiCorrelationMoodSleepLabelPoor: 'Kötü uyku + düşük ruh hali',
+    aiCorrelationMoodSleepLabelOther: 'Diğer',
+    aiCorrelationMoodSleepSummary: '{poor}/{total} gün',
+    aiHydrationLowTitle: 'Düşük hidrasyon',
+    aiHydrationGoodTitle: 'İyi hidrasyon',
+    aiHydrationWhy: 'Hidrasyon enerji ve rahatlığı destekler.',
+    aiHydrationInsight: 'Ortalama {avgWater}L/gün. {lowDays} günde 1.5L’nin altında.',
+    aiHydrationSummary: '{days} gün kaydedildi, ortalama {avgWater}L',
+    aiActivityLowTitle: 'Düşük fiziksel aktivite',
+    aiActivityGoodTitle: 'İyi aktivite seviyesi',
+    aiActivityWhy: 'Egzersiz döngüyü ve ruh halini destekler.',
+    aiActivityInsight: 'Günlerin %{percent}’inde aktivite.{avgDuration, select, undefined {} other { Ortalama süre: {avgDuration} dk.}}',
+    aiActivitySummary: '{active}/{total} günde aktivite',
+    aiRecMaintainRoutine: 'Rutini koru',
+    aiRecKeepLogging: 'Kayıt tutmaya devam et',
+    aiRecTrackFactors: 'Stres ve değişimleri not et',
+    aiRecConsultDoctor: 'Devam ederse uzmana danış',
+    aiRecSleepRoutine: '7-9s uyku rutini oluştur',
+    aiRecPainRelief: 'Güvenli ağrı yönetimi uygula',
+    aiRecStressTechniques: 'Günlük gevşeme teknikleri kullan',
+    aiRecEnergyCheck: 'Enerji için temel kontroller yap',
+    aiRecStayHydrated: 'Günde 2-2.5L su hedefle',
+    aiRecMoveMore: 'Günde en az 30dk hareket et',
+    aiNoInsightsTitle: 'Henüz içgörü yok',
+    aiNoInsightsDescription: 'Kişiselleştirilmiş analiz için kayıt tutmaya devam et.',
+    aiChatAboutInsights: 'Bu içgörüler hakkında sohbet et',
+    aiMainInsightTitle: 'Ana içgörü',
+    aiEvidenceTitle: 'Kanıt',
+    aiRecommendationsTitle: 'Öneriler',
 
     // Daily insight modal
     dailyInsightModalTitle: 'Günün tam özeti',

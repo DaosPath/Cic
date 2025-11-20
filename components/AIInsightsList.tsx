@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import type { AIInsight } from '../services/ai-insights.ts';
 import { AIInsightModal } from './AIInsightModal.tsx';
 import { InsightsSkeleton } from './InsightsSkeleton.tsx';
+import { useTranslation } from '../hooks/useTranslation.ts';
 
 interface AIInsightsListProps {
   insights: AIInsight[];
@@ -10,6 +11,7 @@ interface AIInsightsListProps {
   onDiscard: (insightId: string) => void;
   onStartChat: (insights: AIInsight[]) => void;
   isLoading?: boolean;
+  showChatButton?: boolean;
 }
 
 export const AIInsightsList: React.FC<AIInsightsListProps> = ({
@@ -18,13 +20,15 @@ export const AIInsightsList: React.FC<AIInsightsListProps> = ({
   onPin,
   onDiscard,
   onStartChat,
-  isLoading = false
+  isLoading = false,
+  showChatButton = true
 }) => {
+  const { t } = useTranslation();
   const [selectedInsight, setSelectedInsight] = useState<AIInsight | null>(null);
 
   const getPriorityIcon = (priority: number) => {
     if (priority >= 8) return '🔴';
-    if (priority >= 6) return '🟡';
+    if (priority >= 6) return '🟠';
     return '🟢';
   };
 
@@ -47,10 +51,10 @@ export const AIInsightsList: React.FC<AIInsightsListProps> = ({
           </svg>
         </div>
         <h3 className="text-lg font-bold text-brand-text mb-2" style={{ fontWeight: 700 }}>
-          No hay insights disponibles
+          {t('aiNoInsightsTitle')}
         </h3>
         <p className="text-sm text-brand-text-dim">
-          Sigue registrando tus datos para obtener análisis personalizados
+          {t('aiNoInsightsDescription')}
         </p>
       </div>
     );
@@ -58,7 +62,6 @@ export const AIInsightsList: React.FC<AIInsightsListProps> = ({
 
   return (
     <div className="space-y-4">
-      {/* Insights Cards */}
       {insights.map((insight) => (
         <div
           key={insight.id}
@@ -83,7 +86,7 @@ export const AIInsightsList: React.FC<AIInsightsListProps> = ({
                 <span className="text-xs text-brand-text-dim">{insight.timeRange}</span>
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-brand-text-dim">
-                    {insight.recommendations.length} recomendaciones
+                    {insight.recommendations.length} {t('aiRecommendationsTitle').toLowerCase()}
                   </span>
                   <svg className="w-4 h-4 text-brand-primary opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -95,24 +98,24 @@ export const AIInsightsList: React.FC<AIInsightsListProps> = ({
         </div>
       ))}
 
-      {/* Chat Button */}
-      <div className="sticky bottom-6 pt-4">
-        <button
-          onClick={() => onStartChat(insights)}
-          className="w-full bg-gradient-to-r from-brand-primary to-brand-accent text-white font-bold py-4 px-6 rounded-xl hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-3 group"
-          style={{ fontWeight: 700 }}
-        >
-          <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-          </svg>
-          <span>Chatear sobre estos insights</span>
-          <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-          </svg>
-        </button>
-      </div>
+      {showChatButton && (
+        <div className="sticky bottom-6 pt-4">
+          <button
+            onClick={() => onStartChat(insights)}
+            className="w-full bg-gradient-to-r from-brand-primary to-brand-accent text-white font-bold py-4 px-6 rounded-xl hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-3 group"
+            style={{ fontWeight: 700 }}
+          >
+            <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+            <span>{t('aiChatAboutInsights')}</span>
+            <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </button>
+        </div>
+      )}
 
-      {/* Modal */}
       {selectedInsight && (
         <AIInsightModal
           insight={selectedInsight}
@@ -121,7 +124,6 @@ export const AIInsightsList: React.FC<AIInsightsListProps> = ({
           onDiscard={onDiscard}
           onViewMore={(insight) => {
             setSelectedInsight(null);
-            // Could navigate to detailed view
           }}
           onClose={() => setSelectedInsight(null)}
         />

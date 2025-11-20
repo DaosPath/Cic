@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import type { AIInsight } from '../services/ai-insights.ts';
+import { useTranslation } from '../hooks/useTranslation.ts';
 
 interface AIInsightModalProps {
   insight: AIInsight;
@@ -18,6 +19,7 @@ export const AIInsightModal: React.FC<AIInsightModalProps> = ({
   onViewMore,
   onClose
 }) => {
+  const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
 
   const getConfidenceColor = (confidence: number) => {
@@ -28,16 +30,20 @@ export const AIInsightModal: React.FC<AIInsightModalProps> = ({
 
   const getPriorityIcon = (priority: number) => {
     if (priority >= 8) return '🔴';
-    if (priority >= 6) return '🟡';
+    if (priority >= 6) return '🟠';
     return '🟢';
   };
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
-      case 'habit': return '📝';
-      case 'medical': return '🏥';
-      case 'lifestyle': return '🌱';
-      default: return '💡';
+      case 'habit':
+        return '📝';
+      case 'medical':
+        return '🩺';
+      case 'lifestyle':
+        return '🌿';
+      default:
+        return '•';
     }
   };
 
@@ -74,7 +80,6 @@ export const AIInsightModal: React.FC<AIInsightModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="bg-brand-surface rounded-[18px] border border-brand-border shadow-[0_8px_32px_rgba(0,0,0,0.4)] max-w-lg w-full max-h-[90vh] overflow-hidden flex flex-col animate-in zoom-in-95 duration-200">
-        {/* Header */}
         <div className="p-6 border-b border-brand-border">
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1">
@@ -99,108 +104,83 @@ export const AIInsightModal: React.FC<AIInsightModalProps> = ({
           </div>
         </div>
 
-        {/* Content */}
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
-          {/* Insight */}
           <div className="bg-brand-primary/10 border border-brand-primary/20 rounded-xl p-4">
             <h3 className="text-sm font-semibold text-brand-text mb-2" style={{ fontWeight: 600 }}>
-              Insight Principal
+              {t('aiMainInsightTitle')}
             </h3>
             <p className="text-sm text-brand-text leading-relaxed">
               {insight.insight}
             </p>
           </div>
 
-          {/* Evidence */}
           <div>
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
-                Evidencia
+                {t('aiEvidenceTitle')}
               </h3>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-brand-text-dim">{insight.timeRange}</span>
-                <div className={`text-xs font-semibold ${getConfidenceColor(insight.confidence)}`}>
-                  {insight.confidence}% confianza
-                </div>
+              <div className={`text-xs font-semibold ${getConfidenceColor(insight.confidence)}`}>
+                {insight.confidence}%
               </div>
             </div>
             {renderMiniChart()}
-          </div>
-
-          {/* Recommendations */}
-          <div>
-            <h3 className="text-sm font-semibold text-brand-text mb-3" style={{ fontWeight: 600 }}>
-              Recomendaciones
-            </h3>
-            <div className="space-y-2">
-              {insight.recommendations.slice(0, isExpanded ? undefined : 3).map((rec, index) => (
-                <div key={index} className="flex items-start gap-3 p-3 bg-brand-surface-2 rounded-lg border border-brand-border">
-                  <span className="text-sm flex-shrink-0 mt-0.5">{getCategoryIcon(rec.category)}</span>
-                  <div className="flex-1">
-                    <p className="text-sm text-brand-text leading-relaxed">{rec.text}</p>
-                    <span className="text-xs text-brand-text-dim capitalize mt-1 inline-block">
-                      {rec.category === 'habit' ? 'Hábito' : rec.category === 'medical' ? 'Médico' : 'Estilo de vida'}
-                    </span>
-                  </div>
-                </div>
-              ))}
-              {insight.recommendations.length > 3 && (
-                <button
-                  onClick={() => setIsExpanded(!isExpanded)}
-                  className="text-xs text-brand-primary hover:text-brand-primary/80 font-medium"
-                >
-                  {isExpanded ? 'Ver menos' : `Ver ${insight.recommendations.length - 3} más`}
-                </button>
-              )}
+            <div className="mt-3 text-xs text-brand-text-dim">
+              {insight.timeRange}
             </div>
           </div>
+
+          {insight.recommendations.length > 0 && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
+                  {t('aiRecommendationsTitle')}
+                </h3>
+                <button
+                  onClick={() => setIsExpanded(prev => !prev)}
+                  className="text-xs text-brand-primary hover:underline"
+                >
+                  {isExpanded ? '−' : '+'}
+                </button>
+              </div>
+              <div className="space-y-2">
+                {(isExpanded ? insight.recommendations : insight.recommendations.slice(0, 3)).map((rec, idx) => (
+                  <div key={idx} className="flex items-start gap-2 text-sm text-brand-text">
+                    <span className="text-base leading-none mt-0.5">{getCategoryIcon(rec.category)}</span>
+                    <span>{rec.text}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Footer */}
-        <div className="p-6 border-t border-brand-border">
-          <div className="flex items-center gap-3">
+        <div className="p-4 border-t border-brand-border flex items-center justify-between gap-2">
+          <div className="flex gap-2">
             <button
               onClick={() => onSave(insight)}
-              className="flex-1 bg-brand-primary text-white font-semibold py-2.5 px-4 rounded-xl hover:bg-brand-primary/90 transition-all duration-150 flex items-center justify-center gap-2 text-sm"
-              style={{ fontWeight: 600 }}
+              className="px-3 py-2 text-xs font-semibold rounded-lg bg-brand-surface-2 hover:bg-brand-primary/15 text-brand-text"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
-              </svg>
-              Guardar
+              {t('save')}
             </button>
-            
             <button
               onClick={() => onPin(insight)}
-              className="px-4 py-2.5 rounded-xl border border-brand-border text-brand-text hover:bg-brand-surface-2 transition-all duration-150 flex items-center gap-2 text-sm font-medium"
-              style={{ fontWeight: 500 }}
+              className="px-3 py-2 text-xs font-semibold rounded-lg bg-brand-surface-2 hover:bg-brand-primary/15 text-brand-text"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-              </svg>
-              Fijar
+              {t('insights')}
             </button>
-            
-            <button
-              onClick={() => onViewMore(insight)}
-              className="px-4 py-2.5 rounded-xl border border-brand-border text-brand-text hover:bg-brand-surface-2 transition-all duration-150 flex items-center gap-2 text-sm font-medium"
-              style={{ fontWeight: 500 }}
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              Ver más
-            </button>
-            
             <button
               onClick={() => onDiscard(insight.id)}
-              className="px-4 py-2.5 rounded-xl text-brand-text-dim hover:text-red-400 hover:bg-red-500/10 transition-all duration-150 text-sm"
+              className="px-3 py-2 text-xs font-semibold rounded-lg bg-brand-surface-2 hover:bg-red-500/15 text-red-400"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
+              {t('delete')}
             </button>
           </div>
+          <button
+            onClick={() => onViewMore(insight)}
+            className="px-3 py-2 text-xs font-semibold rounded-lg bg-brand-primary text-white hover:bg-brand-primary/90"
+          >
+            {t('startChat')}
+          </button>
         </div>
       </div>
     </div>

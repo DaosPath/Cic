@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { generateAIInsights, type AIInsight } from '../services/ai-insights.ts';
 import type { DailyLog, Cycle } from '../types.ts';
+import { useTranslation } from '../hooks/useTranslation.ts';
 
 interface UseAIInsightsOptions {
   logs: DailyLog[];
@@ -32,6 +33,7 @@ export function useAIInsights({
   timeRange,
   enabled
 }: UseAIInsightsOptions): UseAIInsightsReturn {
+  const { t } = useTranslation();
   const [insights, setInsights] = useState<AIInsight[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -61,7 +63,7 @@ export function useAIInsights({
     try {
       // Simulate async operation
       setTimeout(() => {
-        const newInsights = generateAIInsights(logs, cycles, timeRange);
+        const newInsights = generateAIInsights(logs, cycles, timeRange, t);
         setInsights(newInsights);
         setIsLoading(false);
       }, 500);

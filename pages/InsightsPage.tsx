@@ -975,10 +975,10 @@ export const InsightsPage: React.FC = () => {
                                         </svg>
                                     </div>
                                     <h2 className="text-xl font-bold text-brand-text mb-2" style={{ fontWeight: 700 }}>
-                                        Ciclo Actual
+                                        {t('viewCycle')}
                                     </h2>
                                     <p className="text-sm text-brand-text-dim" style={{ lineHeight: 1.45 }}>
-                                        Vista detallada del ciclo en curso - En desarrollo
+                                        {t('insightsCurrentCycleSubtitle')}
                                     </p>
                                 </div>
 
@@ -1010,6 +1010,7 @@ export const InsightsPage: React.FC = () => {
                                         handleStartChat(insights);
                                     }}
                                     isLoading={isGeneratingInsights}
+                                    showChatButton={false}
                                 />
 
                                 {/* Chat CTA Unificado para vista anual */}
