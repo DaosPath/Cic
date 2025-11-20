@@ -62,12 +62,12 @@ export const MoodTracker: React.FC = () => {
                     </span>
                 )}
             </div>
-            <div className="flex flex-wrap justify-start items-start gap-3 mb-5 overflow-hidden">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 md:gap-4 mb-5 w-full">
                 {moods.map(mood => (
                     <button
                         key={mood.value}
                         onClick={() => handleMoodSelect(mood.value)}
-                        className={`flex flex-col items-center gap-2 rounded-xl p-2 md:p-3 transition duration-300 transform-gpu basis-[60px] ${
+                        className={`flex flex-col items-center gap-2 rounded-xl p-2 md:p-3 transition duration-300 transform-gpu w-full h-full ${
                             selectedMood === mood.value 
                                 ? 'bg-brand-primary/20 shadow-lg ring-2 ring-brand-primary/50 shadow-brand-primary/20' 
                                 : 'hover:bg-brand-surface/50'
