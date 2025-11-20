@@ -371,7 +371,7 @@ const DayEditor: React.FC<DayEditorProps> = ({ date, log: initialLog, onSave, on
                         }`}
                         style={{ fontWeight: 500 }}
                     >
-                        Simplificado
+                        {t('simplifiedMode')}
                     </button>
                     <button
                         onClick={() => setIsAdvancedMode(true)}
@@ -382,7 +382,7 @@ const DayEditor: React.FC<DayEditorProps> = ({ date, log: initialLog, onSave, on
                         }`}
                         style={{ fontWeight: 500 }}
                     >
-                        Avanzado
+                        {t('advancedMode')}
                     </button>
                 </div>
             </div>

@@ -12,7 +12,7 @@ interface AILogModalProps {
 
 type Step = 'input' | 'review';
 
-export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply, currentDate }) => {
+export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply }) => {
   const [step, setStep] = useState<Step>('input');
   const [description, setDescription] = useState('');
   const [isRecording, setIsRecording] = useState(false);
@@ -20,6 +20,7 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
   const [aiSuggestion, setAiSuggestion] = useState<AILogSuggestion | null>(null);
   const [stopRecording, setStopRecording] = useState<(() => void) | null>(null);
   const { translateSymptomId, language, t } = useTranslation();
+
   const cardClasses = 'bg-brand-surface-2 rounded-xl p-4';
   const highlightCard = 'bg-brand-surface-3 rounded-xl p-4';
 
@@ -35,7 +36,7 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
 
     const stop = startVoiceRecognition(
       (text) => {
-        setDescription(prev => prev ? `${prev} ${text}` : text);
+        setDescription((prev) => (prev ? `${prev} ${text}` : text));
         setIsRecording(false);
         setStopRecording(null);
       },
@@ -58,7 +59,7 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
       const result = await parseLogDescription(description, language);
       setAiSuggestion(result);
       setStep('review');
-    } catch (error) {
+    } catch {
       const errorMessages = {
         es: 'Error al procesar la descripción. Por favor, intenta de nuevo.',
         en: 'Error processing description. Please try again.',
@@ -99,6 +100,26 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
     setAiSuggestion(null);
   };
 
+  const renderMedications = (items: any[]) => (
+    <div className="bg-brand-surface-2 rounded-xl p-3">
+      <div className="text-xs font-semibold text-brand-text-dim mb-2">{t('medicationsLabel')}</div>
+      <div className="space-y-1">
+        {items.map((m, idx) => (
+          <div key={idx} className="text-sm text-brand-text">
+            - {typeof m === 'object' ? `${m.name || ''} ${m.dose || ''}`.trim() : m}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderSimpleList = (title: string, values: string[]) => (
+    <div className="bg-brand-surface-2 rounded-xl p-3">
+      <div className="text-xs font-semibold text-brand-text-dim mb-2">{title}</div>
+      <div className="text-sm text-brand-text">{values.join(', ')}</div>
+    </div>
+  );
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="bg-brand-surface rounded-[18px] shadow-[0_8px_32px_rgba(0,0,0,0.45)] max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col animate-in zoom-in-95 duration-200">
@@ -132,12 +153,12 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6">
           {step === 'input' ? (
-              <div className="space-y-6">
-                {/* Instructions */}
-                <div className={highlightCard}>
-                  <p className="text-sm text-brand-text leading-relaxed mb-2">
-                    <strong className="font-semibold">{t('aiLogExamplesLabel')}</strong>
-                  </p>
+            <div className="space-y-6">
+              {/* Instructions */}
+              <div className={highlightCard}>
+                <p className="text-sm text-brand-text leading-relaxed mb-2">
+                  <strong className="font-semibold">{t('aiLogExamplesLabel')}</strong>
+                </p>
                 <ul className="text-xs text-brand-text-dim space-y-1 leading-relaxed">
                   <li>- {t('aiLogExample1')}</li>
                   <li>- {t('aiLogExample2')}</li>
@@ -196,22 +217,28 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
                 <div className={cardClasses}>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
-                      Confianza del análisis
+                      {t('aiLogConfidence')}
                     </span>
-                    <span className={`text-sm font-bold ${
-                      aiSuggestion.confidence >= 80 ? 'text-brand-positive' :
-                      aiSuggestion.confidence >= 60 ? 'text-amber-400' :
-                      'text-brand-warning'
-                    }`}>
+                    <span
+                      className={`text-sm font-bold ${
+                        aiSuggestion.confidence >= 80
+                          ? 'text-brand-positive'
+                          : aiSuggestion.confidence >= 60
+                            ? 'text-amber-400'
+                            : 'text-brand-warning'
+                      }`}
+                    >
                       {aiSuggestion.confidence}%
                     </span>
                   </div>
                   <div className="h-2 bg-brand-surface rounded-full overflow-hidden">
                     <div
                       className={`h-full transition-all duration-500 ${
-                        aiSuggestion.confidence >= 80 ? 'bg-brand-positive' :
-                        aiSuggestion.confidence >= 60 ? 'bg-amber-400' :
-                        'bg-brand-warning'
+                        aiSuggestion.confidence >= 80
+                          ? 'bg-brand-positive'
+                          : aiSuggestion.confidence >= 60
+                            ? 'bg-amber-400'
+                            : 'bg-brand-warning'
                       }`}
                       style={{ width: `${aiSuggestion.confidence}%` }}
                     />
@@ -223,7 +250,7 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
               {aiSuggestion && (
                 <div className={highlightCard}>
                   <h3 className="text-sm font-semibold text-brand-text mb-2" style={{ fontWeight: 600 }}>
-                    Resumen detectado
+                    {t('aiLogSummaryTitle')}
                   </h3>
                   <p className="text-sm text-brand-text leading-relaxed">
                     {aiSuggestion.summary}
@@ -235,13 +262,13 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
               {aiSuggestion && (
                 <div className="space-y-3">
                   <h3 className="text-sm font-semibold text-brand-text" style={{ fontWeight: 600 }}>
-                    Campos detectados
+                    {t('aiLogDetectedFieldsTitle')}
                   </h3>
 
                   {/* Special sections for arrays */}
                   {aiSuggestion.suggestions.symptoms && aiSuggestion.suggestions.symptoms.length > 0 && (
                     <div className="bg-brand-surface-2 rounded-xl p-3">
-                      <div className="text-xs font-semibold text-brand-text-dim mb-2">Síntomas</div>
+                      <div className="text-xs font-semibold text-brand-text-dim mb-2">{t('symptoms')}</div>
                       <div className="flex flex-wrap gap-1.5">
                         {aiSuggestion.suggestions.symptoms.map((s: string, idx: number) => (
                           <span key={idx} className="px-2 py-0.5 rounded-md bg-brand-primary/20 text-brand-primary text-xs">
@@ -252,221 +279,101 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
                     </div>
                   )}
 
-                  {aiSuggestion.suggestions.medications && aiSuggestion.suggestions.medications.length > 0 && (
-                    <div className="bg-brand-surface-2 rounded-xl p-3">
-                      <div className="text-xs font-semibold text-brand-text-dim mb-2">Medicamentos</div>
-                      <div className="space-y-1">
-                        {aiSuggestion.suggestions.medications.map((m: any, idx: number) => (
-                          <div key={idx} className="text-sm text-brand-text">
-                            • {typeof m === 'object' ? `${m.name || ''} ${m.dose || ''}`.trim() : m}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                  {aiSuggestion.suggestions.medications && aiSuggestion.suggestions.medications.length > 0 && renderMedications(aiSuggestion.suggestions.medications)}
 
                   {aiSuggestion.suggestions.periodProducts && aiSuggestion.suggestions.periodProducts.length > 0 && (
-                    <div className="bg-brand-surface-2 rounded-xl p-3">
-                      <div className="text-xs font-semibold text-brand-text-dim mb-2">Productos menstruales</div>
-                      <div className="text-sm text-brand-text">
-                        {aiSuggestion.suggestions.periodProducts.map((p: string) => {
-                          const translations: Record<string, string> = { pad: 'Toalla', tampon: 'Tampón', cup: 'Copa', disc: 'Disco' };
-                          return translations[p] || p;
-                        }).join(', ')}
-                      </div>
-                    </div>
+                    renderSimpleList(t('menstruationProductsLabel'), aiSuggestion.suggestions.periodProducts)
                   )}
 
                   {aiSuggestion.suggestions.activityType && aiSuggestion.suggestions.activityType.length > 0 && (
-                    <div className="bg-brand-surface-2 rounded-xl p-3">
-                      <div className="text-xs font-semibold text-brand-text-dim mb-2">Tipo de actividad</div>
-                      <div className="text-sm text-brand-text">
-                        {aiSuggestion.suggestions.activityType.map((a: string) => {
-                          const translations: Record<string, string> = { walking: 'Caminar', running: 'Correr', strength: 'Fuerza', yoga: 'Yoga', other: 'Otro' };
-                          return translations[a] || a;
-                        }).join(', ')}
-                      </div>
-                    </div>
+                    renderSimpleList(t('activityTypeLabel'), aiSuggestion.suggestions.activityType)
                   )}
 
                   {aiSuggestion.suggestions.painLocations && aiSuggestion.suggestions.painLocations.length > 0 && (
-                    <div className="bg-brand-surface-2 rounded-xl p-3">
-                      <div className="text-xs font-semibold text-brand-text-dim mb-2">Ubicación del dolor</div>
-                      <div className="text-sm text-brand-text">
-                        {aiSuggestion.suggestions.painLocations.map((p: string) => {
-                          const translations: Record<string, string> = { cramps: 'Cólicos', headache: 'Cabeza', back: 'Espalda', breasts: 'Senos' };
-                          return translations[p] || p;
-                        }).join(', ')}
-                      </div>
-                    </div>
+                    renderSimpleList(t('painLocationLabel'), aiSuggestion.suggestions.painLocations)
                   )}
 
                   {aiSuggestion.suggestions.cravings && aiSuggestion.suggestions.cravings.length > 0 && (
-                    <div className="bg-brand-surface-2 rounded-xl p-3">
-                      <div className="text-xs font-semibold text-brand-text-dim mb-2">Antojos</div>
-                      <div className="text-sm text-brand-text">
-                        {aiSuggestion.suggestions.cravings.map((c: string) => {
-                          const translations: Record<string, string> = { sweet: 'Dulce', salty: 'Salado', chocolate: 'Chocolate', other: 'Otro' };
-                          return translations[c] || c;
-                        }).join(', ')}
-                      </div>
-                    </div>
+                    renderSimpleList(t('cravingsLabel'), aiSuggestion.suggestions.cravings)
                   )}
 
                   {aiSuggestion.suggestions.supplements && aiSuggestion.suggestions.supplements.length > 0 && (
-                    <div className="bg-brand-surface-2 rounded-xl p-3">
-                      <div className="text-xs font-semibold text-brand-text-dim mb-2">Suplementos</div>
-                      <div className="text-sm text-brand-text">
-                        {aiSuggestion.suggestions.supplements.map((s: string) => {
-                          const translations: Record<string, string> = { iron: 'Hierro', magnesium: 'Magnesio', omega3: 'Omega-3', vitaminD: 'Vitamina D', other: 'Otro' };
-                          return translations[s] || s;
-                        }).join(', ')}
-                      </div>
-                    </div>
+                    renderSimpleList(t('supplementsLabel'), aiSuggestion.suggestions.supplements)
                   )}
 
                   {aiSuggestion.suggestions.stressTriggers && aiSuggestion.suggestions.stressTriggers.length > 0 && (
-                    <div className="bg-brand-surface-2 rounded-xl p-3">
-                      <div className="text-xs font-semibold text-brand-text-dim mb-2">Detonantes de estrés</div>
-                      <div className="text-sm text-brand-text">
-                        {aiSuggestion.suggestions.stressTriggers.map((t: string) => {
-                          const translations: Record<string, string> = { work: 'Trabajo', study: 'Estudio', relationship: 'Relación', other: 'Otro' };
-                          return translations[t] || t;
-                        }).join(', ')}
-                      </div>
-                    </div>
+                    renderSimpleList(t('mentalStressTriggersLabel'), aiSuggestion.suggestions.stressTriggers)
                   )}
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {Object.entries(aiSuggestion.suggestions).map(([key, value]) => {
-                      if (value === undefined || value === null || (Array.isArray(value) && value.length === 0)) return null;
-                      
-                      // Skip metadata and internal fields
-                      const skipFields = ['id', 'date', 'symptoms', 'medications', 'aiGenerated', 'aiConfidence', 'aiAmbiguousFields', 
-                                         'periodProducts', 'activityType', 'supplements', 'homeRemedies', 'cravings', 'stressTriggers', 'painLocations'];
-                      if (skipFields.includes(key)) return null;
-                      
-                      const isAmbiguous = aiSuggestion.ambiguousFields.includes(key);
-                      const fieldLabels: Record<string, string> = {
-                        // Menstruation
-                        periodIntensity: 'Intensidad menstruación',
-                        periodColor: 'Color del sangrado',
-                        periodConsistency: 'Consistencia',
-                        hasClots: 'Coágulos',
-                        periodProducts: 'Productos usados',
-                        productSize: 'Talla producto',
-                        productCount: 'Cantidad diaria',
-                        hasLeaks: 'Fugas',
-                        periodStartedToday: 'Inicio hoy',
-                        periodEndedToday: 'Fin hoy',
-                        // Fertility
-                        ovulationTest: 'Test ovulación',
-                        cervixPosition: 'Posición cervical',
-                        cervixFirmness: 'Firmeza cervical',
-                        cervixOpening: 'Apertura cervical',
-                        cervicalFluid: 'Flujo cervical',
-                        sexualActivity: 'Actividad sexual',
-                        sexualActivityTiming: 'Momento actividad',
-                        protection: 'Protección',
-                        // Pain
-                        painLevel: 'Nivel de dolor',
-                        painLocations: 'Ubicación dolor',
-                        painDuration: 'Duración dolor',
-                        // Symptoms
-                        nausea: 'Náuseas',
-                        vomiting: 'Vómitos',
-                        diarrhea: 'Diarrea',
-                        constipation: 'Estreñimiento',
-                        gas: 'Gases',
-                        appetite: 'Apetito',
-                        headache: 'Cefalea',
-                        migraine: 'Migraña',
-                        migraineWithAura: 'Migraña con aura',
-                        dizziness: 'Mareos',
-                        brainFog: 'Niebla mental',
-                        backPain: 'Dolor espalda',
-                        pelvicPain: 'Dolor pélvico',
-                        muscleTension: 'Tensión muscular',
-                        breastTenderness: 'Sensibilidad senos',
-                        breastSwelling: 'Hinchazón senos',
-                        acne: 'Acné',
-                        bloating: 'Hinchazón',
-                        waterRetention: 'Retención líquidos',
-                        // Mental
-                        mood: 'Estado de ánimo',
-                        anxiety: 'Ansiedad',
-                        sadness: 'Tristeza',
-                        irritability: 'Irritabilidad',
-                        calmness: 'Calma',
-                        motivation: 'Motivación',
-                        libido: 'Libido',
-                        stressLevel: 'Nivel estrés',
-                        stressScore: 'Estrés (0-10)',
-                        stressTriggers: 'Detonantes estrés',
-                        // Sleep & Habits
-                        sleepHours: 'Horas de sueño',
-                        sleepQuality: 'Calidad sueño',
-                        bedTime: 'Hora dormir',
-                        wakeTime: 'Hora despertar',
-                        napMinutes: 'Siesta (min)',
-                        waterIntake: 'Agua (litros)',
-                        caffeineIntake: 'Cafeína (tazas)',
-                        alcoholIntake: 'Alcohol (unidades)',
-                        cravings: 'Antojos',
-                        // Activity
-                        physicalActivity: 'Actividad física',
-                        activityType: 'Tipo actividad',
-                        activityDuration: 'Duración (min)',
-                        activityIntensity: 'Intensidad RPE',
-                        steps: 'Pasos',
-                        restingHeartRate: 'FC reposo',
-                        caloriesBurned: 'Calorías',
-                        // Medication
-                        medications: 'Medicamentos',
-                        supplements: 'Suplementos',
-                        contraception: 'Anticonceptivo',
-                        contraceptionDay: 'Día blíster',
-                        hasIUD: 'DIU',
-                        homeRemedies: 'Remedios caseros',
-                        // Tests & Health
-                        pregnancyTest: 'Test embarazo',
-                        hasColdSymptoms: 'Síntomas resfriado',
-                        hasCovidSymptoms: 'Síntomas COVID',
-                        bloodPressure: 'Presión arterial',
-                        basalTemp: 'Temperatura basal',
-                        weight: 'Peso (kg)',
-                        // Context
-                        weather: 'Clima',
-                        location: 'Ubicación',
-                        // Energy
-                        energyLevel: 'Nivel energía'
-                      };
+                    {aiSuggestion.suggestions &&
+                      Object.entries(aiSuggestion.suggestions).map(([key, value]) => {
+                        if (value === undefined || value === null) return null;
+                        if (Array.isArray(value) && value.length === 0) return null;
 
-                      return (
-                        <div
-                          key={key}
-                          className={`bg-brand-surface-2 rounded-xl p-3 border ${
-                            isAmbiguous ? 'border-amber-500/50' : 'border-brand-border'
-                          }`}
-                        >
-                          <div className="flex items-start justify-between gap-2">
-                            <div className="flex-1">
-                              <div className="text-xs font-semibold text-brand-text-dim mb-1">
-                                {fieldLabels[key] || key}
-                                {isAmbiguous && (
-                                  <span className="ml-1 text-amber-400" title="Campo ambiguo, confirma el valor">
-                                    ?
-                                  </span>
-                                )}
-                              </div>
-                              <div className="text-sm font-medium text-brand-text">
-                                {formatFieldValue(key, value)}
+                        const skipFields = [
+                          'id',
+                          'date',
+                          'symptoms',
+                          'medications',
+                          'aiGenerated',
+                          'aiConfidence',
+                          'aiAmbiguousFields',
+                          'periodProducts',
+                          'activityType',
+                          'supplements',
+                          'homeRemedies',
+                          'cravings',
+                          'stressTriggers',
+                          'painLocations'
+                        ];
+                        if (skipFields.includes(key)) return null;
+
+                        const isAmbiguous = aiSuggestion.ambiguousFields.includes(key);
+                        const fieldLabels: Record<string, string> = {
+                          periodIntensity: t('menstruationIntensity'),
+                          energyLevel: t('energyLabel'),
+                          mood: t('mood'),
+                          sleepHours: t('sleepHoursLabel'),
+                          sleepQuality: t('sleepQualityLabel'),
+                          stressScore: t('mentalStressLabel'),
+                          waterIntake: t('sleepWaterLabel'),
+                          caffeineIntake: t('sleepCaffeineLabel'),
+                          alcoholIntake: t('sleepAlcoholLabel'),
+                          activityDuration: t('activityDurationLabel'),
+                          activityIntensity: t('activityIntensityLabel'),
+                          steps: t('activityStepsLabel'),
+                          weight: t('weightLabel'),
+                          pregnancyTest: t('pregnancyTestLabel'),
+                          bloodPressure: t('bloodPressureLabel'),
+                          basalTemp: t('basalTemperatureLabel'),
+                        };
+
+                        return (
+                          <div
+                            key={key}
+                            className={`bg-brand-surface-2 rounded-xl p-3 border ${
+                              isAmbiguous ? 'border-amber-500/50' : 'border-brand-border'
+                            }`}
+                          >
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="flex-1">
+                                <div className="text-xs font-semibold text-brand-text-dim mb-1">
+                                  {fieldLabels[key] || key}
+                                  {isAmbiguous && (
+                                    <span className="ml-1 text-amber-400" title={t('aiLogAmbiguousTitle')}>
+                                      ?
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="text-sm font-medium text-brand-text">
+                                  {formatFieldValue(key, value)}
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
                   </div>
                 </div>
               )}
@@ -480,10 +387,10 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
                     </svg>
                     <div className="flex-1">
                       <p className="text-sm font-semibold text-amber-400 mb-1">
-                        Algunos campos necesitan confirmación
+                        {t('aiLogAmbiguousTitle')}
                       </p>
                       <p className="text-xs text-brand-text-dim leading-relaxed">
-                        Los campos marcados con "?" fueron detectados pero pueden no ser precisos. Podrás editarlos después de aplicar las sugerencias.
+                        {t('aiLogAmbiguousText')}
                       </p>
                     </div>
                   </div>
@@ -502,7 +409,7 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
                 className="px-6 py-2.5 rounded-xl text-sm font-medium text-brand-text-dim hover:text-brand-text hover:bg-brand-surface-2 transition-all duration-150"
                 style={{ fontWeight: 500 }}
               >
-                Cancelar
+                {t('cancel')}
               </button>
               <button
                 onClick={handleAnalyze}
@@ -515,14 +422,11 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
                     <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                     </svg>
-                    Analizando...
+                    {t('aiLogAnalyzing')}
                   </>
                 ) : (
                   <>
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                    </svg>
-                    Analizar
+                    {t('aiLogAnalyze')}
                   </>
                 )}
               </button>
@@ -537,7 +441,7 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
-                Volver
+                {t('back')}
               </button>
               <button
                 onClick={handleApply}
@@ -547,7 +451,7 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                Aplicar sugerencias
+                {t('aiLogApply')}
               </button>
             </>
           )}
@@ -560,98 +464,8 @@ export const AILogModal: React.FC<AILogModalProps> = ({ isOpen, onClose, onApply
 function formatFieldValue(key: string, value: any): string {
   if (typeof value === 'boolean') return value ? 'Sí' : 'No';
   if (typeof value === 'number') return value.toString();
-  if (typeof value === 'string') {
-    const translations: Record<string, Record<string, string>> = {
-      energyLevel: { low: 'Baja', medium: 'Media', high: 'Alta' },
-      stressLevel: { low: 'Bajo', medium: 'Medio', high: 'Alto' },
-      motivation: { low: 'Baja', medium: 'Media', high: 'Alta' },
-      libido: { low: 'Baja', normal: 'Normal', high: 'Alta' },
-      cervicalFluid: { dry: 'Seco', sticky: 'Pegajoso', creamy: 'Cremoso', watery: 'Acuoso', 'egg-white': 'Clara de huevo' },
-      physicalActivity: { none: 'Ninguna', light: 'Suave', moderate: 'Moderada', intense: 'Intensa' },
-      periodColor: { 'bright-red': 'Rojo vivo', 'dark-red': 'Rojo oscuro', 'brown': 'Marrón', 'pink': 'Rosa' },
-      periodConsistency: { watery: 'Acuoso', thick: 'Espeso', clotty: 'Con coágulos' },
-      productSize: { small: 'Pequeña', medium: 'Mediana', large: 'Grande' },
-      ovulationTest: { positive: 'Positivo', negative: 'Negativo', unclear: 'Indeterminado' },
-      cervixPosition: { high: 'Alta', medium: 'Media', low: 'Baja' },
-      cervixFirmness: { firm: 'Firme', soft: 'Suave' },
-      cervixOpening: { open: 'Abierto', closed: 'Cerrado' },
-      appetite: { decreased: 'Disminuido', normal: 'Normal', increased: 'Aumentado' },
-      pregnancyTest: { positive: 'Positivo', negative: 'Negativo', 'not-taken': 'No realizado' },
-      weather: { cold: 'Frío', mild: 'Templado', hot: 'Calor' }
-    };
-    return translations[key]?.[value] || value;
-  }
-  if (Array.isArray(value)) {
-    if (key === 'painLocations') {
-      const locations: Record<string, string> = {
-        cramps: 'Cólicos',
-        headache: 'Cabeza',
-        back: 'Espalda',
-        breasts: 'Senos'
-      };
-      return value.map(v => locations[v] || v).join(', ');
-    }
-    if (key === 'periodProducts') {
-      const products: Record<string, string> = {
-        pad: 'Toalla',
-        tampon: 'Tampón',
-        cup: 'Copa',
-        disc: 'Disco'
-      };
-      return value.map(v => products[v] || v).join(', ');
-    }
-    if (key === 'activityType') {
-      const activities: Record<string, string> = {
-        walking: 'Caminar',
-        running: 'Correr',
-        strength: 'Fuerza',
-        yoga: 'Yoga',
-        other: 'Otro'
-      };
-      return value.map(v => activities[v] || v).join(', ');
-    }
-    if (key === 'supplements') {
-      const supps: Record<string, string> = {
-        iron: 'Hierro',
-        magnesium: 'Magnesio',
-        omega3: 'Omega-3',
-        vitaminD: 'Vitamina D',
-        other: 'Otro'
-      };
-      return value.map(v => supps[v] || v).join(', ');
-    }
-    if (key === 'homeRemedies') {
-      const remedies: Record<string, string> = {
-        'heating-pad': 'Bolsa de calor',
-        'cold-compress': 'Compresa fría',
-        tea: 'Té',
-        bath: 'Baño',
-        other: 'Otro'
-      };
-      return value.map(v => remedies[v] || v).join(', ');
-    }
-    if (key === 'cravings') {
-      const crav: Record<string, string> = {
-        sweet: 'Dulce',
-        salty: 'Salado',
-        chocolate: 'Chocolate',
-        other: 'Otro'
-      };
-      return value.map(v => crav[v] || v).join(', ');
-    }
-    if (key === 'stressTriggers') {
-      const triggers: Record<string, string> = {
-        work: 'Trabajo',
-        study: 'Estudio',
-        relationship: 'Relación',
-        other: 'Otro'
-      };
-      return value.map(v => triggers[v] || v).join(', ');
-    }
-    return value.join(', ');
-  }
-  if (key === 'medications' && Array.isArray(value)) {
-    return value.map((m: any) => `${m.name} ${m.dose}`).join(', ');
-  }
-  return JSON.stringify(value);
+  if (typeof value === 'string') return value;
+  if (Array.isArray(value)) return value.join(', ');
+  if (value && typeof value === 'object') return JSON.stringify(value);
+  return String(value);
 }

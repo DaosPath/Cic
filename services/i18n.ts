@@ -389,6 +389,13 @@ export interface Translations {
   aiLogVoiceIdle: string;
   aiLogVoiceRecording: string;
   aiLogConfidence: string;
+  aiLogAnalyze: string;
+  aiLogAnalyzing: string;
+  aiLogApply: string;
+  aiLogSummaryTitle: string;
+  aiLogDetectedFieldsTitle: string;
+  aiLogAmbiguousTitle: string;
+  aiLogAmbiguousText: string;
   chatQuickCycle: string;
   chatQuickSleep: string;
   chatQuickSymptoms: string;
@@ -845,6 +852,13 @@ const translations: Record<Language, Translations> = {
     aiLogVoiceIdle: 'Usar micrófono',
     aiLogVoiceRecording: 'Grabando... (toca para detener)',
     aiLogConfidence: 'Confianza del análisis',
+    aiLogAnalyze: 'Analizar',
+    aiLogAnalyzing: 'Analizando...',
+    aiLogApply: 'Aplicar sugerencias',
+    aiLogSummaryTitle: 'Resumen detectado',
+    aiLogDetectedFieldsTitle: 'Campos detectados',
+    aiLogAmbiguousTitle: 'Algunos campos necesitan confirmación',
+    aiLogAmbiguousText: 'Los campos marcados con "?" fueron detectados pero pueden no ser precisos. Podrás editarlos después de aplicar las sugerencias.',
     chatQuickCycle: '¿Cómo está mi ciclo?',
     chatQuickSleep: 'Analiza mi sueño',
     chatQuickSymptoms: '¿Qué síntomas tengo?',
@@ -1239,6 +1253,13 @@ const translations: Record<Language, Translations> = {
     aiLogVoiceIdle: 'Use microphone',
     aiLogVoiceRecording: 'Recording... (tap to stop)',
     aiLogConfidence: 'Analysis confidence',
+    aiLogAnalyze: 'Analyze',
+    aiLogAnalyzing: 'Analyzing...',
+    aiLogApply: 'Apply suggestions',
+    aiLogSummaryTitle: 'Detected summary',
+    aiLogDetectedFieldsTitle: 'Detected fields',
+    aiLogAmbiguousTitle: 'Some fields need confirmation',
+    aiLogAmbiguousText: 'Fields marked with "?" were detected but may be imprecise. You can edit them after applying the suggestions.',
     chatQuickCycle: 'How is my cycle looking?',
     chatQuickSleep: 'Analyze my sleep',
     chatQuickSymptoms: 'What symptoms do I have?',
@@ -1692,6 +1713,13 @@ const translations: Record<Language, Translations> = {
     aiLogVoiceIdle: 'Mikrofonu kullan',
     aiLogVoiceRecording: 'Kaydediliyor... (durdurmak için dokun)',
     aiLogConfidence: 'Analiz güveni',
+    aiLogAnalyze: 'Analiz et',
+    aiLogAnalyzing: 'Analiz ediliyor...',
+    aiLogApply: 'Önerileri uygula',
+    aiLogSummaryTitle: 'Tespit edilen özet',
+    aiLogDetectedFieldsTitle: 'Tespit edilen alanlar',
+    aiLogAmbiguousTitle: 'Bazı alanlar onay istiyor',
+    aiLogAmbiguousText: '"?" ile işaretli alanlar bulundu fakat tam olmayabilir. Önerileri uyguladıktan sonra düzenleyebilirsin.',
     chatQuickCycle: 'Döngüm nasıl gidiyor?',
     chatQuickSleep: 'Uykumu analiz et',
     chatQuickSymptoms: 'Hangi belirtilerim var?',
