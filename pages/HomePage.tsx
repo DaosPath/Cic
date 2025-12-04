@@ -140,43 +140,67 @@ export const HomePage: React.FC = () => {
 
                 {/* Chat CTA */}
                 <div className="w-full animate-slide-up" style={{ animationDelay: '0.3s' }}>
-                    <div className="bg-gradient-to-br from-brand-primary/10 via-brand-accent/10 to-brand-primary/10 border border-brand-primary/30 rounded-[18px] p-6 shadow-[0_4px_16px_rgba(0,0,0,0.15)] hover:shadow-[0_6px_24px_rgba(0,0,0,0.25)] transition-all duration-300">
-                        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                            <div className="flex items-center gap-4">
-                                <div className="p-3 rounded-xl bg-brand-primary/20 backdrop-blur-sm">
-                                    <svg className="w-6 h-6 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="relative overflow-hidden rounded-[20px] border border-brand-border bg-gradient-to-br from-brand-surface/95 via-brand-surface-2/95 to-brand-surface/90 shadow-[0_8px_32px_rgba(0,0,0,0.35)] hover:shadow-[0_12px_48px_rgba(0,0,0,0.45)] transition-all duration-300">
+                        <div className="absolute inset-0 opacity-40 pointer-events-none bg-[radial-gradient(circle_at_20%_20%,rgba(255,165,0,0.12),transparent_45%),radial-gradient(circle_at_80%_35%,rgba(255,105,180,0.12),transparent_40%)]"></div>
+                        <div className="relative p-6 md:p-7 flex flex-col gap-5">
+                            <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6">
+                                <div className="p-3 rounded-2xl bg-brand-primary/15 backdrop-blur-sm border border-brand-primary/30 shadow-[0_6px_20px_rgba(255,165,0,0.15)]">
+                                    <svg className="w-7 h-7 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                                     </svg>
                                 </div>
-                                <div>
-                                    <h3 className="text-base font-bold text-brand-text mb-1" style={{ fontWeight: 700, lineHeight: 1.3 }}>
-                                        Chatear con IA
+                                <div className="flex-1 min-w-0">
+                                    <h3 className="text-lg font-bold text-brand-text mb-1 leading-tight" style={{ fontWeight: 750 }}>
+                                        {t('chatWithAI')}
                                     </h3>
-                                    <p className="text-sm text-brand-text-dim" style={{ fontWeight: 500, lineHeight: 1.45 }}>
-                                        Pregunta sobre tu ciclo actual, predicciones y recomendaciones
+                                    <p className="text-sm text-brand-text-dim leading-relaxed" style={{ fontWeight: 500 }}>
+                                        {t('askAboutCycle')}
                                     </p>
                                 </div>
+                                <button
+                                    onClick={() => { window.location.hash = '/insights?chat=1'; }}
+                                    className="relative inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-black transition-all duration-200 overflow-hidden"
+                                    style={{
+                                        background: 'linear-gradient(135deg, #fdbb2d 0%, #f97316 35%, #f59e0b 100%)',
+                                        boxShadow: '0 6px 24px rgba(253,187,45,0.25), 0 4px 12px rgba(249,115,22,0.25)'
+                                    }}
+                                >
+                                    <span className="text-sm md:text-base" style={{ fontWeight: 700 }}>{t('startChat')}</span>
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                    </svg>
+                                </button>
                             </div>
-                            
-                            <button
-                                onClick={() => {/* TODO: Implement chat navigation */}}
-                                className="group flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-brand-primary to-brand-accent text-white font-semibold rounded-full shadow-lg shadow-brand-primary/25 hover:shadow-xl hover:shadow-brand-primary/35 hover:scale-105 active:scale-100 transition-all duration-200"
-                                style={{ fontWeight: 600 }}
-                            >
-                                <span>Iniciar Chat</span>
-                                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                                </svg>
-                            </button>
-                        </div>
-                        
-                        <div className="mt-4 pt-4 border-t border-brand-border/50 flex items-center gap-2 text-xs text-brand-text-dim">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <span style={{ fontWeight: 500 }}>
-                                Contexto: <span className="text-brand-primary font-semibold">Día {dayOfCycle} • {currentPhase}</span>
-                            </span>
+
+                            <div className="flex flex-wrap items-center gap-3">
+                                <span className="text-xs uppercase tracking-[0.14em] text-brand-text-dim/80 font-semibold">
+                                    {t('context')}
+                                </span>
+                                <span className="px-3 py-1 rounded-full text-xs font-semibold bg-brand-primary/15 border border-brand-primary/30 text-brand-primary">
+                                    {t('dayOfCycle')}: {dayOfCycle > 0 ? dayOfCycle : '--'}
+                                </span>
+                                {!discrete && (
+                                    <span className="px-3 py-1 rounded-full text-xs font-semibold bg-brand-accent/15 border border-brand-accent/30 text-brand-accent capitalize">
+                                        {getPhaseTranslation(currentPhase)}
+                                    </span>
+                                )}
+                                <span className="px-3 py-1 rounded-full text-xs font-semibold bg-brand-surface-2/80 border border-brand-border/50 text-brand-text-dim">
+                                    {predictions ? formatDayMonth(predictions.nextPeriod[0], intlLocale) : t('calculating')}
+                                </span>
+                            </div>
+
+                            <div className="flex flex-wrap gap-2">
+                                {[t('chatQuickSleep'), t('chatQuickCycle'), t('chatQuickRecommendations'), t('aiLogExample5')].map((prompt) => (
+                                    <button
+                                        key={prompt}
+                                        onClick={() => { window.location.hash = '/insights?chat=1'; sessionStorage.setItem('prefillChatPrompt', prompt); }}
+                                        className="px-3 py-2 rounded-xl text-xs font-semibold bg-brand-surface-2/80 border border-brand-border/40 text-brand-text hover:border-brand-primary/40 hover:text-brand-primary transition-all duration-150"
+                                        style={{ fontWeight: 600 }}
+                                    >
+                                        {prompt}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </div>

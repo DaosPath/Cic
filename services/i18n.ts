@@ -459,8 +459,10 @@ export interface Translations {
   noSavedInsights: string;
   noPinnedInsights: string;
   chatWithAI: string;
+  askAboutCycle: string;
   chatInsightsDescription: string;
   startChat: string;
+  context: string;
   chatContextLabel: string;
   chatContextLog: string;
   aiLogTitle: string;
@@ -1012,8 +1014,10 @@ const translations: Record<Language, Translations> = {
     noSavedInsights: 'No tienes insights guardados',
     noPinnedInsights: 'No tienes insights fijados',
     chatWithAI: 'Chatear con IA',
+    askAboutCycle: 'Pregunta sobre tu ciclo actual, predicciones y recomendaciones',
     chatInsightsDescription: 'Analiza tu registro de hoy y obtén recomendaciones personalizadas',
     startChat: 'Iniciar Chat',
+    context: 'Contexto',
     chatContextLabel: 'Contexto:',
     chatContextLog: 'Registro de {date}',
     aiLogTitle: 'Registro con IA',
@@ -1414,8 +1418,10 @@ const translations: Record<Language, Translations> = {
     noSavedInsights: 'No saved insights yet',
     noPinnedInsights: 'No pinned insights yet',
     chatWithAI: 'Chat with AI',
+    askAboutCycle: 'Ask about your current cycle, predictions, and recommendations',
     chatInsightsDescription: 'Analyze today\'s log and get personalized recommendations',
     startChat: 'Start chat',
+    context: 'Context',
     chatContextLabel: 'Context:',
     chatContextLog: 'Log from {date}',
     aiLogTitle: 'AI Log',
@@ -1963,9 +1969,11 @@ const translations: Record<Language, Translations> = {
     savedInsightsTabSaved: 'Kaydedilenler',
     noSavedInsights: 'Kaydedilmiş iç görü yok',
     noPinnedInsights: 'Sabitlenmiş iç görü yok',
-    chatWithAI: 'Yapay zekâ ile sohbet',
+    chatWithAI: 'Yapay zek? ile sohbet',
+    askAboutCycle: 'Mevcut döngün, tahminler ve öneriler hakkında sor',
     chatInsightsDescription: 'Bugünkü kaydını analiz et ve kişiselleştirilmiş öneriler al',
     startChat: 'Sohbeti başlat',
+    context: 'Bağlam',
     chatContextLabel: 'Bağlam:',
     chatContextLog: '{date} kaydı',
     aiLogTitle: 'Yapay Zekâ ile Kayıt',
@@ -2177,22 +2185,38 @@ const translations: Record<Language, Translations> = {
     aiRecommendationsTitle: 'Öneriler',
 
     // Daily insight modal
-    dailyInsightModalTitle: 'Günün tam özeti',
-    dailyInsightModalSleepTitle: 'Uyku',
-    dailyInsightModalHydrationTitle: 'Hidrasyon',
-    dailyInsightModalActivityTitle: 'Aktivite',
-    dailyInsightModalInsightTitle: 'Günlük içgörü',
-    dailyInsightStressTitle: 'Stres',
-    dailyInsightFlowVeryHeavy: 'Çok yoğun',
-    dailyInsightInsufficientSleep: 'Bugün yeterince uyuyamadın. Daha iyi toparlanma için 7-9 saat hedefleyebilirsin.',
-    dailyInsightIdealSleep: 'Harika! Tavsiye edilen uyku süresini yakaladın.',
-    dailyInsightLowMoodEnergy: 'Düşük ruh hali ve enerji ilişkili olabilir. Kısa bir yürüyüş veya sevdiğin bir aktivite yardımcı olabilir.',
-    dailyInsightHighPain: 'Ağrı seviyesi yüksek. Isı uygulayıp dinlen ve devam ederse doktora danış.',
-    dailyInsightHighStress: 'Stres seviyesi yüksek. Nefes egzersizleri veya meditasyon rahatlatabilir.',
-    dailyInsightLowHydration: 'Hidrasyon düşük. Günlük en az 2L su içmeye çalış.',
-    dailyInsightHydrationOk: 'Harika! Hidrasyonun iyi durumda.',
-    dailyInsightActivityPraise: 'Harika! Fiziksel aktivite döngünü ve ruh halini destekler.',
-    dailyInsightFallback: 'Daha fazla kayıt gir, böylece sana özel içgörüler güçlenir.',
+    dailyInsightModalTitle: 'Günün tam özeti',
+
+    dailyInsightModalSleepTitle: 'Uyku',
+
+    dailyInsightModalHydrationTitle: 'Hidrasyon',
+
+    dailyInsightModalActivityTitle: 'Aktivite',
+
+    dailyInsightModalInsightTitle: 'Günlük içgörü',
+
+    dailyInsightStressTitle: 'Stres',
+
+    dailyInsightFlowVeryHeavy: 'Çok yoğun',
+
+    dailyInsightInsufficientSleep: 'Bugün yeterince uyuyamadın. Daha iyi toparlanma için 7-9 saat hedefleyebilirsin.',
+
+    dailyInsightIdealSleep: 'Harika! Tavsiye edilen uyku süresini yakaladın.',
+
+    dailyInsightLowMoodEnergy: 'Düşük ruh hali ve enerji ilişkili olabilir. Kısa bir yürüyüş veya sevdiğin bir aktivite yardımcı olabilir.',
+
+    dailyInsightHighPain: 'Ağrı seviyesi yüksek. Isı uygulayıp dinlen ve devam ederse doktora danış.',
+
+    dailyInsightHighStress: 'Stres seviyesi yüksek. Nefes egzersizleri veya meditasyon rahatlatabilir.',
+
+    dailyInsightLowHydration: 'Hidrasyon düşük. Günlük en az 2L su içmeye çalış.',
+
+    dailyInsightHydrationOk: 'Harika! Hidrasyonun iyi durumda.',
+
+    dailyInsightActivityPraise: 'Harika! Fiziksel aktivite döngünü ve ruh halini destekler.',
+
+    dailyInsightFallback: 'Daha fazla kayıt gir, böylece sana özel içgörüler güçlenir.',
+
     devToolsHeading: '🛠️ Veri oluşturma',
     devFillLast7: 'Son 7 günü doldur',
     devFillLast30: 'Son 30 günü doldur',

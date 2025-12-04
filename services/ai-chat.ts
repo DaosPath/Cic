@@ -1,4 +1,3 @@
-import { GoogleGenAI } from "@google/genai";
 import type { ChatMessage, ChatContext } from './ai-chat-formatter.ts';
 import type { Language, DailyLog, Cycle } from '../types.ts';
 import { detectLanguage } from './i18n.ts';
@@ -7,22 +6,34 @@ import { DataAnalyzer, toolDefinitions } from './ai-tools.ts';
 export type { DailyLog, Cycle };
 export type { ViewType };
 
-const API_KEY = (typeof process !== 'undefined' && process.env && process.env.API_KEY)
-    ? process.env.API_KEY
-    : "AIzaSyDY_OO9FEfPw_vpxILXzXOM8rt4m-goD5w";
+const GEMINI_ENDPOINT = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_GEMINI_ENDPOINT)
+    ? (import.meta as any).env.VITE_GEMINI_ENDPOINT
+    : '/api/gemini';
+const MODEL = 'gemini-2.5-flash';
 
-let ai: GoogleGenAI | null = null;
+const callGemini = async (contents: string): Promise<string> => {
+    const response = await fetch(GEMINI_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            contents,
+            model: MODEL,
+            config: { temperature: 0.7 }
+        })
+    });
 
-const getAiClient = (): GoogleGenAI | null => {
-    if (ai) {
-        return ai;
+    if (!response.ok) {
+        const message = await response.text().catch(() => 'Unknown error');
+        throw new Error(message || `Request failed with status ${response.status}`);
     }
-    if (API_KEY) {
-        ai = new GoogleGenAI({ apiKey: API_KEY });
-        return ai;
+
+    const data = await response.json().catch(() => ({}));
+    const text = typeof data?.text === 'string' ? data.text.trim() : '';
+    if (!text) {
+        throw new Error('Empty response from API');
     }
-    console.warn("Gemini API key not found. AI chat features will be disabled.");
-    return null;
+
+    return text;
 };
 
 // Convert tool definitions to Gemini format
@@ -449,12 +460,6 @@ export const sendChatMessage = async (
     session: ChatSession,
     userMessage: string
 ): Promise<string> => {
-    const aiClient = getAiClient();
-
-    if (!aiClient) {
-        return "Lo siento, el servicio de chat con IA no está disponible en este momento. Por favor, verifica la configuración de la API.";
-    }
-
     try {
         // Build system prompt with context and view type
         const systemPrompt = getSystemPrompt(session.language, session.viewType);
@@ -473,15 +478,7 @@ ${contextPrompt}
 ${conversationHistory ? `Historial de conversación:\n${conversationHistory}\n\n` : ''}Usuario: ${userMessage}`;
 
         // Initial request
-        let response = await aiClient.models.generateContent({
-            model: 'gemini-2.5-flash',
-            contents: fullPrompt,
-            config: {
-                temperature: 0.7,
-            },
-        });
-
-        let text = response.text?.trim() || '';
+        let text = await callGemini(fullPrompt);
         
         // Check for tool calls and execute them (max 3 iterations)
         let iterations = 0;
@@ -517,15 +514,7 @@ ${toolResults.join('\n\n')}
 
 Ahora responde a la pregunta del usuario basándote en estos datos. NO solicites más herramientas, usa los datos proporcionados.`;
 
-            response = await aiClient.models.generateContent({
-                model: 'gemini-2.5-flash',
-                contents: fullPrompt,
-                config: {
-                    temperature: 0.7,
-                },
-            });
-
-            text = response.text?.trim() || '';
+            text = await callGemini(fullPrompt);
         }
 
         if (!text) {
@@ -558,5 +547,5 @@ Ahora responde a la pregunta del usuario basándote en estos datos. NO solicites
 };
 
 export const isAIAvailable = (): boolean => {
-    return !!API_KEY;
+    return true;
 };

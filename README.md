@@ -15,6 +15,6 @@ View your app in AI Studio: https://ai.studio/apps/drive/1_1_oQbPaiR6jhQRiPumC0z
 
 1. Install dependencies:
    `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+2. Copy `.env.example` to `.env.local` (or `.env`) and set `GEMINI_API_KEY` (used only on the backend). Override `GEMINI_MODEL` if you want a different Gemini model. Optionally set `VITE_GEMINI_ENDPOINT` if you want the frontend to call a deployed API (defaults to `/api/gemini`).
+3. Run locally with AI enabled: `vercel dev` (needs Vercel CLI) so the `/api/gemini` route is available. If you only run `npm run dev`, AI calls will 404 unless `VITE_GEMINI_ENDPOINT` points to a deployed API.
+4. Run the app UI: `npm run dev` (or just use `vercel dev` to have both UI and API). 

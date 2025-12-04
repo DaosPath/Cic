@@ -1,24 +1,34 @@
-import { GoogleGenAI } from "@google/genai";
 import type { CyclePhase, Language } from '../types.ts';
 import { detectLanguage, getTranslations } from './i18n.ts';
 
-const API_KEY = (typeof process !== 'undefined' && process.env && process.env.API_KEY)
-    ? process.env.API_KEY
-    : "AIzaSyDY_OO9FEfPw_vpxILXzXOM8rt4m-goD5w";
+const GEMINI_ENDPOINT = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_GEMINI_ENDPOINT)
+    ? (import.meta as any).env.VITE_GEMINI_ENDPOINT
+    : '/api/gemini';
+const MODEL = 'gemini-2.5-flash';
 
-let ai: GoogleGenAI | null = null;
+const generateContent = async (contents: string): Promise<string> => {
+    const response = await fetch(GEMINI_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            contents,
+            model: MODEL,
+            config: { temperature: 0.7 }
+        })
+    });
 
-// Lazily initialize the AI client to prevent app crash on startup if API key is missing.
-const getAiClient = (): GoogleGenAI | null => {
-    if (ai) {
-        return ai;
+    if (!response.ok) {
+        const message = await response.text().catch(() => 'Unknown error');
+        throw new Error(message || `Request failed with status ${response.status}`);
     }
-    if (API_KEY) {
-        ai = new GoogleGenAI({ apiKey: API_KEY });
-        return ai;
+
+    const data = await response.json().catch(() => ({}));
+    const text = typeof data?.text === 'string' ? data.text.trim() : '';
+    if (!text) {
+        throw new Error('Empty response from API');
     }
-    console.warn("Gemini API key not found. AI features will be disabled.");
-    return null;
+
+    return text;
 };
 
 type SupportedLanguage = Exclude<Language, 'auto'>;
@@ -63,21 +73,8 @@ export const getPhaseInsight = async (phase: CyclePhase, language: Language): Pr
         return cachedInsight;
     }
 
-    const aiClient = getAiClient();
-    if (!aiClient) {
-        return translations.aiUnavailable;
-    }
-
     try {
-        const response = await aiClient.models.generateContent({
-            model: 'gemini-2.5-flash',
-            contents: phasePrompts[lang][phase],
-            config: {
-                temperature: 0.7,
-            },
-        });
-
-        const text = response.text.trim();
+        const text = await generateContent(phasePrompts[lang][phase]);
         if (text) {
             sessionStorage.setItem(cacheKey, text);
             return text;
