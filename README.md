@@ -1,20 +1,32 @@
 <div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+  <img width="1200" height="475" alt="Aura Banner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
 </div>
 
-# Run and deploy your AI Studio app
+# Aura Ciclo — Seguimiento menstrual con IA y privacidad
 
-This contains everything you need to run your app locally.
+Aplicación React + Vite para registrar el ciclo, obtener insights con Gemini y mantener la privacidad (modo discreto, datos locales e IndexedDB). Incluye PWA y endpoint backend `/api/gemini` para no exponer la API key.
 
-View your app in AI Studio: https://ai.studio/apps/drive/1_1_oQbPaiR6jhQRiPumC0zNmvCgut98c
+## Requisitos
+- Node.js
+- (Opcional) Vercel CLI si quieres correr UI + API en local con `vercel dev`.
 
-## Run Locally
+## Instalación y entorno
+1. Instala dependencias: `npm install`
+2. Copia `.env.example` a `.env.local` (o `.env`) y define:
+   - `GEMINI_API_KEY` (solo backend)
+   - `GEMINI_MODEL` (opcional, p. ej. `gemini-2.5-flash`)
+   - `VITE_GEMINI_ENDPOINT` (opcional, por defecto `/api/gemini`)
 
-**Prerequisites:**  Node.js
+## Desarrollo
+- UI + API en local (recomendado): `vercel dev`
+- Solo UI (sin API local): `npm run dev` y apunta `VITE_GEMINI_ENDPOINT` a una API ya desplegada.
 
+## Producción
+1. Despliega (p. ej. en Vercel) y configura variables de entorno en el panel del proyecto.
+2. Build: `npm run build`
+3. Preview local del build: `npm run preview`
 
-1. Install dependencies:
-   `npm install`
-2. Copy `.env.example` to `.env.local` (or `.env`) and set `GEMINI_API_KEY` (used only on the backend). Override `GEMINI_MODEL` if you want a different Gemini model. Optionally set `VITE_GEMINI_ENDPOINT` if you want the frontend to call a deployed API (defaults to `/api/gemini`).
-3. Run locally with AI enabled: `vercel dev` (needs Vercel CLI) so the `/api/gemini` route is available. If you only run `npm run dev`, AI calls will 404 unless `VITE_GEMINI_ENDPOINT` points to a deployed API.
-4. Run the app UI: `npm run dev` (or just use `vercel dev` to have both UI and API). 
+## Scripts útiles
+- `npm run dev` — servidor de desarrollo Vite.
+- `npm run build` — build de producción.
+- `npm run preview` — sirve el build para verificarlo localmente.
