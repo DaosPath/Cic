@@ -1,7 +1,3 @@
-<div align="center">
-  <img width="1200" height="475" alt="Aura Banner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
-
 # Aura Ciclo — Seguimiento menstrual con IA y privacidad
 
 Aplicación React + Vite para registrar el ciclo, obtener insights con Gemini y mantener la privacidad (modo discreto, datos locales e IndexedDB). Incluye PWA y endpoint backend `/api/gemini` para no exponer la API key.
