@@ -1,4 +1,4 @@
-const CACHE_NAME = 'aura-ciclo-cache-v2';
+const CACHE_NAME = 'aura-ciclo-cache-v3';
 const PRECACHE_ASSETS = [
   './',
   './index.html',
