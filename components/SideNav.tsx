@@ -11,7 +11,7 @@ export const SideNav: React.FC = () => {
     tr: 'sevgiyle',
   };
   const loveWord = loveWordMap[language] || loveWordMap.es;
-  const loveMessage = t('madeWithLoveForAzra');
+  const loveMessage = t('madeWithLove');
   const messageParts = loveMessage.split(' ');
   let cycleColorIndex = 0;
   

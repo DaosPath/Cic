@@ -427,7 +427,7 @@ export interface Translations {
 
   // Additional UI copy
   appTagline: string;
-  madeWithLoveForAzra: string;
+  madeWithLove: string;
   logSymptoms: string;
   savedInsightsTabPinned: string;
   savedInsightsTabSaved: string;
@@ -1007,7 +1007,7 @@ const translations: Record<Language, Translations> = {
 
     // Additional UI copy
     appTagline: 'Salud menstrual inteligente',
-    madeWithLoveForAzra: 'Con amor para Azra',
+    madeWithLove: 'Hecho con amor',
     logSymptoms: 'Registrar síntomas',
     savedInsightsTabPinned: 'Fijados',
     savedInsightsTabSaved: 'Guardados',
@@ -1411,7 +1411,7 @@ const translations: Record<Language, Translations> = {
 
     // Additional UI copy
     appTagline: 'Smart menstrual health',
-    madeWithLoveForAzra: 'With love for Azra',
+    madeWithLove: 'Made with love',
     logSymptoms: 'Log symptoms',
     savedInsightsTabPinned: 'Pinned',
     savedInsightsTabSaved: 'Saved',
@@ -1963,7 +1963,7 @@ const translations: Record<Language, Translations> = {
 
     // Additional UI copy
     appTagline: 'Akıllı adet sağlığı',
-    madeWithLoveForAzra: 'Azra için sevgiyle',
+    madeWithLove: 'Sevgiyle yapıldı',
     logSymptoms: 'Semptomları kaydet',
     savedInsightsTabPinned: 'Sabitlenenler',
     savedInsightsTabSaved: 'Kaydedilenler',
