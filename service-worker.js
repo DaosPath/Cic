@@ -1,9 +1,12 @@
-const CACHE_NAME = 'aura-ciclo-cache-v1';
+const CACHE_NAME = 'aura-ciclo-cache-v2';
 const PRECACHE_ASSETS = [
   './',
   './index.html',
   './manifest.json',
   './favicon.ico',
+  './favicon-32.png',
+  './favicon-16.png',
+  './apple-touch-icon.png',
   './icon-192.png',
   './icon-512.png',
   'https://cdn.tailwindcss.com',
