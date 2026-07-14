@@ -2,10 +2,13 @@ import React, { useContext, useState, useEffect } from 'react';
 import { AppContext } from '../context/AppContext.tsx';
 import { saveSettings, getBackupData, restoreBackupData, clearLogsAndCycles, clearAndBulkInsert, upsertLog } from '../services/db.ts';
 import { generateDevData, generateLogsForDateRange, generateTodayLog, fillMissingDays } from '../services/dev-data.ts';
-import type { AppSettings } from '../types.ts';
+import type { AppSettings, ThemeMode, UiSkin } from '../types.ts';
 import { ConfirmationModal } from '../components/ConfirmationModal.tsx';
 import { useTranslation } from '../hooks/useTranslation.ts';
 import { subDays } from 'date-fns/subDays';
+import { ThemeToggle } from '../components/ui/ThemeToggle.tsx';
+import { Toast } from '../components/ui/Toast.tsx';
+import { applyAppearance } from '../hooks/useTheme.ts';
 
 const languageOptions = [
     { value: 'auto', labelKey: 'automatic' },
@@ -304,10 +307,10 @@ export const SettingsPage: React.FC = () => {
                 </div>
             )}
 
-            <div className="min-h-screen px-4 md:px-8 pt-12 pb-32 md:pb-24">
+            <div className="page-content safe-pb md:pb-24">
                 <div className="max-w-[1140px] mx-auto">
                     {/* Header */}
-                    <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-6 md:p-8 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)] mb-6">
+                    <div className="aura-surface p-6 md:p-8 mb-6">
                         <h1 className="text-3xl md:text-4xl font-bold text-brand-text mb-2" style={{ fontWeight: 700, lineHeight: 1.3 }}>
                             {t('configuration')}
                         </h1>
@@ -321,7 +324,7 @@ export const SettingsPage: React.FC = () => {
                         {/* Left Column */}
                         <div className="space-y-6">
                             {/* Cycle Configuration */}
-                            <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-5 md:p-6 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)]">
+                            <div className="aura-surface p-5 md:p-6">
                                 <div className="flex items-center gap-3 mb-5">
                                     <div className="p-2 rounded-xl bg-brand-primary/15">
                                         <svg className="w-5 h-5 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -382,8 +385,89 @@ export const SettingsPage: React.FC = () => {
                                 </div>
                             </div>
 
+
+                            {/* Appearance / skins */}
+                            <div className="aura-surface p-5 md:p-6" data-testid="appearance-settings">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <h2 className="text-lg font-bold text-brand-text">Apariencia</h2>
+                                </div>
+
+                                <p className="text-xs text-brand-text-dim mb-2 font-semibold">Estilo visual</p>
+                                <p className="text-xs text-brand-text-dim mb-3">
+                                    Clásico es la experiencia principal (versión anterior). Aura Living Cycle es el rediseño opcional.
+                                </p>
+                                <div
+                                    role="radiogroup"
+                                    aria-label="Estilo visual de la interfaz"
+                                    className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-5"
+                                >
+                                    {([
+                                        {
+                                            id: 'classic' as UiSkin,
+                                            title: 'Clásico',
+                                            desc: 'Versión anterior — oscuro, acentos de fase (principal)',
+                                        },
+                                        {
+                                            id: 'living-cycle' as UiSkin,
+                                            title: 'Aura Living Cycle',
+                                            desc: 'Rediseño sereno — crema, malva y tema claro/oscuro',
+                                        },
+                                    ]).map((opt) => {
+                                        const selected = (localSettings.uiSkin || 'classic') === opt.id;
+                                        return (
+                                            <button
+                                                key={opt.id}
+                                                type="button"
+                                                role="radio"
+                                                aria-checked={selected}
+                                                data-testid={`skin-${opt.id}`}
+                                                onClick={async () => {
+                                                    const next = { ...localSettings, uiSkin: opt.id };
+                                                    setLocalSettings(next);
+                                                    setSettings(next);
+                                                    applyAppearance(opt.id, (next.themeMode as ThemeMode) || 'system');
+                                                    await saveSettings(next);
+                                                }}
+                                                className={`text-left min-h-[var(--touch-min)] p-3 rounded-[var(--radius-md)] border transition-colors ${
+                                                    selected
+                                                        ? 'border-[var(--brand)] bg-[color-mix(in_srgb,var(--brand)_12%,transparent)]'
+                                                        : 'border-[var(--border)] bg-[var(--surface-2)] hover:border-[var(--brand)]'
+                                                }`}
+                                            >
+                                                <span className="block text-sm font-semibold text-brand-text">{opt.title}</span>
+                                                <span className="block text-[11px] text-brand-text-dim mt-1 leading-snug">{opt.desc}</span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+
+                                {(localSettings.uiSkin || 'classic') === 'living-cycle' && (
+                                    <>
+                                        <p className="text-xs text-brand-text-dim mb-2 font-semibold">Modo de color</p>
+                                        <p className="text-xs text-brand-text-dim mb-3">
+                                            Claro, oscuro o automático (solo en Aura Living Cycle).
+                                        </p>
+                                        <ThemeToggle
+                                            value={(localSettings.themeMode as ThemeMode) || 'system'}
+                                            onChange={async (mode) => {
+                                                const next = { ...localSettings, themeMode: mode, uiSkin: 'living-cycle' as UiSkin };
+                                                setLocalSettings(next);
+                                                setSettings(next);
+                                                applyAppearance('living-cycle', mode);
+                                                await saveSettings(next);
+                                            }}
+                                        />
+                                    </>
+                                )}
+                                {(localSettings.uiSkin || 'classic') === 'classic' && (
+                                    <p className="text-xs text-brand-text-dim">
+                                        El estilo clásico usa la paleta oscura original. Cambia a Living Cycle para modo claro/oscuro.
+                                    </p>
+                                )}
+                            </div>
+
                             {/* Privacy */}
-                            <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-5 md:p-6 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)]">
+                            <div className="aura-surface p-5 md:p-6">
                                 <div className="flex items-center gap-3 mb-5">
                                     <div className="p-2 rounded-xl bg-brand-primary/15">
                                         <svg className="w-5 h-5 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -393,6 +477,17 @@ export const SettingsPage: React.FC = () => {
                                     <h2 className="text-lg font-bold text-brand-text" style={{ fontWeight: 700, lineHeight: 1.3 }}>
                                         {t('privacy')}
                                     </h2>
+                                </div>
+                                <div className="bg-brand-surface-2 p-4 rounded-xl border border-brand-border mb-3 text-xs text-brand-text-dim leading-relaxed space-y-1">
+                                    <p className="font-semibold text-brand-text">Dónde se guardan tus datos</p>
+                                    <p>En este dispositivo (IndexedDB). Sin cuenta en la nube por defecto. Exporta o elimina desde esta pantalla.</p>
+                                    <p>
+                                        <a href="/privacy.html" className="text-brand-primary underline">Política de privacidad</a>
+                                        {' · '}
+                                        <a href="/help.html" className="text-brand-primary underline">Ayuda</a>
+                                        {' · '}
+                                        <a href="/terms.html" className="text-brand-primary underline">Términos</a>
+                                    </p>
                                 </div>
                                 <div className="bg-brand-surface-2 p-4 rounded-xl border border-brand-border flex items-start justify-between gap-4">
                                     <div className="flex-1">
@@ -418,7 +513,7 @@ export const SettingsPage: React.FC = () => {
                             </div>
 
                             {/* Data Management */}
-                            <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-5 md:p-6 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)]">
+                            <div className="aura-surface p-5 md:p-6">
                                 <div className="flex items-center gap-3 mb-5">
                                     <div className="p-2 rounded-xl bg-brand-primary/15">
                                         <svg className="w-5 h-5 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">

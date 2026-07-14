@@ -24,6 +24,9 @@ const defaultSettings: AppSettings = {
     customSymptoms: [],
     favoriteSymptomIds: [],
     language: 'auto',
+    themeMode: 'system',
+    uiSkin: 'classic',
+    onboardingComplete: false,
 };
 
 export const AppContext = createContext<AppContextType>({

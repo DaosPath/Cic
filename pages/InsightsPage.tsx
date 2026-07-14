@@ -551,9 +551,9 @@ export const InsightsPage: React.FC = () => {
 
     if (cycles.length < 2) {
         return (
-            <div className="min-h-screen px-4 md:px-8 pt-12 pb-24 md:pb-12">
+            <div className="page-content pt-12 pb-24 md:pb-12">
                 <div className="max-w-[1200px] mx-auto">
-                    <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-12 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)] text-center">
+                    <div className="bg-[var(--surface)] p-12 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)] text-center">
                         <div className="p-4 rounded-xl bg-brand-primary/15 w-20 h-20 mx-auto mb-6 flex items-center justify-center">
                             <svg className="w-10 h-10 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -968,7 +968,7 @@ export const InsightsPage: React.FC = () => {
 
                         {aiTimeMode === 'current-cycle' && (
                             <div className="space-y-6">
-                                <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-8 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)] text-center">
+                                <div className="bg-[var(--surface)] p-8 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)] text-center">
                                     <div className="p-4 rounded-xl bg-brand-primary/15 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
                                         <svg className="w-8 h-8 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -1042,7 +1042,7 @@ export const InsightsPage: React.FC = () => {
                         {/* KPI Cards */}
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6">
                             {/* Average Cycle Length */}
-                            <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-5 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)]">
+                            <div className="bg-[var(--surface)] p-5 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)]">
                                 <div className="flex items-center justify-between mb-3">
                                     <div className="p-2 rounded-xl bg-brand-primary/15">
                                         <svg className="w-5 h-5 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1065,7 +1065,7 @@ export const InsightsPage: React.FC = () => {
                             </div>
 
                             {/* Variability */}
-                            <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-5 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)]">
+                            <div className="bg-[var(--surface)] p-5 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)]">
                                 <div className="flex items-center justify-between mb-3">
                                     <div className="p-2 rounded-xl bg-brand-accent/15">
                                         <svg className="w-5 h-5 text-brand-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1082,7 +1082,7 @@ export const InsightsPage: React.FC = () => {
                             </div>
 
                             {/* Regularity */}
-                            <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-5 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)]">
+                            <div className="bg-[var(--surface)] p-5 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)]">
                                 <div className="flex items-center justify-between mb-3">
                                     <div className="p-2 rounded-xl bg-brand-positive/15">
                                         <svg className="w-5 h-5 text-brand-positive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1099,7 +1099,7 @@ export const InsightsPage: React.FC = () => {
                             </div>
 
                             {/* Average Period Duration */}
-                            <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-5 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)]">
+                            <div className="bg-[var(--surface)] p-5 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)]">
                                 <div className="flex items-center justify-between mb-3">
                                     <div className="p-2 rounded-xl bg-phase-menstruation/15">
                                         <svg className="w-5 h-5 text-phase-menstruation" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1119,7 +1119,7 @@ export const InsightsPage: React.FC = () => {
                         {/* Two Column Layout */}
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                             {/* Cycle Duration Chart */}
-                            <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-5 md:p-6 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)]">
+                            <div className="bg-[var(--surface)] p-5 md:p-6 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)]">
                                 <div className="flex items-center justify-between mb-5">
                                     <div className="flex items-center gap-3">
                                         <div className="p-2 rounded-xl bg-brand-primary/15">
@@ -1138,7 +1138,7 @@ export const InsightsPage: React.FC = () => {
                             </div>
 
                             {/* Cycle History */}
-                            <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-5 md:p-6 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)]">
+                            <div className="bg-[var(--surface)] p-5 md:p-6 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)]">
                                 <div className="flex items-center gap-3 mb-5">
                                     <div className="p-2 rounded-xl bg-brand-accent/15">
                                         <svg className="w-5 h-5 text-brand-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1179,7 +1179,7 @@ export const InsightsPage: React.FC = () => {
                         </div>
 
                         {/* Symptom Analysis */}
-                        <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-5 md:p-6 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)] mb-6">
+                        <div className="bg-[var(--surface)] p-5 md:p-6 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)] mb-6">
                             <div className="flex items-center gap-3 mb-5">
                                 <div className="p-2 rounded-xl bg-brand-positive/15">
                                     <svg className="w-5 h-5 text-brand-positive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1220,7 +1220,7 @@ export const InsightsPage: React.FC = () => {
                         {/* Advanced Analysis */}
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             {/* Heatmap */}
-                            <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-5 md:p-6 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)]">
+                            <div className="bg-[var(--surface)] p-5 md:p-6 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)]">
                                 <div className="flex items-center gap-3 mb-4">
                                     <div className="p-2 rounded-xl bg-brand-warning/15">
                                         <svg className="w-5 h-5 text-brand-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1235,7 +1235,7 @@ export const InsightsPage: React.FC = () => {
                             </div>
 
                             {/* Correlations */}
-                            <div className="bg-gradient-to-br from-brand-surface/70 to-brand-surface/50 p-5 md:p-6 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)]">
+                            <div className="bg-[var(--surface)] p-5 md:p-6 rounded-[18px] backdrop-blur-lg border border-brand-border shadow-[0_4px_16px_rgba(0,0,0,0.25)]">
                                 <div className="flex items-center gap-3 mb-4">
                                     <div className="p-2 rounded-xl bg-brand-primary/15">
                                         <svg className="w-5 h-5 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -140,6 +140,9 @@ export interface Cycle {
 }
 
 export type Language = 'es' | 'en' | 'tr' | 'auto';
+export type ThemeMode = 'light' | 'dark' | 'system';
+/** Visual skin: classic = previous Aura Ciclo (default); living-cycle = Aura Living Cycle redesign */
+export type UiSkin = 'classic' | 'living-cycle';
 
 export interface AppSettings {
   userName?: string;
@@ -152,6 +155,10 @@ export interface AppSettings {
   customSymptoms: Symptom[];
   favoriteSymptomIds?: string[];
   language: Language;
+  themeMode?: ThemeMode;
+  /** Defaults to classic so Living Cycle is opt-in */
+  uiSkin?: UiSkin;
+  onboardingComplete?: boolean;
 }
 
 export interface Prediction {

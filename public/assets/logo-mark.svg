@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" role="img" aria-label="Aura Ciclo">
+  <rect width="64" height="64" rx="16" fill="#4B3041"/>
+  <!-- Outer orbit -->
+  <circle cx="32" cy="32" r="18" stroke="#D7A4AD" stroke-width="2.5" opacity="0.9"/>
+  <!-- Phase arc -->
+  <path d="M32 14 A18 18 0 0 1 48.5 38" stroke="#C97C7C" stroke-width="3" stroke-linecap="round"/>
+  <!-- Inner ring -->
+  <circle cx="32" cy="32" r="9" stroke="#B9ADC4" stroke-width="2" opacity="0.85"/>
+  <!-- Soft center -->
+  <circle cx="32" cy="32" r="3.5" fill="#9BAE9B"/>
+  <!-- Orbit marker -->
+  <circle cx="48.5" cy="38" r="3" fill="#F7F4F2"/>
+</svg>

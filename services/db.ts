@@ -1,4 +1,5 @@
-import { openDB, DBSchema, IDBPDatabase } from 'idb';
+import { openDB } from 'idb';
+import type { DBSchema, IDBPDatabase } from 'idb';
 import type { DailyLog, Cycle, AppSettings } from '../types.ts';
 
 const DB_NAME = 'AuraCicloDB';
@@ -42,6 +43,25 @@ const getDb = (): Promise<IDBPDatabase<AuraCicloDB>> => {
   return dbPromise;
 };
 
+/** Test-only: close and drop the DB so unit tests get a clean store. */
+export const __resetDbForTests = async (): Promise<void> => {
+  if (dbPromise) {
+    try {
+      const db = await dbPromise;
+      db.close();
+    } catch {
+      // ignore close errors in tests
+    }
+  }
+  dbPromise = null;
+  await new Promise<void>((resolve, reject) => {
+    const req = indexedDB.deleteDatabase(DB_NAME);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error ?? new Error('deleteDatabase failed'));
+    req.onblocked = () => resolve();
+  });
+};
+
 // --- Logs ---
 export const getLog = async (date: string): Promise<DailyLog | undefined> => {
   const db = await getDb();
@@ -79,21 +99,34 @@ export const getLatestCycle = async (): Promise<Cycle | undefined> => {
 export const getSettings = async (): Promise<AppSettings> => {
   const db = await getDb();
   const settings = await db.get('settings', 'appSettings');
-  return settings || {
-    cycleLength: 28,
-    lutealPhaseLength: 14,
-    startOfWeek: 'monday',
-    discreteMode: false,
-    isDevMode: false,
-    customSymptoms: [
+  if (!settings) {
+    return {
+      cycleLength: 28,
+      lutealPhaseLength: 14,
+      startOfWeek: 'monday',
+      discreteMode: false,
+      isDevMode: false,
+      customSymptoms: [
         { id: 'headache', name: 'Dolor de cabeza', category: 'physical' },
         { id: 'cramps', name: 'Cólicos', category: 'physical' },
         { id: 'bloating', name: 'Hinchazón', category: 'physical' },
         { id: 'irritability', name: 'Irritabilidad', category: 'mood' },
         { id: 'fatigue', name: 'Fatiga', category: 'energy' },
-    ],
-    favoriteSymptomIds: [],
-    language: 'es',
+      ],
+      favoriteSymptomIds: [],
+      language: 'es',
+      themeMode: 'system',
+      uiSkin: 'classic',
+      onboardingComplete: false,
+    };
+  }
+  // Migrate older settings without new keys (existing installs skip onboarding;
+  // uiSkin defaults to classic so Living Cycle remains opt-in)
+  return {
+    ...settings,
+    themeMode: settings.themeMode ?? 'system',
+    uiSkin: settings.uiSkin === 'living-cycle' ? 'living-cycle' : 'classic',
+    onboardingComplete: settings.onboardingComplete ?? true,
   };
 };
 

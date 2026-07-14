@@ -2,299 +2,125 @@
 <html lang="es-PE">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" href="./favicon.ico" sizes="any" />
-    <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0a0a0f">
-    <title>Aura Ciclo</title>
-    <link rel="manifest" href="./manifest.json" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#F7F4F2" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1A1619" media="(prefers-color-scheme: dark)" />
+    <meta name="description" content="Aura Ciclo — seguimiento personal del ciclo menstrual, privado y local. Registra síntomas, consulta el calendario y revisa tendencias sin cuentas obligatorias." />
+    <meta name="application-name" content="Aura Ciclo" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Aura Ciclo" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Aura Ciclo — seguimiento personal del ciclo" />
+    <meta property="og:description" content="Registro diario, calendario y tendencias con privacidad. Datos en tu dispositivo. Aura Living Cycle." />
+    <meta property="og:image" content="/assets/og-social.jpg" />
+    <meta property="og:locale" content="es_PE" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Aura Ciclo" />
+    <meta name="twitter:description" content="Seguimiento personal del ciclo, sereno y privado." />
+    <meta name="twitter:image" content="/assets/og-social.jpg" />
+    <title>Aura Ciclo — Seguimiento personal del ciclo</title>
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles/tokens.css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
         theme: {
           extend: {
             fontFamily: {
-              sans: ['Inter', 'sans-serif'],
+              sans: ['DM Sans', 'system-ui', 'sans-serif'],
+              display: ['Fraunces', 'Georgia', 'serif'],
             },
             colors: {
-              // Base colors using CSS variables
               'brand-bg': 'var(--bg)',
               'brand-surface': 'var(--surface)',
               'brand-surface-2': 'var(--surface-2)',
               'brand-text': 'var(--text)',
               'brand-text-dim': 'var(--text-2)',
               'brand-border': 'var(--border)',
-              
-              // Dynamic phase colors
               'brand-primary': 'var(--brand)',
               'brand-accent': 'var(--accent)',
               'brand-particle': 'var(--particle)',
               'brand-ring': 'var(--ring)',
-              
-              // Semantic colors
               'brand-positive': 'var(--positive)',
               'brand-warning': 'var(--warning)',
-              
-              // Legacy colors for backward compatibility
               'brand-background': 'var(--bg)',
-              'brand-secondary': '#5a5a6a',
-              'phase-menstruation': '#E84D5B',
-              'phase-follicular': '#1FB6A6',
-              'phase-ovulation': '#10B981',
-              'phase-luteal': '#F59E0B',
-            }
+              'brand-secondary': 'var(--text-2)',
+              'phase-menstruation': 'var(--phase-menstruation)',
+              'phase-follicular': 'var(--phase-follicular)',
+              'phase-ovulation': 'var(--phase-ovulation)',
+              'phase-luteal': 'var(--phase-luteal)',
+            },
+            screens: {
+              xs: '360px',
+              sm: '390px',
+              md: '768px',
+              lg: '1024px',
+              xl: '1280px',
+              '2xl': '1440px',
+            },
+            minHeight: {
+              touch: '44px',
+            },
+            minWidth: {
+              touch: '44px',
+            },
           }
         }
       }
     </script>
-    <style>
-      :root {
-        /* Base colors (dark mode) */
-        --bg: #0B0D10;
-        --surface: #12151A;
-        --surface-2: #1A1F28;
-        --text: #E6E8EC;
-        --text-2: #A1A7B3;
-        --border: #232833;
-        
-        /* Default phase colors (follicular) */
-        --brand: #1FB6A6;
-        --accent: #4FD1C5;
-        --particle: #A7F3D0;
-        --ring: rgba(31, 182, 166, 0.3);
-        
-        /* Semantic colors */
-        --positive: #10B981;
-        --warning: #F59E0B;
-        
-        /* Transition for smooth color changes */
-        --transition-duration: 180ms;
-      }
-      
-      /* Phase-specific color themes */
-      [data-phase="menstruation"] {
-        --brand: #E84D5B;
-        --accent: #FF8A8A;
-        --particle: #FFB3B3;
-        --ring: rgba(232, 77, 91, 0.3);
-      }
-      
-      [data-phase="follicular"] {
-        --brand: #1FB6A6;
-        --accent: #4FD1C5;
-        --particle: #A7F3D0;
-        --ring: rgba(31, 182, 166, 0.3);
-      }
-      
-      [data-phase="ovulation"] {
-        --brand: #10B981;
-        --accent: #F5C84B;
-        --particle: #FFE08A;
-        --ring: rgba(16, 185, 129, 0.3);
-      }
-      
-      [data-phase="luteal"] {
-        --brand: #F59E0B;
-        --accent: #FDE68A;
-        --particle: #FCD34D;
-        --ring: rgba(245, 158, 11, 0.3);
-      }
-      
-      body {
-        background-color: var(--bg);
-        color: var(--text);
-        font-family: 'Inter', sans-serif;
-        transition: background-color var(--transition-duration) ease;
-      }
-      /* Custom scrollbar for a better dark mode experience */
-      ::-webkit-scrollbar {
-        width: 8px;
-      }
-      ::-webkit-scrollbar-track {
-        background: var(--surface);
-      }
-      ::-webkit-scrollbar-thumb {
-        background: var(--border);
-        border-radius: 4px;
-        transition: background var(--transition-duration) ease;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: var(--brand);
-      }
-      
-      /* Focus states for accessibility */
-      *:focus-visible {
-        outline: 2px solid var(--brand);
-        outline-offset: 3px;
-        border-radius: 8px;
-      }
-      
-      /* Smooth color transitions */
-      * {
-        transition-property: color, background-color, border-color, fill, stroke;
-        transition-duration: var(--transition-duration);
-        transition-timing-function: ease;
-      }
-      
-      /* Prevent autofill white background */
-      input:-webkit-autofill,
-      input:-webkit-autofill:hover,
-      input:-webkit-autofill:focus,
-      textarea:-webkit-autofill,
-      textarea:-webkit-autofill:hover,
-      textarea:-webkit-autofill:focus {
-        -webkit-box-shadow: 0 0 0 1000px var(--surface) inset !important;
-        -webkit-text-fill-color: var(--text) !important;
-        border-color: var(--border) !important;
-        transition: background-color 5000s ease-in-out 0s;
-      }
-      
-      /* Custom textarea scrollbar */
-      textarea::-webkit-scrollbar {
-        width: 10px;
-      }
-      textarea::-webkit-scrollbar-track {
-        background: transparent;
-        border-radius: 10px;
-      }
-      textarea::-webkit-scrollbar-thumb {
-        background: var(--border);
-        border-radius: 10px;
-        border: 2px solid transparent;
-        background-clip: padding-box;
-      }
-      textarea::-webkit-scrollbar-thumb:hover {
-        background: var(--text-2);
-        background-clip: padding-box;
-      }
-      
-      /* Textarea placeholder */
-      textarea::placeholder {
-        color: var(--text-2);
-        opacity: 0.7;
-      }
-      
-      /* Textarea focus ring */
-      textarea:focus {
-        box-shadow: 0 0 0 3px rgba(31, 182, 166, 0.2);
-      }
-      
-      [data-phase="menstruation"] textarea:focus {
-        box-shadow: 0 0 0 3px rgba(232, 77, 91, 0.2);
-      }
-      
-      [data-phase="ovulation"] textarea:focus {
-        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
-      }
-      
-      [data-phase="luteal"] textarea:focus {
-        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
-      }
-      
-      /* Smooth animations */
-      @keyframes fade-in {
-        from {
-          opacity: 0;
-          transform: translateY(-15px) scale(0.98);
+    <script>
+      (function () {
+        try {
+          var skin = localStorage.getItem('aura-skin-preview') || 'classic';
+          if (skin !== 'living-cycle' && skin !== 'classic') skin = 'classic';
+          document.documentElement.setAttribute('data-skin', skin);
+          if (skin === 'classic') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            var metaC = document.querySelector('meta[name="theme-color"]');
+            if (metaC) metaC.setAttribute('content', '#0a0a0f');
+          } else {
+            var stored = localStorage.getItem('aura-theme-preview');
+            var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            var theme = stored || (prefersDark ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', theme === 'dark' ? 'dark' : 'light');
+          }
+        } catch (e) {
+          document.documentElement.setAttribute('data-skin', 'classic');
+          document.documentElement.setAttribute('data-theme', 'dark');
         }
-        to {
-          opacity: 1;
-          transform: translateY(0) scale(1);
-        }
-      }
-      
-      @keyframes slide-up {
-        from {
-          opacity: 0;
-          transform: translateY(30px) scale(0.95);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0) scale(1);
-        }
-      }
-      
-      .animate-fade-in {
-        animation: fade-in 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-      }
-      
-      .animate-slide-up {
-        animation: slide-up 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-        animation-fill-mode: both;
-      }
-      
-      /* Smooth transitions */
-      * {
-        transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-      }
-      
-      /* Respect reduced motion preferences */
-      @media (prefers-reduced-motion: reduce) {
-        *,
-        *::before,
-        *::after {
-          animation-duration: 0.01ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.01ms !important;
-        }
-      }
-      
-      /* Subtle glow effect */
-      @keyframes glow {
-        0%, 100% {
-          opacity: 0.5;
-        }
-        50% {
-          opacity: 1;
-        }
-      }
-      
-      @keyframes slide-in-right {
-        from {
-          transform: translateX(100%);
-          opacity: 0;
-        }
-        to {
-          transform: translateX(0);
-          opacity: 1;
-        }
-      }
-      
-      .animate-slide-in-right {
-        animation: slide-in-right 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-      }
-    </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "react": "https://aistudiocdn.com/react@^19.2.0",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
-    "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.9.4",
-    "idb": "https://aistudiocdn.com/idb@^8.0.3",
-    "date-fns/": "https://aistudiocdn.com/date-fns@^3.6.0/",
-    "date-fns": "https://aistudiocdn.com/date-fns@^3.6.0",
-    "@google/genai": "https://aistudiocdn.com/google-genai@^0.18.0"
-  }
-}
-</script>
-</head>
+      })();
+    </script>
+  </head>
   <body>
-    <noscript>Necesitas habilitar JavaScript para ejecutar esta aplicación.</noscript>
+    <noscript>
+      <div style="max-width:40rem;margin:2rem auto;padding:1.5rem;font-family:system-ui,sans-serif;line-height:1.6;color:#282326;background:#F7F4F2">
+        <h1 style="font-size:1.5rem">Aura Ciclo</h1>
+        <p>Seguimiento personal del ciclo menstrual con enfoque en privacidad. Los registros se guardan en tu dispositivo.</p>
+        <p><strong>Para usar la aplicación interactiva necesitas JavaScript.</strong> Mientras tanto puedes leer:</p>
+        <ul>
+          <li><a href="/privacy.html">Política de privacidad</a></li>
+          <li><a href="/help.html">Ayuda</a></li>
+          <li><a href="/terms.html">Términos</a></li>
+        </ul>
+      </div>
+    </noscript>
     <div id="root"></div>
     <script type="module" src="./index.tsx"></script>
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('./service-worker.js').then(registration => {
-            console.log('SW registered: ', registration);
-          }).catch(registrationError => {
-            console.log('SW registration failed: ', registrationError);
+          navigator.serviceWorker.register('/service-worker.js').then(() => {
+            console.log('SW registered');
+          }).catch(() => {
+            console.log('SW registration failed');
           });
         });
       }
